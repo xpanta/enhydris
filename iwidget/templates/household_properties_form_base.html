@@ -1,0 +1,131 @@
+{% with field=form.num_of_occupants %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div> {% endwith %}
+<h3>
+    Family composition
+</h3>
+<table>
+    <tr>
+        <td colspan=7>{{ form.fcba_lt15.field.category }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.fcba_lt15.label }}</td>
+        <td>{{ form.fcba_16_25.label }}</td>
+        <td>{{ form.fcba_26_35.label }}</td>
+        <td>{{ form.fcba_36_45.label }}</td>
+        <td>{{ form.fcba_46_55.label }}</td>
+        <td>{{ form.fcba_56_65.label }}</td>
+        <td>{{ form.fcba_gt66.label }}</td>
+    </tr>
+    <tr>
+        <td>{% with field=form.fcba_lt15 %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.fcba_16_25 %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.fcba_26_35 %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.fcba_36_45 %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.fcba_46_55 %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.fcba_56_65 %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.fcba_gt66 %}{{ field.errors }} {{field }}{% endwith %}</td>
+    </tr>
+    <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr>
+    <tr>
+        <td colspan=7>{{ form.gender_male.field.category }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.gender_male.label }}</td>
+        <td>{{ form.gender_female.label }}</td>
+    </tr>
+    <tr>
+        <td>{% with field=form.gender_male %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.gender_female %}{{ field.errors }} {{field }}{% endwith %}</td>
+    </tr>
+    <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr>
+    <tr>
+        <td colspan=7>{{ form.prof_full_time.field.category }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.prof_full_time.label }}</td>
+        <td>{{ form.prof_part_time.label }}</td>
+        <td>{{ form.prof_retired.label }}</td>
+        <td>{{ form.prof_studying.label }}</td>
+        <td>{{ form.prof_unemployed.label }}</td>
+        <td>{{ form.prof_without.label }}</td>
+    </tr>
+    <tr>
+        <td>{% with field=form.prof_full_time %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.prof_part_time %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.prof_retired %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.prof_studying %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.prof_unemployed %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.prof_without %}{{ field.errors }} {{field }}{% endwith %}</td>
+    </tr>
+    <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr> <tr><td colspan=7> </td></tr>
+    <tr>
+        <td colspan=7>{{ form.edu_level_primary.field.category }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.edu_level_primary.label }}</td>
+        <td>{{ form.edu_level_junior.label }}</td>
+        <td>{{ form.edu_level_highschool.label }}</td>
+        <td>{{ form.edu_level_grad.label }}</td>
+        <td>{{ form.edu_level_postgrad.label }}</td>
+    </tr>
+    <tr>
+        <td>{% with field=form.edu_level_primary %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.edu_level_junior %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.edu_level_highschool %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.edu_level_grad %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.edu_level_postgrad %}{{ field.errors }} {{field }}{% endwith %}</td>
+    </tr>
+</table>
+<h3>
+    Property characteristics
+</h3>
+{% with field=form.property_size %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.property_type %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.construction_period %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.ownership_status %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.outdoor_facilities %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.out_areas_garden %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.out_areas_pervious %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.out_areas_roof %} <div> {{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.water_heaters %} <div>{{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.water_pricing %} <div>{{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+
+<h3>
+    Appliances characteristics 
+</h3>
+<table>
+    <tr>
+        <td colspan=7>{{ form.appl_washing.field.category }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.appl_washing.label }}</td>
+        <td>{{ form.appl_dishwasher.label }}</td>
+        <td>{{ form.appl_bath.label }}</td>
+        <td>{{ form.appl_shower.label }}</td>
+        <td>{{ form.appl_toilet.label }}</td>
+        <td>{{ form.appl_boiler.label }}</td>
+        <td>{{ form.appl_sink.label }}</td>
+    </tr>
+    <tr>
+        <td>{% with field=form.appl_washing %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.appl_dishwasher %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.appl_bath %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.appl_shower %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.appl_toilet %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.appl_boiler %}{{ field.errors }} {{field }}{% endwith %}</td>
+        <td>{% with field=form.appl_sink %}{{ field.errors }} {{field }}{% endwith %}</td>
+    </tr>
+</table>
+
+<br>
+{% with field=form.efficient_appliances %} <div>{{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}
+<br>
+{% with field=form.water_dms %} <div>{{ field.label_tag }} {{ field.errors }} {{ field }} <sup>{{ field.help_text }}</sup> </div>{% endwith %}

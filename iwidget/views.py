@@ -1,0 +1,956 @@
+# -*- coding: utf-8 -*-
+#!/usr/bin/python
+
+# iWidget application for openmeteo Enhydris software
+# This software is provided with the AGPL license
+# Copyright (c) 2013 National Technical University of Athens
+
+import os
+import logging
+from datetime import datetime, timedelta
+
+from django.utils import simplejson
+
+from django import db
+from django.db.models import Q
+from django.http import (Http404, HttpResponseRedirect, HttpResponse,)
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.utils.decorators import method_decorator
+
+from enhydris.hcore.views import (TimeseriesDetailView as TDV,
+                                  bufcount, inc_month)
+from enhydris.conf import settings
+from uc011.models import (IWTimeseries, Household, DMA, TSTEP_FIFTEEN_MINUTES,
+                          TSTEP_DAILY, TSTEP_MONTHLY, VAR_CUMULATIVE,
+                          VAR_PERIOD, VAR_COST, TSTEP_HOURLY,
+                          VAR_ENERGY_PERIOD, VAR_ENERGY_COST)
+from uc011.forms import HouseholdForm
+from uc011.utils import (statistics_on_daily,
+                         energy_statistics_on_daily)
+
+
+class TimeseriesDetailView(TDV):
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        object_id = kwargs['pk']
+        user = request.user
+        try:
+            ts = IWTimeseries.objects.get(pk=object_id)
+        except IWTimeseries.DoesNotExist:
+            raise Http404('Timeseries object does not exist')
+        is_household = hasattr(ts.gentity, 'gpoint') and hasattr(ts.gentity.gpoint,
+                'household')
+        if not (user.is_staff or user.is_superuser) and \
+                (not is_household or ts.gentity.gpoint.household.user.id != user.id):
+            request.notifications.error("Permission denied")
+            return HttpResponseRedirect(reverse('index'))
+        return super(TimeseriesDetailView, self).dispatch(request,
+                *args, **kwargs)
+
+@login_required
+def household_view(request, household_id=None):
+    user = request.user
+    if not household_id:
+        household = user.households.all()[0]
+    else:
+        try:
+            household = Household.objects.get(pk=household_id)
+        except Household.DoesNotExist:
+            raise Http404
+    if not (user.is_staff or user.is_superuser) and \
+            (household.user.id != user.id):
+        request.notifications.error("Permission denied")
+        return HttpResponseRedirect(reverse('index'))
+    dma = household.dma
+    ts_dma_daily_pc = dma.timeseries.filter(
+            Q(time_step__id=TSTEP_DAILY) &
+            Q(name__icontains='capita') &
+            Q(variable__id=VAR_PERIOD))[0]
+    ts_dma_monthly_pc = dma.timeseries.filter(
+            Q(time_step__id=TSTEP_MONTHLY) &
+            Q(name__icontains='capita') &
+            Q(variable__id=VAR_PERIOD))[0]
+    ts_raw = household.timeseries.filter(time_step__isnull=True,
+            variable__id=VAR_CUMULATIVE)[0]
+    ts_fifteen = household.timeseries.filter(
+            time_step__id=TSTEP_FIFTEEN_MINUTES,
+            variable__id=VAR_PERIOD)[0]
+    ts_hourly = household.timeseries.filter(
+            time_step__id=TSTEP_HOURLY,
+            variable__id=VAR_PERIOD)[0]
+    ts_daily = household.timeseries.filter(
+            time_step__id=TSTEP_DAILY,
+            variable__id=VAR_PERIOD)[0]
+    ts_monthly = household.timeseries.filter(
+            time_step__id=TSTEP_MONTHLY,
+            variable__id=VAR_PERIOD)[0]
+    ts_cost = household.timeseries.filter(
+            time_step__id=TSTEP_MONTHLY,
+            variable__id=VAR_COST)[:1]
+    # Energy time series
+    ts_daily_energy = household.timeseries.filter(
+            time_step__id=TSTEP_DAILY,
+            variable__id=VAR_ENERGY_PERIOD)[:1]
+    ts_daily_energy = ts_daily_energy[0] if ts_daily_energy else None
+    ts_hourly_energy = household.timeseries.filter(
+            time_step__id=TSTEP_HOURLY,
+            variable__id=VAR_ENERGY_PERIOD)[:1]
+    ts_hourly_energy = ts_hourly_energy[0] if ts_hourly_energy else None
+    ts_energy_cost = household.timeseries.filter(
+            time_step__id=TSTEP_MONTHLY,
+            variable__id=VAR_ENERGY_COST)[:1]
+    ts_energy_cost = ts_energy_cost[0] if ts_energy_cost else None
+    ts_fifteen_energy = household.timeseries.filter(
+            time_step__id=TSTEP_FIFTEEN_MINUTES,
+            variable__id=VAR_ENERGY_PERIOD)[:1]
+    ts_fifteen_energy = ts_fifteen_energy[0] if ts_fifteen_energy else None
+    ts_monthly_energy = household.timeseries.filter(
+            time_step__id=TSTEP_MONTHLY,
+            variable__id=VAR_ENERGY_PERIOD)[:1]
+    ts_monthly_energy = ts_monthly_energy[0] if ts_monthly_energy else None
+    ts_dma_daily_energy_pc = dma.timeseries.filter(
+            Q(time_step__id=TSTEP_DAILY) &
+            Q(name__icontains='capita') &
+            Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+    ts_dma_daily_energy_pc = ts_dma_daily_energy_pc[0] if ts_dma_daily_energy_pc else None
+    ts_dma_monthly_energy_pc = dma.timeseries.filter(
+            Q(time_step__id=TSTEP_MONTHLY) &
+            Q(name__icontains='capita') &
+            Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+    ts_dma_monthly_energy_pc = ts_dma_monthly_energy_pc[0] if ts_dma_monthly_energy_pc else None
+
+    # TODO: Remove this after full migration to rest api
+    if len(ts_cost):
+        ts_cost = ts_cost[0]
+    else:
+        # Fallback
+        ts_cost = ts_monthly
+    nocc = household.num_of_occupants
+    charts = [
+        {
+            'id': 1,
+            'name': 'Fifteen minutes water consumption (litres)',
+            'display_min': False, 'display_max': True, 'display_avg': False,
+            'display_sum': True, 'time_span': 'day', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False,
+            'main_timeseries_id': ts_fifteen.id,
+            'span_options': ['month', 'week', 'day'],
+        },
+        {
+            'id': 7,
+            'name': 'Hourly water consumption (litres)',
+            'display_min': False, 'display_max': True, 'display_avg': False,
+            'display_sum': True, 'time_span': 'week', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': True,
+            'main_timeseries_id': ts_hourly.id,
+            'has_pie': 1,
+            'span_options': ['year', 'month', 'week', 'day'],
+        },
+        {
+            'id': 6,
+            'name': 'Cumulative consumption - raw measurements (m<sup>3</sup>)',
+            'display_min': False, 'display_max': False, 'display_avg': False,
+            'display_sum': False, 'time_span': 'week', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False,
+            'main_timeseries_id': ts_raw.id,
+            'span_options': ['month', 'week', 'day'],
+        },
+        'Fifteen energy placeholder',
+        'Hourly energy placeholder',
+        {
+            'id': 2,
+            'name': 'Daily water consumption (litres)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'month', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': True,
+            'main_timeseries_id': ts_daily.id, 'occupancy': nocc,
+            'span_options': ['year', 'month', 'week'],
+        },
+        {
+            'id': 3,
+            'name': 'Daily water consumption per capita (litres)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'month', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False,
+            'span_options': ['year', 'month', 'week'],
+        },
+        'Daily energy placeholder',
+        'Daily energy per capita placeholder',
+        {
+            'id': 4,
+            'name': 'Water consumption per month, up to a year period (m<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': True,
+            'main_timeseries_id': ts_monthly.id, 'occupancy': nocc,
+            'has_pie': 2,
+            'span_options': [],
+        },
+        {
+            'id': 8,
+            'name': u'Water cost per month, up to a year period (€)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False, 
+            'main_timeseries_id': ts_cost.id, 'occupancy': nocc,
+            'span_options': [],
+        },
+        {
+            'id': 5,
+            'name': 'Water consumption per month, per capita, up to a year period (m<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False, 
+            'span_options': [],
+        },
+        'Monthly energy placeholder',
+        'Monthly energy cost placeholder',
+        'Monthly energy per capita placeholder',
+    ]
+    if ts_daily_energy:
+        # There are energy time series, add them to the array
+        index = charts.index('Daily energy placeholder')
+        charts[index]= {
+                'id': 9,
+                'name': 'Daily energy consumption (kWh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'month', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'main_timeseries_id': ts_daily_energy.id, 'occupancy': nocc,
+                'span_options': ['year', 'month', 'week'],
+            }
+
+        index = charts.index('Fifteen energy placeholder')
+        charts[index]= {
+                'id': 10,
+                'name': 'Fifteen minutes energy consumption (kWh)',
+                'display_min': False, 'display_max': True, 'display_avg': False,
+                'display_sum': True, 'time_span': 'day', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'main_timeseries_id': ts_fifteen_energy.id,
+                'span_options': ['month', 'week', 'day'],
+            }
+
+        index = charts.index('Hourly energy placeholder')
+        charts[index]= {
+                'id': 11,
+                'name': 'Hourly energy consumption (kWh)',
+                'display_min': False, 'display_max': True, 'display_avg': False,
+                'display_sum': True, 'time_span': 'week', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'main_timeseries_id': ts_hourly_energy.id,
+                'has_pie': 3,
+                'span_options': ['year', 'month', 'week', 'day'],
+            }
+
+        index = charts.index('Daily energy per capita placeholder')
+        charts[index]= {
+                'id': 12,
+                'name': 'Daily energy consumption per capita (kWh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'month', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'span_options': ['year', 'month', 'week'],
+            }
+
+        index = charts.index('Monthly energy placeholder')
+        charts[index]= {
+                'id': 13,
+                'name': 'Monthly energy consumption (kWh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'main_timeseries_id': ts_monthly_energy.id, 'occupancy': nocc,
+                'has_pie': 4,
+                'span_options': [],
+            }
+
+        index = charts.index('Monthly energy cost placeholder')
+        charts[index]= {
+                'id': 14,
+                'name': u'Energy cost per month, up to a year period (€)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False, 
+                'main_timeseries_id': ts_energy_cost.id, 'occupancy': nocc,
+                'span_options': [],
+            }
+
+        index = charts.index('Monthly energy per capita placeholder')
+        charts[index]= {
+                'id': 15,
+                'name': 'Montlhly energy consumption per capita (kWh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False, 
+                'span_options': [],
+            }
+    else:
+        for placeholder in (
+                'Fifteen energy placeholder',
+                'Hourly energy placeholder',
+                'Daily energy placeholder',
+                'Daily energy per capita placeholder',
+                'Monthly energy placeholder',
+                'Monthly energy cost placeholder',
+                'Monthly energy per capita placeholder',
+                
+                ):
+            charts.remove(placeholder)
+
+    # chart_selectors items:
+    # key: id: the id attribue of chart instance in above chart list
+    #          Select input element will be above the chart
+    # value: selections: a list of ('chart_id', 'Displayed name')
+    #        title: a category title to display
+    #        default: default item from selections
+    chart_selectors = {
+            1: {
+                'selections': [(1, 'Fifteen minutes water '
+                                   'consumption'),
+                               (7, 'Hourly water consumption'),
+                               (6, 'Raw measurements'),],
+                'title': 'High resolution data',
+                'default': 7
+            },
+            2: {
+                'selections': [(2, 'Daily water consumption'),
+                               (3, 'Daily water consumption '
+                                   'per capita'),],
+                'title': 'Daily data',
+                'default': 2
+            },
+            4: {
+                'selections': [(4, 'Monthly water consumption'),
+                               (8, 'Monthly water cost'),
+                               (5, 'Monthly water consumption '
+                                   'per capita'),],
+                'title': 'Monthly data',
+                'default': 4
+            },
+    }
+
+    if ts_daily_energy:
+        # There are energy time series, add them to selectors
+        chart_selectors[1]['selections'] += [
+                (10, 'Fifteen minutes energy consumption'),
+                (11, 'Hourly energy consumption'),]
+        chart_selectors[2]['selections'] += [
+                (9, 'Daily energy consumption'),
+                (12, 'Daily energy consumption per capita'),]
+        chart_selectors[4]['selections'] += [
+                (13, 'Monthly energy consumption'),
+                (14, 'Monthly energy cost'),
+                (15, 'Monthly energy consumption per capita'),]
+
+    variables = [
+        {
+            'id': 1, 'chart_id': 1, 'name': 'var_name',
+            'timeseries_id': ts_fifteen.id,
+            'is_bar': True, 'bar_width': 7*60*1000,
+            'factor': 1000.000,
+        },
+        {
+            'id': 2, 'chart_id': 2, 'name': 'var_name',
+            'timeseries_id': ts_daily.id,
+            'is_bar': True, 'bar_width': 11*60*60*1000,
+            'factor': 1000.000,
+        },
+        {
+            'id': 3, 'chart_id': 4, 'name': 'var_name',
+            'timeseries_id': ts_monthly.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1,
+        },
+        {
+            'id': 4, 'chart_id': 6, 'name': 'var_name',
+            'timeseries_id': ts_raw.id,
+            'is_bar': False,
+            'factor': 1.000,
+        },
+        {
+            'id': 5, 'chart_id': 3, 'name': 'Household',
+            'timeseries_id': ts_daily.id,
+            'is_bar': True, 'bar_width': 11*60*60*1000,
+            'factor': 1000.000/nocc,
+        },
+        {
+            'id': 6, 'chart_id': 3, 'name': 'DMA',
+            'timeseries_id': ts_dma_daily_pc.id,
+            'factor': 1000.000,
+        },
+        {
+            'id': 7, 'chart_id': 5, 'name': 'Household',
+            'timeseries_id': ts_monthly.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1.000/nocc,
+        },
+        {
+            'id': 8, 'chart_id': 5, 'name': 'DMA',
+            'timeseries_id': ts_dma_monthly_pc.id,
+            'factor': 1.000,
+        },
+        {
+            'id': 9, 'chart_id': 7, 'name': 'var_name',
+            'timeseries_id': ts_hourly.id,
+            'is_bar': True, 'bar_width': 30*60*1000,
+            'factor': 1000.000,
+        },
+        {
+            'id': 10, 'chart_id': 8, 'name': 'var_name',
+            'timeseries_id': ts_cost.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1,
+        },
+    ]
+    if ts_daily_energy:
+        # There are energy time series, add them to variables
+        variables += [
+            {
+                'id': 11, 'chart_id': 9, 'name': 'Household',
+                'timeseries_id': ts_daily_energy.id,
+                'is_bar': True, 'bar_width': 11*60*60*1000,
+                'factor': 1.0,
+            },
+            {
+                'id': 12, 'chart_id': 10, 'name': 'var_name',
+                'timeseries_id': ts_fifteen_energy.id,
+                'is_bar': True, 'bar_width': 7*60*1000,
+                'factor': 1.0,
+            },
+            {
+                'id': 13, 'chart_id': 11, 'name': 'var_name',
+                'timeseries_id': ts_hourly_energy.id,
+                'is_bar': True, 'bar_width': 30*60*1000,
+                'factor': 1.0,
+            },
+            {
+                'id': 14, 'chart_id': 12, 'name': 'Household',
+                'timeseries_id': ts_daily_energy.id,
+                'is_bar': True, 'bar_width': 11*60*60*1000,
+                'factor': 1.0/nocc,
+            },
+            {
+                'id': 15, 'chart_id': 12, 'name': 'DMA',
+                'timeseries_id': ts_dma_daily_energy_pc.id,
+                'factor': 1.000,
+            },
+            {
+                'id': 16, 'chart_id': 13, 'name': 'var_name',
+                'timeseries_id': ts_monthly_energy.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': 1,
+            },
+            {
+                'id': 17, 'chart_id': 14, 'name': 'var_name',
+                'timeseries_id': ts_energy_cost.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': 1,
+            },
+            {
+                'id': 18, 'chart_id': 15, 'name': 'Household',
+                'timeseries_id': ts_monthly_energy.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': 1.000/nocc,
+            },
+            {
+                'id': 19, 'chart_id': 15, 'name': 'DMA',
+                'timeseries_id': ts_dma_monthly_energy_pc.id,
+                'factor': 1.000,
+            },
+        ]
+
+    pies = {
+                1: {'timeseries_id': ts_hourly.id,
+                    'period_unit': 'hour',
+                    'period_from': 1,
+                    'period_to': 6,
+                    'default_period': 'Nightly consumption 0:00-06:00',
+                    'alternate_period': 'Daily consumption 06:00-24:00'},
+                2: {'timeseries_id': ts_monthly.id,
+                    'period_unit': 'month',
+                    'period_from': 5,
+                    'period_to': 9,
+                    'default_period': 'Summer consumption (May-September)',
+                    'alternate_period': 'Winter consumption (October-April)'}
+    }
+    if ts_daily_energy:
+        # There are energy time series, add them to pies
+        pies.update({
+                    3: {'timeseries_id': ts_hourly_energy.id,
+                        'period_unit': 'hour',
+                        'period_from': 1,
+                        'period_to': 6,
+                        'default_period': 'Nightly consumption 0:00-06:00',
+                        'alternate_period': 'Daily consumption 06:00-24:00'},
+                    4: {'timeseries_id': ts_monthly_energy.id,
+                        'period_unit': 'month',
+                        'period_from': 5,
+                        'period_to': 9,
+                        'default_period': 'Summer consumption (May-September)',
+                        'alternate_period': 'Winter consumption (October-April)'}
+            })
+
+    js_data = {
+            'timeseries_data_url': reverse('timeseries_data'),
+            'periods_stats_url': reverse('periods_stats'),
+            'charts': charts,
+            'variables': variables,
+            'pies': pies
+    }
+    js_data = simplejson.dumps(js_data)
+    form = HouseholdForm(instance=household)
+    for field in form.fields:                
+        form.fields[field].required = False
+        form.fields[field].widget.attrs['disabled'] = 'disabled'
+        form.fields[field].help_text=u''
+    context = {'household': household,
+             'charts': charts,
+             'form': form,
+             'js_data': js_data,
+             'chart_selectors': chart_selectors,
+             'overview': statistics_on_daily(ts_daily, nocc),
+             'energy_overview': None}
+    if ts_daily_energy:
+        context['energy_overview'] = energy_statistics_on_daily(
+                ts_daily_energy, nocc)
+    return render_to_response('household.html',
+            context,
+        context_instance=RequestContext(request))
+
+@login_required
+def dma_view(request, dma_id):
+    user = request.user
+    if not (user.is_staff or user.is_superuser):
+        request.notifications.error("Permission denied")
+        return HttpResponseRedirect(reverse('index'))
+    try:
+        dma = DMA.objects.get(pk=dma_id)
+    except DMA.DoesNotExist:
+        raise Http404('DMA does not exist')
+    ts_daily = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
+            ~Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
+    ts_monthly = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
+            ~Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
+    ts_daily_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
+            Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
+    ts_monthly_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
+            Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
+
+    ts_daily_energy = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
+            ~Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+    ts_daily_energy = ts_daily_energy[0] if ts_daily_energy else None
+    ts_monthly_energy = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
+            ~Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+    ts_monthly_energy = ts_monthly_energy[0] if ts_monthly_energy else None
+    ts_daily_energy_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
+            Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+    ts_daily_energy_pc = ts_daily_energy_pc[0] if ts_daily_energy_pc else None
+    ts_monthly_energy_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
+            Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+    ts_monthly_energy_pc = ts_monthly_energy_pc[0] if ts_monthly_energy_pc else None
+
+    charts = [
+        {
+            'id': 1,
+            'name': 'Daily water consumption (m<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'week', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'main_timeseries_id': ts_daily.id,
+            'span_options': ['year', 'month', 'week'],
+            'initial_display': True,
+        },
+        {
+            'id': 2,
+            'name': 'Water consumption per month, up to a year period (m<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'main_timeseries_id': ts_monthly.id,
+            'span_options': [],
+            'initial_display': True,
+        },
+        {
+            'id': 3,
+            'name': 'Daily water consumption per capita (litres)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'week', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'main_timeseries_id': ts_daily_pc.id,
+            'span_options': ['year', 'month', 'week'],
+            'initial_display': True,
+        },
+        {
+            'id': 4,
+            'name': 'Water consumption per month, up to a year period, per capita (<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'main_timeseries_id': ts_monthly_pc.id,
+            'span_options': [],
+            'initial_display': True,
+        },
+    ]
+    if ts_daily_energy:
+        charts += [
+            {
+                'id': 5,
+                'name': 'Daily energy consumption (kWh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'week', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'main_timeseries_id': ts_daily_energy.id,
+                'span_options': ['year', 'month', 'week'],
+                'initial_display': True,
+            },
+            {
+                'id': 6,
+                'name': 'Energy consumption per month, up to a year period (MWh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'main_timeseries_id': ts_monthly_energy.id,
+                'span_options': [],
+                'initial_display': True,
+            },
+            {
+                'id': 7,
+                'name': 'Daily energy consumption per capita (kWh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'week', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'main_timeseries_id': ts_daily_energy_pc.id,
+                'span_options': ['year', 'month', 'week'],
+                'initial_display': True,
+            },
+            {
+                'id': 8,
+                'name': 'Energy consumption per month, up to a year period, per capita (kWh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'main_timeseries_id': ts_monthly_energy_pc.id,
+                'span_options': [],
+                'initial_display': True,
+            },
+        ]
+
+    variables = [
+        {
+            'id': 1, 'chart_id': 1, 'name': 'var_name',
+            'timeseries_id': ts_daily.id,
+            'is_bar': True, 'bar_width': 11*60*60*1000,
+            'factor': 1.000,
+        },
+        {
+            'id': 2, 'chart_id': 2, 'name': 'var_name',
+            'timeseries_id': ts_monthly.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1.000,
+        },
+        {
+            'id': 3, 'chart_id': 3, 'name': 'var_name',
+            'timeseries_id': ts_daily_pc.id,
+            'is_bar': True, 'bar_width': 11*60*60*1000,
+            'factor': 1000.000,
+        },
+        {
+            'id': 4, 'chart_id': 4, 'name': 'var_name',
+            'timeseries_id': ts_monthly_pc.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1.000,
+        },
+    ]
+    if ts_daily_energy:
+        variables += [
+            {
+                'id': 5, 'chart_id': 5, 'name': 'var_name',
+                'timeseries_id': ts_daily_energy.id,
+                'is_bar': True, 'bar_width': 11*60*60*1000,
+                'factor': 1.000,
+            },
+            {
+                'id': 6, 'chart_id': 6, 'name': 'var_name',
+                'timeseries_id': ts_monthly_energy.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': .001,
+            },
+            {
+                'id': 7, 'chart_id': 7, 'name': 'var_name',
+                'timeseries_id': ts_daily_energy_pc.id,
+                'is_bar': True, 'bar_width': 11*60*60*1000,
+                'factor': 1.000,
+            },
+            {
+                'id': 8, 'chart_id': 8, 'name': 'var_name',
+                'timeseries_id': ts_monthly_energy_pc.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': 1.000,
+            },
+        ]
+
+    js_data = {
+            'timeseries_data_url': reverse('timeseries_data'),
+            'charts': charts,
+            'variables': variables
+    }
+    js_data = simplejson.dumps(js_data)
+    return render_to_response('dma.html',
+            {'dma': dma,
+             'charts': charts,
+             'js_data': js_data},
+        context_instance=RequestContext(request))
+
+@login_required
+def super_index(request):
+    return render_to_response('superuser.html',
+            {'dmas': DMA.objects.all()},
+        context_instance=RequestContext(request))
+
+@login_required
+def index(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('login'))
+    if not (request.user.is_superuser or request.user.is_staff):
+        return household_view(request)
+    return super_index(request)
+
+@login_required
+def household_properties(request):
+    user = request.user
+    household = user.households.all()
+    if household.count()<1:
+        raise Http404('User does not have household')
+    household = household[0]
+    if request.method == "POST":
+        form = HouseholdForm(request.POST, request.FILES,
+                instance=household)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Changes saved successfully')
+            return HttpResponseRedirect(household.get_absolute_url()+
+                    '#characteristicstab')
+    else:
+        form = HouseholdForm(instance=household)
+    return render_to_response('household_properties_form.html',
+            {'form': form,
+             'household': household,
+             },
+        context_instance=RequestContext(request))
+
+import linecache
+from enhydris.hcore.tstmpupd import update_ts_temp_file
+from pthelma.timeseries import datetime_from_iso
+
+def periods_distribution(request, *args, **kwargs):
+
+    def date_at_pos(pos):
+        s = linecache.getline(afilename, pos)
+        return datetime_from_iso(s.split(',')[0])
+
+    def timedeltadivide(a, b):
+        """Divide timedelta a by timedelta b."""
+        a = a.days*86400+a.seconds
+        b = b.days*86400+b.seconds
+        return float(a)/float(b)
+
+# Return the nearest record number to the specified date
+# The second argument is 0 for exact match, -1 if no
+# exact match and the date is after the record found,
+# 1 if no exact match and the date is before the record.
+    def find_line_at_date(adatetime, totlines):
+        if totlines <2:
+            return totlines
+        i1, i2 = 1, totlines
+        d1=date_at_pos(i1)
+        d2=date_at_pos(i2)
+        if adatetime<=d1:
+            return (i1, 0 if d1==adatetime else 1)
+        if adatetime>=d2:
+            return (i2, 0 if d2==adatetime else -1)
+        while(True):
+            i = i1 + int(round( float(i2-i1)* timedeltadivide( adatetime-d1, d2-d1) ))
+            d = date_at_pos(i)
+            if d==adatetime: return (i, 0)
+            if (i==i1) or (i==i2): return (i, -1 if i==i1 else 1)
+            if d<adatetime:
+                d1, i1 = d, i
+            if d>adatetime:
+                d2, i2 = d, i
+
+    gstats = {'default_period': 0, 'alternate_period': 0}
+    def add_to_stats(params, date, value):
+        test_component = getattr(date, params['period_unit'])
+        try:
+            period_from = int(params['period_from'])
+            period_to = int(params['period_to'])
+        except ValueError:
+            return
+        if test_component>=period_from and period_to>=test_component:
+            key = 'default_period'
+        else:
+            key = 'alternate_period'
+        gstats[key] += value
+            
+    def inc_datetime(adate, unit, steps):
+        if unit == 'day':
+            return adate+steps * timedelta(days=1)
+        elif unit == 'week':
+            return adate + steps * timedelta(weeks=1)
+        elif unit == 'month':
+            return inc_month(adate, steps)
+        elif unit == 'year':
+            return inc_month(adate, 12*steps)
+        elif unit == 'moment':
+            return adate            
+        elif unit == 'hour':
+            return adate+steps * timedelta(minutes=60)
+        elif unit == 'twohour':
+            return adate+steps * timedelta(minutes=120)
+        else: raise Http404
+   
+    if not (request.method == "GET" and request.GET.get('object_id')):
+        raise Http404
+    response = HttpResponse(content_type='application/json')
+    response.status_code = 200
+    try:
+        object_id = int(request.GET['object_id'])
+    except ValueError:
+        raise Http404
+    afilename = os.path.join(settings.ENHYDRIS_TS_GRAPH_CACHE_DIR,
+                             '%d.hts'%(object_id,))
+    update_ts_temp_file(settings.ENHYDRIS_TS_GRAPH_CACHE_DIR,
+                        db.connection, object_id)
+    chart_data = []
+    if request.GET.has_key('start_pos') and request.GET.has_key('end_pos'):
+        start_pos = int(request.GET['start_pos'])
+        end_pos = int(request.GET['end_pos'])
+    else:
+        end_pos = bufcount(afilename)
+        tot_lines = end_pos
+        if request.GET.has_key('last'):
+            if request.GET.has_key('date') and request.GET['date']:
+                datetimestr = request.GET['date']
+                datetimefmt = '%Y-%m-%d'
+                if request.GET.has_key('time') and request.GET['time']:
+                    datetimestr = datetimestr + ' '+request.GET['time']
+                    datetimefmt = datetimefmt + ' %H:%M'
+                try:
+                    first_date = datetime.strptime(datetimestr, datetimefmt)
+                    last_date = inc_datetime(first_date, request.GET['last'], 1)
+                    (end_pos, is_exact) = find_line_at_date(last_date, tot_lines)
+                    if request.GET.has_key('exact_datetime'):
+                        if request.GET['exact_datetime'] == 'true':
+                            if is_exact!=0:
+                                raise Http404
+                except ValueError:
+                    raise Http404
+            else:
+                last_date = date_at_pos(end_pos)
+                first_date = inc_datetime(last_date, request.GET['last'], -1)
+# This is an almost bad workarround to exclude the first record from
+# sums, i.e. when we need the 144 10 minute values from a day.
+                if request.GET.has_key('start_offset'):
+                    offset = float(request.GET['start_offset'])
+                    first_date+= timedelta(minutes=offset)
+            start_pos= find_line_at_date(first_date, tot_lines)[0]
+        else:
+            start_pos= 1
+    params = {x: request.GET.get(x) for x in ('period_unit',
+            'period_from', 'period_to', )}
+    if not all(params.values()):
+        raise Http404
+    if not params['period_unit'] in ('month', 'hour'):
+        raise Http404
+    length = end_pos - start_pos + 1
+    fine_step = 1
+    pos=start_pos
+    amax=''
+    prev_pos=-1
+    tick_pos=-1
+    afloat = 0.01
+    try:
+        linecache.checkcache(afilename)
+        while pos < start_pos+length:
+            s = linecache.getline(afilename, pos)
+            if s.isspace():
+                pos+=fine_step
+                continue 
+            t = s.split(',') 
+# Use the following exception handling to catch incoplete
+# reads from cache. Tries only one time, next time if
+# the error on the same line persists, it raises.
+            try:
+                k = datetime_from_iso(t[0])
+                v = t[1]
+            except:
+                if pos>prev_pos:
+                    prev_pos = pos
+                    linecache.checkcache(afilename)
+                    continue
+                else:
+                    raise
+            if v!='':
+                afloat = float(v)
+                add_to_stats(params, k, afloat)
+# Some times linecache tries to read a file being written (from 
+# timeseries.write_file). So every 5000 lines refresh the cache.
+            if (pos-start_pos)%5000==0:
+                linecache.checkcache(afilename)
+            pos+=fine_step
+    finally:
+        linecache.clearcache()
+    response.content = simplejson.dumps({'stats': gstats})
+    callback = request.GET.get("jsoncallback", None)    
+    if callback:
+        response.content = '%s(%s)'%(callback, response.content,)
+    return response
+
+
+def test(request):
+    logging.debug("test!!")
+    return HttpResponse("OK")

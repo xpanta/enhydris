@@ -1,0 +1,1097 @@
+[
+    {
+        "pk": 1, 
+        "model": "iwidget.propertytype", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.829", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Detached"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.propertytype", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": null, 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Semi detached"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.propertytype", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": null, 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Flat"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "iwidget.propertytype", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": null, 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Tenement"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.constructionperiod", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:46:50.091", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Before 1970"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.constructionperiod", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:46:55.633", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "1971-1990"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.constructionperiod", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:47:00.075", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "1991-2000"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "iwidget.constructionperiod", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:47:04.785", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "After 2001"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.ownershipstatus", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:47:43.942", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Owned"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.ownershipstatus", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:47:48.952", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Rented"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.outdoorfacility", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:06.209", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Garden"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.outdoorfacility", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:14.228", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Pool"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.outdoorfacility", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:17.861", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Roof"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "iwidget.outdoorfacility", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:21.880", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Car washing"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.waterheater", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:40.379", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Electricity"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.waterheater", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:45.504", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Gas"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.waterheater", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:50.023", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Solid Fue"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "iwidget.waterheater", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:54.114", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Biomass"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "iwidget.waterheater", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:48:59.443", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "LPG"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "iwidget.waterheater", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:49:04.508", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Solar"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "iwidget.waterheater", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:49:09.348", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Oil"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.waterpricingscheme", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:50:02.782", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Flat rate tariff"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.waterpricingscheme", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:50:07.492", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Water metering tariff"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.waterpricingscheme", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:50:12.113", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Rising block tariff"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "iwidget.waterpricingscheme", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:50:16.640", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Declining block tariff"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "iwidget.waterpricingscheme", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:50:21.539", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Seasonal tariff"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "iwidget.waterpricingscheme", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:50:27.210", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Time-of-day tariff"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "iwidget.waterpricingscheme", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:50:35.497", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Social tariff"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.efficientappliance", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:51:02.899", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Dual flush toilets"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.efficientappliance", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:51:07.345", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Low flow taps"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.efficientappliance", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:51:13.304", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Efficient showerheads"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "iwidget.efficientappliance", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:51:18.159", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Water/Energy efficient washing machine"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "iwidget.efficientappliance", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:51:23.717", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Water/Energy efficient dishwasher"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "iwidget.efficientappliance", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:51:29.638", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Drip irrigation or Sprinkler timers"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.waterdms", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:51:56.420", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Rainwater Harvesting System"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.waterdms", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:52:02.132", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Greywater Treatment System"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.waterdms", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:52:06.843", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Combination of RHS and GTS"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.householdvaluecategory", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T22:47:11.820", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Family composition by age (indicate how many family members correspond to each category)"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.householdvaluecategory", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T22:47:19.831", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Family composition by gender (indicate how many family members correspond to each category)"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.householdvaluecategory", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T22:47:46.567", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Family composition by professional situation (indicate how many family members correspond to each category)"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "iwidget.householdvaluecategory", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T22:47:54.499", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Family composition by education level (indicate how many family members correspond to each category)"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "iwidget.householdvaluecategory", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T22:48:56.309", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Outdoor areas"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "iwidget.householdvaluecategory", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T22:49:47.708", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Number of water appliances at home (indicate the number of each appliance in your house)"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 1, 
+            "original_db": null, 
+            "descr": "\u226415", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T22:51:12.547", 
+            "original_id": null, 
+            "form_component": "fcba_lt15"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 1, 
+            "original_db": null, 
+            "descr": "16-25", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:02:41.192", 
+            "original_id": null, 
+            "form_component": "fcba_16_25"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 1, 
+            "original_db": null, 
+            "descr": "26-35", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:03:01.397", 
+            "original_id": null, 
+            "form_component": "fcba_26_35"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 1, 
+            "original_db": null, 
+            "descr": "36-45", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:03:25.900", 
+            "original_id": null, 
+            "form_component": "fcba_36_45"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 1, 
+            "original_db": null, 
+            "descr": "46-55", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:03:40.407", 
+            "original_id": null, 
+            "form_component": "fcba_46_55"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 1, 
+            "original_db": null, 
+            "descr": "56-65", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:03:56.833", 
+            "original_id": null, 
+            "form_component": "fcba_56_65"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 1, 
+            "original_db": null, 
+            "descr": "\u226566", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:04:17.732", 
+            "original_id": null, 
+            "form_component": "fcba_gt66"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 2, 
+            "original_db": null, 
+            "descr": "Male", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:05:37.290", 
+            "original_id": null, 
+            "form_component": "gender_male"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 2, 
+            "original_db": null, 
+            "descr": "Female", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:05:47.387", 
+            "original_id": null, 
+            "form_component": "gender_female"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 3, 
+            "original_db": null, 
+            "descr": "Full time working", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:06:18.399", 
+            "original_id": null, 
+            "form_component": "prof_full_time"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 3, 
+            "original_db": null, 
+            "descr": "Part time working", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:06:31.811", 
+            "original_id": null, 
+            "form_component": "prof_part_time"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 3, 
+            "original_db": null, 
+            "descr": "Retired", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:06:41.737", 
+            "original_id": null, 
+            "form_component": "prof_retired"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 3, 
+            "original_db": null, 
+            "descr": "Studying", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:07:01.183", 
+            "original_id": null, 
+            "form_component": "prof_studying"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 3, 
+            "original_db": null, 
+            "descr": "Unemployed", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:07:22.183", 
+            "original_id": null, 
+            "form_component": "prof_unemployed"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 3, 
+            "original_db": null, 
+            "descr": "Without professional activity (e.g. housewives)", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:07:36.492", 
+            "original_id": null, 
+            "form_component": "prof_without"
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 4, 
+            "original_db": null, 
+            "descr": "Primary school", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:08:43.971", 
+            "original_id": null, 
+            "form_component": "edu_level_primary"
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 4, 
+            "original_db": null, 
+            "descr": "Junior High School", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:09:04.165", 
+            "original_id": null, 
+            "form_component": "edu_level_junior"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 4, 
+            "original_db": null, 
+            "descr": "High School", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:09:21.689", 
+            "original_id": null, 
+            "form_component": "edu_level_highschool"
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 4, 
+            "original_db": null, 
+            "descr": "Graduation (Bachelor)", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:09:38.479", 
+            "original_id": null, 
+            "form_component": "edu_level_grad"
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 4, 
+            "original_db": null, 
+            "descr": "Post-Graduation (Master, Phd)", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:10:01.376", 
+            "original_id": null, 
+            "form_component": "edu_level_postgrad"
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 6, 
+            "original_db": null, 
+            "descr": "Garden area (in m\u00b2)", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-16T01:57:09.615", 
+            "original_id": null, 
+            "form_component": "out_areas_garden"
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 6, 
+            "original_db": null, 
+            "descr": "Pervious area (in m\u00b2 )", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-16T01:57:18.597", 
+            "original_id": null, 
+            "form_component": "out_areas_pervious"
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 6, 
+            "original_db": null, 
+            "descr": "Roof area (in m\u00b2)", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-16T01:57:28.611", 
+            "original_id": null, 
+            "form_component": "out_areas_roof"
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 7, 
+            "original_db": null, 
+            "descr": "Washing machine", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:12:00.337", 
+            "original_id": null, 
+            "form_component": "appl_washing"
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 7, 
+            "original_db": null, 
+            "descr": "Dishwasher", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:12:13.191", 
+            "original_id": null, 
+            "form_component": "appl_dishwasher"
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 7, 
+            "original_db": null, 
+            "descr": "Bath", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:12:29.113", 
+            "original_id": null, 
+            "form_component": "appl_bath"
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 7, 
+            "original_db": null, 
+            "descr": "Shower", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:12:41.488", 
+            "original_id": null, 
+            "form_component": "appl_shower"
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 7, 
+            "original_db": null, 
+            "descr": "Toilet", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:12:55.311", 
+            "original_id": null, 
+            "form_component": "appl_toilet"
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 7, 
+            "original_db": null, 
+            "descr": "Boiler", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:13:10.310", 
+            "original_id": null, 
+            "form_component": "appl_boiler"
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "iwidget.householdvaluesubcategory", 
+        "fields": {
+            "category": 7, 
+            "original_db": null, 
+            "descr": "Sink (kitchen and WC)", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T23:13:25.183", 
+            "original_id": null, 
+            "form_component": "appl_sink"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "hcore.timestep", 
+        "fields": {
+            "original_db": null, 
+            "descr": "Daily", 
+            "length_minutes": 1440, 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.929", 
+            "original_id": null, 
+            "length_months": 0
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "hcore.timestep", 
+        "fields": {
+            "original_db": null, 
+            "descr": "Fifteen minutes", 
+            "length_minutes": 15, 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.919", 
+            "original_id": null, 
+            "length_months": 0
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "hcore.timestep", 
+        "fields": {
+            "original_db": null, 
+            "descr": "Monthly", 
+            "length_minutes": 0, 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.933", 
+            "original_id": null, 
+            "length_months": 1
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "hcore.timestep", 
+        "fields": {
+            "original_db": null, 
+            "descr": "Hourly", 
+            "length_minutes": 60, 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.933", 
+            "original_id": null, 
+            "length_months": 0
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "hcore.variable", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.994", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Cumulative water consumption"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "hcore.variable", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.998", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Water consumption for a period"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "hcore.variable", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.994", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Cold water consumption for a period"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "hcore.variable", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.994", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Hot water consumption for a period"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "hcore.variable", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.994", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Energy consumption for a period"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "hcore.variable", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.994", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Cumulative cold water consumption"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "hcore.variable", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.994", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Cumulative hot water consumption"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "hcore.variable", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:33.994", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Cumulative energy consumption"
+        }
+    }, 
+    {
+        "pk": 3,
+        "model": "hcore.variable",
+        "fields": {
+            "descr_alt": "Cost",
+            "last_modified": "2014-01-14T23:53:43.886",
+            "original_id": null,
+            "original_db": null,
+            "descr": "Cost"}
+    },
+    {
+        "pk": 10,
+        "model": "hcore.variable",
+        "fields": {
+            "descr_alt": "Energy Cost",
+            "last_modified": "2014-01-14T23:53:43.886",
+            "original_id": null,
+            "original_db": null,
+            "descr": "Energy Cost"}
+    },
+    {
+        "pk": 1, 
+        "model": "hcore.timezone", 
+        "fields": {
+            "code": "UTC", 
+            "utc_offset": 0, 
+            "last_modified": "2013-09-15T21:19:34.030", 
+            "original_id": null, 
+            "original_db": null
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "hcore.unitofmeasurement", 
+        "fields": {
+            "original_db": null, 
+            "descr": "Cubit meters", 
+            "symbol": "m^3", 
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:34.046", 
+            "original_id": null, 
+            "variables": [1, 2]
+        }
+    }, 
+    {
+        "pk": 2,
+        "model": "hcore.unitofmeasurement",
+        "fields": {
+            "original_db": null,
+            "descr": "Euro",
+            "symbol": "\u20ac",
+            "descr_alt": "Euro",
+            "last_modified": "2014-01-14T23:54:12.852",
+            "original_id": null,
+            "variables": [3]
+        }
+    },
+    {
+        "pk": 3,
+        "model": "hcore.unitofmeasurement",
+        "fields": {
+            "original_db": null,
+            "descr": "kilo Watt Hour",
+            "symbol": "kWh",
+            "descr_alt": "killo Watt Hour",
+            "last_modified": "2014-01-14T23:54:12.852",
+            "original_id": null,
+            "variables": [3]
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "hcore.gentityaltcodetype", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:34.063", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Water Company ID"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "hcore.instrumenttype", 
+        "fields": {
+            "descr_alt": "", 
+            "last_modified": "2013-09-15T21:19:34.090", 
+            "original_id": null, 
+            "original_db": null, 
+            "descr": "Type for smart meter"
+        }
+    }
+]

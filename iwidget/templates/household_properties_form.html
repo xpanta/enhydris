@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} Update household information {% endblock %}
+
+{% block content_main %}
+    <h2>
+        Update household (id={{ household.alt_codes.all.0.value }}) information
+    </h2>
+    <form action="{% url 'household_properties' %}" method="post">{% csrf_token %}
+
+        {% if form.errors or form.non_field_errors %}
+            <p class="errorlist error box">
+                No success. Please make the required changes marked in red and resubmit
+            </p>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <div class="box error">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        <div>
+            {% include "household_properties_form_base.html" %}
+            <input type="submit" value="Submit" />
+        </div>
+    </form>
+    <br />
+    <a href="{{ household.get_absolute_url }}#characteristicstab">Back to household with id: {{ household.alt_codes.all.0.value }}</a>
+{% endblock %}

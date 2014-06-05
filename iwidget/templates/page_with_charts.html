@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load general_tags %}
+
+{% block extra_head %}
+  <!--[if lt IE 9]>
+      <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/excanvas.min.js"></script>
+  <![endif]-->
+  <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.flot.min.js"></script>
+  <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.flot.selection.min.js"></script>
+  <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.flot.time.min.js"></script>
+  {#  <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.flot.highlighter.js"></script> #}
+  {# <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.flot.spider.js"></script> #}
+  <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.flot.pie.min.js"></script>
+  <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.timePicker.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.collapser.mod.js"></script>
+  <link media="screen" href="{{ STATIC_URL }}css/tablesorter.css" type="text/css" rel="stylesheet">
+  <link media="all" href="{{ STATIC_URL }}css/timePicker.css" type="text/css" rel="stylesheet">
+  <style type="text/css" rel="stylesheet">
+      .expArrow{ font-weight: normal; }
+      .collArrow{ font-weight: normal; }
+  </style>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/tooltip.js"></script>
+  <script type="text/javascript">
+        var js_data = {{ js_data|safe }};
+        var charts_refreshed = false;
+        $(function(){
+                $('#tabs').tabs(
+                    {
+                        activate: function(event, ui){
+                            if(ui.newTab.attr('id')!='chartli')
+                                return
+                            if(charts_refreshed)
+                                return
+                            redraw_charts();
+                            charts_refreshed = true;
+                        }
+                    });
+                $('.chart-selector').change(function(event){
+                    var chart_id = parseInt($(this).val());
+                    $(this).nextUntil('.chart-selector', '.chartdiv').hide();
+                    $('#chartdiv'+chart_id).fadeIn({
+                        complete: function(){
+                            redraw_charts(chart_id);
+                        }
+                    });
+                });
+        });
+  </script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/charts.js"></script>
+{% endblock %}
+
+{% block extracss %}
+<style>
+    span.max{ font-weight: bold; color: #aa8888; }
+    span.min{ font-weight: bold; color: #8888aa; }
+    span.avg{ font-weight: bold; color: #88aa88; }
+    span.sum{ font-weight: bold; color: #888888; }
+    div.textareas{ padding: 15px; float: left; border-width: 1px; border-style: dotted; border-color: #bbbbbb; background-color: #f7f7ff;}
+    .tooltip {
+        display:none;
+        background-color: #fff;
+        border-color: #00a;
+        border-width: 1px;
+        border-style: dotted;
+        font-size:0.9em;
+        height:1.4em;
+        width:112px;
+        padding:5px;
+        color:#000; 
+        z-index:999;
+    }
+    .js-hidden{ display:none; }
+</style>
+{% endblock %}
+
+{% block content_main %}
+
+    {% block description_block %}
+    {% endblock %}
+
+    <div id="tabs">
+
+        <ul>
+            {% block pre_tab_uls %}
+            {% endblock %}
+            <li id="chartli"><a href="#chartstab">{% trans "Consumption details" %}</a></li>
+            {% block extra_tab_uls %}
+            {% endblock %}
+        </ul>
+
+        {% block pre_tab_divs %}
+        {% endblock %}
+
+        <div id="chartstab">
+            {% for chart in charts %}
+                {% if chart_selectors %}
+                    {% with chart_selector=chart_selectors|getfor:chart.id %}
+                        {% if chart_selector %}
+                            <div style="height: 2.5em; width: 100%; float: left;"></div>
+                            <h3 style="margin-top: 3em;">{{chart_selector.title }}</h3>
+                            {% trans "Select to display:" %} 
+                            <select class="chart-selector" name="select{{ chart.id }}">
+                                {% for selection in chart_selector.selections %}
+                                    <option value="{{ selection.0 }}" {% if chart_selector.default == selection.0 %}selected{% endif %}>{{ selection.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+                <div class="chartdiv" id="chartdiv{{chart.id}}" style="float:left; clear:both; background-color: #f9fff9; border-bottom: thin solid #eeeeee; width:99%;{% if not chart.initial_display %}display: none;{% endif %}">
+                    <p style="margin-left: 240px; display:inline;"> <strong>{{chart.name|safe}}</strong></p>
+                    <div id="data_holder{{chart.id}}">
+                        <div id="chartarea{{chart.id}}" style="margin:10px;width:480px;height:320px;float:left;position: relative;"></div>
+                        <div id="charttooltip{{chart.id}}" class="tooltip"></div>
+                        {% if chart.has_info_box %}
+                        <div>
+                            <div id="textarea{{chart.id}}" class="textareas">
+                                {% if chart.display_max %}
+                                <p>{% trans "Maximum value: " %}<span class="max" id="max{{chart.id}}"></span>,  
+                                   {% trans "at: " %}<span class="max" id="max_tstmp{{chart.id}}"></span></p>{% endif %}
+                                {% if chart.display_avg %}
+                                    <p>{% trans "Average value: " %}<span class="avg" id="avg{{chart.id}}"></span></p>
+                                    {% if chart.occupancy %}
+                                        <p>{% trans "Average value (per capita): " %}<span class="avg" id="avgpc{{chart.id}}"></span></p>
+                                    {% endif %}
+                                {% endif %}
+                                {% if chart.display_sum %}
+                                <p>{% trans "Sum: " %}<span class="sum" id="sum{{chart.id}}"></span></p>{% endif %}
+                                {% if chart.display_min %}
+                                <p>{% trans "Minimum value: " %}<span class="min" id="min{{chart.id}}"></span>,  
+                                   {% trans "at: " %}<span class="min" id="min_tstmp{{chart.id}}"></span></p>{% endif %}
+                                {% if chart.display_lastvalue %}
+                                <p>{% trans "Last measurement: " %}<span class="sum" id="last{{chart.id}}"></span>,  
+                                   {% trans "at: " %}<span class="sum" id="last_tstmp{{chart.id}}"></span></p>{% endif %}
+                                {% if chart.main_timeseries_id %}
+                                <p>
+                                   <a target="_blank" href={% url 'timeseries_detail' chart.main_timeseries_id %}>
+                                   {% trans "Open time series page" %}</a></p>{% endif %}
+                                {% if chart.can_zoom %}
+                                <p><span id="dragtozoom{{chart.id}}">{%trans "Drag on chart to zoom in" %}</span>
+                                <a href="javascript:chartUnzoom({{chart.id}});" style="display: none;" id="unzoom{{chart.id}}"> - {% trans "Unzoom chart" %}</a>{% endif %}
+                                {% if chart.span_options %}
+                                    <p>
+                                        {% trans "Select time period:" %}
+                                        {% for span in chart.span_options %}
+                                            <a href="" id="js-span-link_{{ chart.id }}_{{ span }}" class="js-span-link {% if span == chart.time_span %}js-hidden{% endif %}">
+                                                {{ span }}&nbsp;&nbsp;
+                                            </a>
+                                            <span id="js-span-static_{{ chart.id }}_{{ span }}" class="js-span-static {% if span != chart.time_span %}js-hidden{% endif %}">
+                                                <strong>
+                                                    {{ span }}&nbsp;&nbsp;
+                                                </strong>
+                                            </span>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                            {% if chart.has_pie %}
+                                <div id="piediv{{chart.has_pie}}" style="position:relative; margin:10px; padding:15px; float:left; width:370px; height:180px"> </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        {% if chart.is_vector %}
+                            <div id="rosearea{{chart.id}}" style="margin:10px;width:320px;height:320px;float:left;position: relative;clear:right;"></div>
+                        {%endif%}
+                    </div>
+                    <div>
+
+                    </div>
+                </div>
+            {% endfor %}
+
+            <p class='date_select' id='date_select' style="margin-left: 3em; margin-bottom: 2.5em; float: left;"></p> 
+            <div style="clear: left; border:1px solid gray; padding: 6px; margin: 1.5em 3px; display: none;" id="date_select_form">
+                <p>
+                    <form action="" method="get">
+                        {% trans "Date: " %}
+                        <input name="date" class="date" id="date" type="text" readonly="readonly"/>
+                        <input name="last" class="last" type="text" style="display:none;"/>
+                        {% trans "Time: " %}
+                        <input name="time" class="time" id="time" type="text" size=7 readonly="readonly" />
+                        <input type=submit value="{% trans 'Submit' %}" />
+                    </form>
+                </p>
+            </div>
+        </div>
+
+        {% block extra_tab_divs %}
+        {% endblock %}
+    </div>
+
+    <div style="clear:both;">
+        {% block bottom_block %}
+        {% endblock %}
+    </div>
+
+    {% if request.user.is_superuser %}
+        <div style="clear:both;">
+            <a href="{% url 'index' %}">{% trans "Back to main page" %}</a> 
+        </div>
+    {% endif %}
+{% endblock %}

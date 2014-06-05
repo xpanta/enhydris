@@ -1,0 +1,92 @@
+<h2> MODEL DESCRIPTION </h2>
+
+<p>The purpose of this model is to capture the effects of awareness raising campaigns and water price changes to households' attitudes towards water conservation.</p>
+
+<p>The model is a first prototype of the proposed Use Case WU_UC06.2 for the water utility domain.</p>
+
+<h2 id="howitworks">How it works</h2>
+
+<p>The model focuses on the urban population that resides or moves into a specific area. The model does not include geographic information of the area. </p>
+
+<p>The model has a monthly time step. </p>
+
+<p>The model includes some social ties within the area by linking each household-agent with its closest neighbours (from none to a maximum of eight neighbours). </p>
+
+<p>Household-agents make monthly decisions about their opinion regarding water conservation (positive (+1) / negative (-1)).</p>
+
+<p>Each household-agent is characterised by those parameters that shape the social impact exerted to their water conservation opinion by the other household-agent and by water policies such as awareness raising campaigns and water price changes.</p>
+
+<p>This model applies the theory of social impact, first introduced by Latane (1981), which was developed to investigate the effects of external and internal forces to group opinions. </p>
+
+<p>The model's parameters relevant to the social impact level of the population under investigation are difficult to quantify, therefore, these variables are set based on previous studies (Wragg, 2006). For this specific case: </p>
+
+<ul>
+<li><p>Persuasiveness of the population (influence_strength): each household-agent is assigned a value sampled from a normal distribution with a mean value of 5 and a standard deviation of 4 (N(5,4))</p></li>
+<li><p>Opinion resistance to change (opinion_strength): a constant value of 2 is assigned for the whole household-agent population</p></li>
+<li><p>Media persuasiveness (Media_strength): each household-agent is assigned a value sampled from a normal distribution with a mean value of 5 and a standard deviation of 4 (N(5,4))</p></li>
+<li><p>Susceptibility to change of the average opinion of the population (Volatility_SocialImpact): a constant value of 20 is assigned for the whole household-agent population. This value means that the household-agent population is able to return to each original opinion when there is no external influence from water policies and is not highly dependent on social norms</p></li>
+</ul>
+
+<h2 id="howtouseit">How to use it</h2>
+
+<ul>
+<li>Setup of the model parameters</li>
+</ul>
+
+<p>Selection of total simulation time in months</p>
+
+<ol>
+<li>Select from the slider "total-time-of-simulation" the maximum simulation steps [0-120]</li>
+</ol>
+
+<p>Setup of household population increase rate</p>
+
+<ol>
+<li><p>Select from the slider "population-increase-step" the step, in months, of population increase [0 - 12] (if this parameter is not relevant select 0)</p></li>
+<li><p>Select from the slider ""%<em>population</em>increase"" the population increase rate [0 - 1] (if this parameter is not relevant select 0)</p></li>
+</ol>
+
+<p>If one of the above parameters is set to 0, population increase will not be applied.</p>
+
+<p>Setup of household population and distribution of one household demographic characteristic</p>
+
+<ol>
+<li><p>Select from the slider "population" the number of the household-agents that will create the model's population [1-1000]. </p></li>
+<li><p>Select from the sliders "%<em>middle</em>demographic<em>class" "%</em>highest<em>demographic</em>class" the participation percentage of this type of demographic class to the total population. Example: if 10% of the population is characterised as rich, and 60% of the population is characterised as middle class, set slider "%<em>middle</em>demographic<em>class" to 0.6 and slider "%</em>highest<em>demographic</em>class" to 0.1. The model will calculate the percentage of the lowest demographic class (i.e. poor). </p></li>
+</ol>
+
+<p>Initial number of households positive to water conservation</p>
+
+<ol>
+<li>Select from the slider "%+water_conservation" the initial percentage of households which are positive towards water conservation [0-1] </li>
+</ol>
+
+<p>Setup of Awareness Campaign</p>
+
+<ol>
+<li><p>Select from the slider "onset-envcampaign" when (number of months since the beginning of the simulation) an awareness campaign will begin [0-120]</p></li>
+<li><p>Select from the slider "end-envcampaign" when (number of months since the beginning of the simulation) an awareness campaign will end [0-120]</p></li>
+<li><p>Select from the slider "Intensity<em>of</em>awareness<em>policy" the intensity of the awareness campaign under investigation [no policy low medium high]. A low intensity awareness campaign may include only messages of water conservation in the water bills, a medium intensity awareness campaign may also include posters in central points of the community under investigation, and high intensity awareness campaigns may also include door-to-door briefing for water conservation. If no awareness campaign is applied it is possible to set the slider of "Intensity</em>of<em>awareness</em>policy" to "no policy".</p></li>
+</ol>
+
+<p>Setup of Pricing Policy</p>
+
+<ol>
+<li><p>Select from the slider "onset-pricingpolicy" when (number of months since the beginning of the simulation) the information regarding a pending price change will reach the population [0-120]. The onset of the pricing policy is set either the month when the change will occur or even a couple of months earlier (taking into consideration that the community will be informed earlier regarding this change). The end of the pricing policy is calculated by the model at 6 months after its onset.</p></li>
+<li><p>Select from the slider "Pricing<em>Policy" whether prices will increase or decrease. If no pricing policy is applied it is possible to set the slider of "Pricing</em>Policy" to "no policy". </p></li>
+<li><p>PRESS SETUP</p></li>
+<li><p>PRESS GO</p></li>
+</ol>
+
+<p>Results</p>
+
+<p>The results of the model are presented in the plot "% of positive opinions towards conservation". </p>
+
+<p>By right clicking to the plot "% of positive opinions towards conservation" it is possible either to copy the image of the plot (right click the plot / click on COPY IMAGE) or to copy the data of the plot by creating a .csv file named as the plot (right click the plot / click on EXPORT).  </p>
+
+<h2 id="creditsandreferences">Credits and references</h2>
+
+<p>Developed by Ifigeneia Koutiva, National Technical University of Athens</p>
+
+<p>Latane B. (1981). The psychology of social impact American Psychologist, 36, 343 – 365
+Wragg T. (2006). Modelling the effects of information campaigns using Agent Based Simulation, public report DSTO-TR-1853, Department of Defence, Australian Government.</p>

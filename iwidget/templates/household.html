@@ -1,0 +1,356 @@
+{% extends "page_with_charts.html" %}
+{% load i18n %}
+
+{% block title %} {% trans 'Household' %} {{ household.alt_codes.all.0.value }}{% endblock %}
+
+{% block description_block %}
+    <h2>
+        {% blocktrans with name=household.alt_codes.all.0.value %}
+            Household with id: {{ name }}
+        {% endblocktrans %}
+    </h2>
+{% endblock %}
+
+{% block pre_tab_uls %}
+    <li>
+        <a href="#overviewtab">
+            {% if not request.user.is_superuser %}
+                {% trans "Your current status" %}
+            {% else %}
+                {% trans "Household current status" %}
+            {% endif %}
+        </a>
+    </li>
+{% endblock %}
+
+{% block pre_tab_divs %}
+    <style>
+        table.padded-table td {padding:5px;}
+        img.status-icons {width:18px;height:18px;}
+    </style>
+    <div id="overviewtab">
+        <div>
+            <h3>{% trans "Water consumption" %}</h3>
+            <table class="padded-table">
+                <tr>
+                    <th>{% trans "Measurement<br>period" %}</th>
+                    <th>{% trans "Current year" %}<br>({{ overview.today_timestamp.year }})</th>
+                    <th>{% trans "Same period in previous year" %}<br>({{ overview.today_timestamp.year|add:"-1" }})</th>
+                    <th>{% trans "Target consumption (*)" %}</th>
+                    <th>{% trans "Goal achievement" %}</th>
+                </tr>
+                <tr>
+                    <td>{% trans "Last full measured day " %} ({{overview.today_timestamp|date:"j/m/o"}})</td>
+                    <td><strong>{{ overview.today|floatformat:1 }} litres</strong></td>
+                    <td>{{ overview.today_last_year|floatformat:1 }} litres</td>
+                    <td>{{ overview.target_daily|floatformat:1 }} litres</td>
+                    <td>
+                        {% if overview.today > overview.target_daily %}
+                            <img src="{{ STATIC_URL }}warning-icon-24px.png" class="status-icons"/>
+                            {% trans "Consumption over the target" %}
+                        {% else %}
+                            <img src="{{ STATIC_URL }}check-icon-24px.png" class="status-icons" />
+                            {% trans "Consumption within target range" %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Last seven days" %} (
+                        {{ overview.last_7_days_timestamp|date:"j/m" }} -
+                        {{ overview.today_timestamp|date:"j/m" }} )
+                    </td>
+                    <td><strong>{{ overview.last_7_days|floatformat:1 }} litres</strong></td>
+                    <td>{{ overview.last_7_days_last_year|floatformat:1 }} litres</td>
+                    <td>{{ overview.target_weekly|floatformat:1 }} litres</td>
+                    <td>
+                        {% if overview.last_7_days > overview.target_weekly %}
+                            <img src="{{ STATIC_URL }}warning-icon-24px.png" class="status-icons" />
+                            {% trans "Consumption over the target" %}
+                        {% else %}
+                            <img src="{{ STATIC_URL }}check-icon-24px.png" class="status-icons" />
+                            {% trans "Consumption within target range" %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Current month " %} ({{overview.today_timestamp|date:"F"}})</td>
+                    <td><strong>{{ overview.current_month|floatformat:1 }} m<sup>3</sup></strong></td>
+                    <td>{{ overview.current_month_last_year|floatformat:1 }} m<sup>3</sup></td>
+                    <td>{{ overview.target_month|floatformat:1 }} m<sup>3</sup></td>
+                    <td>
+                        {% if overview.current_month > overview.target_month %}
+                            <img src="{{ STATIC_URL }}warning-icon-24px.png" class="status-icons" />
+                            {% trans "Consumption over the target" %}
+                        {% else %}
+                            <img src="{{ STATIC_URL }}check-icon-24px.png" class="status-icons" />
+                            {% trans "Consumption within target range" %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Current year " %} ({{overview.today_timestamp|date:"o"}})</td>
+                    <td><strong>{{ overview.current_year|floatformat:1 }} m<sup>3</sup></strong></td>
+                    <td>{{ overview.last_year|floatformat:1 }} m<sup>3</sup></td>
+                    <td>{{ overview.target_year|floatformat:1 }} m<sup>3</sup></td>
+                    <td>
+                        {% if overview.curret_year > overview.target_year %}
+                            <img src="{{ STATIC_URL }}warning-icon-24px.png" class="status-icons" />
+                            {% trans "Consumption over the target" %}
+                        {% else %}
+                            <img src="{{ STATIC_URL }}check-icon-24px.png" class="status-icons" />
+                            {% trans "Consumption within target range" %}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+            <h3>{% trans "Water cost" %}</h3>
+            <table class="padded-table">
+                <tr>
+                    <th>{% trans "Accounting period" %}</th>
+                    <th>{% trans "Current year" %}<br>({{ overview.today_timestamp.year }})</th>
+                    <th>{% trans "Same period in previous year" %}<br>({{ overview.today_timestamp.year|add:"-1" }})</th>
+                </tr>
+                <tr>
+                    <td>{% trans "Last seven days" %} (
+                        {{ overview.last_7_days_timestamp|date:"j/m" }} -
+                        {{ overview.today_timestamp|date:"j/m" }} )
+                    </td>
+                    <td><strong>{{ overview.last_7_days_cost|floatformat:2 }} €</strong></td>
+                    <td>{{ overview.last_7_days_last_year_cost|floatformat:2 }} €</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Current month " %} ({{overview.today_timestamp|date:"F"}})</td>
+                    <td><strong>{{ overview.current_month_cost|floatformat:2 }} €</strong></td>
+                    <td>{{ overview.current_month_last_year_cost|floatformat:2 }} €</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Current year " %} ({{overview.today_timestamp|date:"o"}})</td>
+                    <td><strong>{{ overview.current_year_cost|floatformat:2 }} €</strong</td>
+                    <td>{{ overview.last_year_cost|floatformat:2 }} €</td>
+                </tr>
+            </table>
+            <p>
+                <strong></em>
+                {% blocktrans with nocc=household.num_of_occupants %}
+                (*) "Target consumption" is a value calculated by an average water
+                use of 120 litres per person per day multiplied by the number
+                of inhabitants of your household ({{ nocc }}).
+                120 litres per person per day is an indicative optimum value
+                for sustainable water consumption.
+                {% endblocktrans %} 
+                </strong/></em>
+            </p>
+        </div>
+
+        {% if energy_overview %}
+            <div>
+                <h3>{% trans "Energy consumption" %}</h3>
+                <table class="padded-table">
+                    <tr>
+                        <th>{% trans "Measurement<br>period" %}</th>
+                        <th>{% trans "Current year" %}<br>({{ energy_overview.today_timestamp.year }})</th>
+                        <th>{% trans "Same period in previous year" %}<br>({{ energy_overview.today_timestamp.year|add:"-1" }})</th>
+                        <th>{% trans "Target consumption (*)" %}</th>
+                        <th>{% trans "Goal achievement" %}</th>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Last full measured day " %} ({{ energy_overview.today_timestamp|date:"j/m/o"}})</td>
+                        <td><strong>{{ energy_overview.today|floatformat:1 }} kWh</strong></td>
+                        <td>{{ energy_overview.today_last_year|floatformat:1 }} kWh</td>
+                        <td>{{ energy_overview.target_daily|floatformat:1 }} kWh</td>
+                        <td>
+                            {% if energy_overview.today > overview.target_daily %}
+                                <img src="{{ STATIC_URL }}warning-icon-24px.png" class="status-icons"/>
+                                {% trans "Consumption over the target" %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}check-icon-24px.png" class="status-icons" />
+                                {% trans "Consumption within target range" %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Last seven days" %} (
+                            {{ energy_verview.last_7_days_timestamp|date:"j/m" }} -
+                            {{ energy_overview.today_timestamp|date:"j/m" }} )
+                        </td>
+                        <td><strong>{{ energy_overview.last_7_days|floatformat:1 }} kWh</strong></td>
+                        <td>{{ energy_overview.last_7_days_last_year|floatformat:1 }} kWh</td>
+                        <td>{{ energy_overview.target_weekly|floatformat:1 }} kWh</td>
+                        <td>
+                            {% if energy_overview.last_7_days > energy_overview.target_weekly %}
+                                <img src="{{ STATIC_URL }}warning-icon-24px.png" class="status-icons" />
+                                {% trans "Consumption over the target" %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}check-icon-24px.png" class="status-icons" />
+                                {% trans "Consumption within target range" %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Current month " %} ({{energy_overview.today_timestamp|date:"F"}})</td>
+                        <td><strong>{{ energy_overview.current_month|floatformat:1 }} kWh</strong></td>
+                        <td>{{ energy_overview.current_month_last_year|floatformat:1 }} kWh</td>
+                        <td>{{ energy_overview.target_month|floatformat:1 }} kWh</td>
+                        <td>
+                            {% if energy_overview.current_month > energy_overview.target_month %}
+                                <img src="{{ STATIC_URL }}warning-icon-24px.png" class="status-icons" />
+                                {% trans "Consumption over the target" %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}check-icon-24px.png" class="status-icons" />
+                                {% trans "Consumption within target range" %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Current year " %} ({{energy_overview.today_timestamp|date:"o"}})</td>
+                        <td><strong>{{ energy_overview.current_year|floatformat:1 }} kWh</strong></td>
+                        <td>{{ energy_overview.last_year|floatformat:1 }} kWh</td>
+                        <td>{{ energy_overview.target_year|floatformat:1 }} kWh</td>
+                        <td>
+                            {% if energy_overview.curret_year > energy_overview.target_year %}
+                                <img src="{{ STATIC_URL }}warning-icon-24px.png" class="status-icons" />
+                                {% trans "Consumption over the target" %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}check-icon-24px.png" class="status-icons" />
+                                {% trans "Consumption within target range" %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                <h3>{% trans "Energy cost" %}</h3>
+                <table class="padded-table">
+                    <tr>
+                        <th>{% trans "Accounting period" %}</th>
+                        <th>{% trans "Current year" %}<br>({{ energy_overview.today_timestamp.year }})</th>
+                        <th>{% trans "Same period in previous year" %}<br>({{ energy_overview.today_timestamp.year|add:"-1" }})</th>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Last seven days" %} (
+                            {{ energy_overview.last_7_days_timestamp|date:"j/m" }} -
+                            {{ energy_overview.today_timestamp|date:"j/m" }} )
+                        </td>
+                        <td><strong>{{ energy_overview.last_7_days_cost|floatformat:2 }} €</strong></td>
+                        <td>{{ energy_overview.last_7_days_last_year_cost|floatformat:2 }} €</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Current month " %} ({{energy_overview.today_timestamp|date:"F"}})</td>
+                        <td><strong>{{ energy_overview.current_month_cost|floatformat:2 }} €</strong></td>
+                        <td>{{ energy_overview.current_month_last_year_cost|floatformat:2 }} €</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Current year " %} ({{energy_overview.today_timestamp|date:"o"}})</td>
+                        <td><strong>{{ energy_overview.current_year_cost|floatformat:2 }} €</strong</td>
+                        <td>{{ energy_overview.last_year_cost|floatformat:2 }} €</td>
+                    </tr>
+                </table>
+                <p>
+                    <strong></em>
+                    {% blocktrans with nocc=household.num_of_occupants %}
+                    (*) "Target consumption" is a value calculated by an average electricity
+                    use of 5 kWh per person per day multiplied by the number
+                    of inhabitants of your household ({{ nocc }}).
+                    {% endblocktrans %} 
+                    </strong/></em>
+                </p>
+            </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
+{% block extra_tab_uls %}
+    <li>
+        <a href="#improve-water-efficiency">
+            {% trans "Improve your water efficiency" %}
+        </a>
+    </li>
+    <li>
+        <a href="#propertiestab">
+            {% if not request.user.is_superuser %}
+                {% trans "Your profile" %}
+            {% else %}
+                {% trans "Household owner profile" %}
+            {% endif %}
+        </a>
+    </li>
+    <li>
+        <a href="#characteristicstab">
+            {% if not request.user.is_superuser %}
+                {% trans "Update your profile" %}
+            {% else %}
+                {% trans "Household characteristics" %}
+            {% endif %}
+        </a>
+    </li>
+{% endblock %}
+
+{% block extra_tab_divs %}
+    <div id="improve-water-efficiency">
+        <h3>
+            {% trans "Be Smart with Water in the House" %}
+        </h3>
+        <p style='background-image:url("http://i-widget-elearning.eu//iWidget/tipsWidget/images/back2_circle.gif"); background-repeat:no-repeat; height:264px; padding-left:160px; background-position:0px 0px; width:320px; text-size:1.2em; font-size: 120%;'>
+            {% blocktrans %}
+                Learn how you can improve the water efficiency of
+                your household and how best to reduce your water
+                consumption, through the new iWIDGET On-line Course on Water!
+                Join the <a href="http://www.i-widget-elearning.eu/iWidget/" target="_blank">
+                Be Smart with Water in the House</a>
+                course using the link below and become an active player in
+                water efficiency challenge.
+            {% endblocktrans %}
+        </p>
+    </div>
+    <div id="propertiestab">
+        <h3>{% trans "Household properties" %}</h3>
+        <dl>
+            <dt>{% trans "Number of occupants" %}</dt>
+                <dd>{{household.num_of_occupants }}</dd>
+            {% if not request.user.is_superuser %}
+                <dt>{% trans "Address" %}</dt>
+                    <dd>{{ household.address }}</dd>
+            {% endif %}
+            <dt>{% trans "Property type" %}</dt>
+                <dd>{{ household.property_type }}</dd>
+        </dl>
+        {% if not request.user.is_superuser %}
+            <a href="{% url 'household_properties' %}">
+                Press here to update household characteristics
+            </a>
+            <h3>{% trans "Owner information" %}</h3>
+            <img src="{{ STATIC_URL }}default_profile.jpg" alt="profile picture" style="border: 2px solid gray;"/>
+            <dl>
+                {% comment %}
+                <dt>{% trans 'First name' %}</dt>
+                    <dd>{{ household.user.first_name }}</dd>
+                <dt>{% trans 'Last name' %}</dt>
+                    <dd>{{ household.user.last_name }}</dd>
+                {% endcomment %}
+                <dt>{% trans 'username' %}</dt>
+                    <dd>{{ household.user.username }}</dd>
+                <dt>{% trans 'Last login' %}</dt>
+                    <dd>{{ household.user.last_login }}</dd>
+                <dt>{% trans 'Date joined' %}</dt>
+                    <dd>{{ household.user.date_joined }}</dd>
+            </dl>
+        {% endif %}
+    </div>
+    <div id="characteristicstab">
+        {% if not request.user.is_superuser %}
+            <a href="{% url 'household_properties' %}">
+                Press here to update household characteristics
+            </a>
+        {% endif %}
+        <br>
+
+        {% include "household_properties_form_base.html" %}
+
+    </div>
+{% endblock %}
+
+{% block bottom_block %}
+    {% if request.user.is_superuser %}
+        <a href="{% url 'dma_view' household.dma.id %}">{% trans "Back to Household DMA info" %}</a> 
+    {% endif %}
+{% endblock %}

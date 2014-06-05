@@ -1,0 +1,3 @@
+{% for item in specification_list %}
+{{ item.id }},{{ item.brand.technology.id }},{{ item.brand.id }},{{ item.no }},{{ item.i }},{{ item.j }},{{ item.category.id }},{{ item.value }},{% if item.unit %}{{ item.unit }}{% else %}-1{% endif %}
+{% endfor %}

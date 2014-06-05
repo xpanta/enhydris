@@ -1,0 +1,57 @@
+{% extends "enhydris/base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans 'Administrator view' %}{% endblock %}
+
+{% block extra_head %}
+  <script type="text/javascript">
+        $(function(){
+                $('#tabs').tabs();
+            });
+  </script>
+{% endblock %}
+
+{% block content_main %}
+    <h2>{% trans 'Administrator view' %}</h2>
+
+    <div id="tabs">
+
+        <ul>
+            <li id="dmalistli"><a href="#dmalist">{% trans "Zones" %}</a></li>
+            <li id="netlogoli"><a href="#netlogo">{% trans "Assess policy effects" %}</a></li>
+        </ul>
+
+        <div id="dmalist">
+            <h3>{% trans 'DMAs' %}</h3>
+            <ul>
+                {% for dma in dmas %}
+                    <li>
+                        <a href="{% url 'dma_view' dma.id %}">
+                            {% trans "DMA with id=" %}{{ dma }} - {{ dma.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="netlogo">
+            <h3>
+                Support for assessing policy effects - NetLogo Model
+            </h3>
+            <p>
+                <applet code="org.nlogo.lite.Applet"
+                    archive="{{ STATIC_URL }}NetLogoLite.jar"
+                    width="1400" height="1000">
+                <param name="DefaultModel"
+                    value="{{ STATIC_URL }}uc_6_2_v13.nlogo">
+                <param name="java_arguments"
+                    value="-Djnlp.packEnabled=true">
+                </applet>
+            </p>
+
+            <p>
+                {% include "info.html" %}
+            </p>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "page_with_charts.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'DMA' %} "{{ dma.name }}"{% endblock %}
+
+{% block description_block %}
+    <h2>
+        {% blocktrans with name=dma.name %}
+        DMA "{{ name }}" properties
+        {% endblocktrans %}
+    </h2>
+
+{% endblock %}
+
+{% block extra_tab_uls %}
+    <li>
+        <a href="#householdstab">
+            {% trans "Households" %}
+        </a>
+    </li>
+{% endblock %}
+
+{% block extra_tab_divs %}
+    <div id="householdstab">
+        <h3>
+            {% trans "List of households" %}
+        </h3>
+        <ul>
+            {% for household in dma.households.all %}
+            <li>
+                <a href="{% url 'household_view' household.id %}">
+                    {{ household.alt_codes.all.0 }}
+                </a> - 
+                {% trans "occupancy" %}:
+                {{ household.num_of_occupants }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
