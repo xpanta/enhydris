@@ -20,8 +20,8 @@ There is an extra requirement. The library "Dickinson" which is not included in 
 ## Concerning the contents of this repository ##
 
  * enhydris: This is the core Enhydris app. Most of the functionality lies inside this application.
- * iwidget: This app includes some extra general functionality regarding the iWIDGET project and it is coupled with the functionality necessary for **Use Case C_UC01.1: Obtain total water consumption and costs using real-time data from smart meters**. We have to uncouple this functionality and create a new app (see bellow).
+ * iwidget: This app includes some extra generic functionality regarding the iWIDGET project and it is coupled with the functionality which is necessary for **Use Case C_UC01.1: Obtain total water consumption and costs using real-time data from smart meters**. We have to uncouple this functionality and create a new app (see bellow).
  * tl: This app is necessary for iwidget to run. To be honest I don't know what it does. But it is needed. As soon as I know what it does. I will update this README.
- * uc011: Empty app, waiting for the extra functionality regarding **Use Case C_UC01.1** of iwidget to be put here.
+ * uc011: This is an empty app, waiting for the extra functionality regarding **Use Case C_UC01.1** of iwidget to be put here.
 
 
