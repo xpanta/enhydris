@@ -7,7 +7,7 @@
 
 from django import forms
 
-from uc011.models import (Household, ArithmeticValueItem,
+from iwidget.models import (Household, ArithmeticValueItem,
                           HouseholdValueSubcategory)
 
 

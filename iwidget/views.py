@@ -24,12 +24,12 @@ from django.utils.decorators import method_decorator
 from enhydris.hcore.views import (TimeseriesDetailView as TDV,
                                   bufcount, inc_month)
 from enhydris.conf import settings
-from uc011.models import (IWTimeseries, Household, DMA, TSTEP_FIFTEEN_MINUTES,
+from iwidget.models import (IWTimeseries, Household, DMA, TSTEP_FIFTEEN_MINUTES,
                           TSTEP_DAILY, TSTEP_MONTHLY, VAR_CUMULATIVE,
                           VAR_PERIOD, VAR_COST, TSTEP_HOURLY,
                           VAR_ENERGY_PERIOD, VAR_ENERGY_COST)
-from uc011.forms import HouseholdForm
-from uc011.utils import (statistics_on_daily,
+from iwidget.forms import HouseholdForm
+from iwidget.utils import (statistics_on_daily,
                          energy_statistics_on_daily)
 
 

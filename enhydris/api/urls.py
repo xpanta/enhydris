@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.generics import RetrieveAPIView
 from enhydris.hcore import models
-from uc011 import models as iwidget_models
+from iwidget import models as iwidget_models
 from enhydris.api.views import modelnames, TimeseriesList, TimeseriesDetail,\
     Tsdata, ListAPIView
 from enhydris.api import serializers

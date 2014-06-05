@@ -8,7 +8,7 @@ from registration.views import RegistrationView
 from enhydris.hcore.forms import RegistrationForm
 from enhydris.hcore.views import terms, login
 
-from uc011.views import (TimeseriesDetailView, index, household_view,
+from iwidget.views import (TimeseriesDetailView, index, household_view,
                          dma_view, household_properties, periods_distribution)
 
 admin.autodiscover()
@@ -72,7 +72,7 @@ if getattr(settings, 'REGISTRATION_OPEN', True):
             name='registration_register')) + urlpatterns
 
 
-from iwidget.settings import DEBUG, MEDIA_ROOT, STATIC_ROOT
+from enhydris.settings import DEBUG, MEDIA_ROOT, STATIC_ROOT
 if DEBUG:
     urlpatterns += patterns(
         '',

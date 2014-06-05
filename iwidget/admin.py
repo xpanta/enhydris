@@ -1,5 +1,5 @@
 from django.contrib import admin
-from uc011.models import (HouseholdValueCategory, HouseholdValueSubcategory,
+from iwidget.models import (HouseholdValueCategory, HouseholdValueSubcategory,
                           PropertyType, ConstructionPeriod, OwnershipStatus,
                           OutdoorFacility, WaterHeater, EfficientAppliance,
                           WaterPricingScheme, WaterDMS)

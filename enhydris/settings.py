@@ -7,7 +7,7 @@ TEMPLATE_DEBUG = True
 DEBUG = True
 PROJECT_DIR = os.path.dirname(__file__)
 
-ROOT_URLCONF = 'iwidget.urls'
+ROOT_URLCONF = 'enhydris.urls'
 
 LANGUAGES = (('en', 'English'), ('el', 'Greek'))
 LANGUAGE = 'en'
@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     'enhydris.permissions',
     'tl',
     'uc011',
+    'iwidget',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -224,11 +225,11 @@ LOGGING = {
             'propagate': True,
             'level':'DEBUG',
         },
-        'uc011': {
+        'iwidget': {
             'handlers': ['file'],
             'level': 'DEBUG',
         },
-        'enhydris.hcore': {
+        'enhydris': {
             'handlers': ['file'],
             'level': 'DEBUG',
         },
