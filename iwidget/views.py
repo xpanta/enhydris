@@ -43,14 +43,14 @@ class TimeseriesDetailView(TDV):
             ts = IWTimeseries.objects.get(pk=object_id)
         except IWTimeseries.DoesNotExist:
             raise Http404('Timeseries object does not exist')
-        is_household = hasattr(ts.gentity, 'gpoint') and hasattr(ts.gentity.gpoint,
-                'household')
+        is_household = hasattr(ts.gentity, 'gpoint') \
+            and hasattr(ts.gentity.gpoint, 'household')
         if not (user.is_staff or user.is_superuser) and \
                 (not is_household or ts.gentity.gpoint.household.user.id != user.id):
             request.notifications.error("Permission denied")
             return HttpResponseRedirect(reverse('index'))
         return super(TimeseriesDetailView, self).dispatch(request,
-                *args, **kwargs)
+                                                          *args, **kwargs)
 
 @login_required
 def household_view(request, household_id=None):
