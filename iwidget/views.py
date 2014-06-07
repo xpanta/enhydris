@@ -68,61 +68,61 @@ def household_view(request, household_id=None):
         return HttpResponseRedirect(reverse('index'))
     dma = household.dma
     ts_dma_daily_pc = dma.timeseries.filter(
-            Q(time_step__id=TSTEP_DAILY) &
-            Q(name__icontains='capita') &
-            Q(variable__id=VAR_PERIOD))[0]
+        Q(time_step__id=TSTEP_DAILY) &
+        Q(name__icontains='capita') &
+        Q(variable__id=VAR_PERIOD))[0]
     ts_dma_monthly_pc = dma.timeseries.filter(
-            Q(time_step__id=TSTEP_MONTHLY) &
-            Q(name__icontains='capita') &
-            Q(variable__id=VAR_PERIOD))[0]
+        Q(time_step__id=TSTEP_MONTHLY) &
+        Q(name__icontains='capita') &
+        Q(variable__id=VAR_PERIOD))[0]
     ts_raw = household.timeseries.filter(time_step__isnull=True,
-            variable__id=VAR_CUMULATIVE)[0]
+                                         variable__id=VAR_CUMULATIVE)[0]
     ts_fifteen = household.timeseries.filter(
-            time_step__id=TSTEP_FIFTEEN_MINUTES,
-            variable__id=VAR_PERIOD)[0]
+        time_step__id=TSTEP_FIFTEEN_MINUTES, variable__id=VAR_PERIOD)[0]
     ts_hourly = household.timeseries.filter(
-            time_step__id=TSTEP_HOURLY,
-            variable__id=VAR_PERIOD)[0]
+        time_step__id=TSTEP_HOURLY,
+        variable__id=VAR_PERIOD)[0]
     ts_daily = household.timeseries.filter(
-            time_step__id=TSTEP_DAILY,
-            variable__id=VAR_PERIOD)[0]
+        time_step__id=TSTEP_DAILY,
+        variable__id=VAR_PERIOD)[0]
     ts_monthly = household.timeseries.filter(
-            time_step__id=TSTEP_MONTHLY,
-            variable__id=VAR_PERIOD)[0]
+        time_step__id=TSTEP_MONTHLY,
+        variable__id=VAR_PERIOD)[0]
     ts_cost = household.timeseries.filter(
-            time_step__id=TSTEP_MONTHLY,
-            variable__id=VAR_COST)[:1]
+        time_step__id=TSTEP_MONTHLY,
+        variable__id=VAR_COST)[:1]
     # Energy time series
     ts_daily_energy = household.timeseries.filter(
-            time_step__id=TSTEP_DAILY,
-            variable__id=VAR_ENERGY_PERIOD)[:1]
+        time_step__id=TSTEP_DAILY,
+        variable__id=VAR_ENERGY_PERIOD)[:1]
     ts_daily_energy = ts_daily_energy[0] if ts_daily_energy else None
     ts_hourly_energy = household.timeseries.filter(
-            time_step__id=TSTEP_HOURLY,
-            variable__id=VAR_ENERGY_PERIOD)[:1]
+        time_step__id=TSTEP_HOURLY,
+        variable__id=VAR_ENERGY_PERIOD)[:1]
     ts_hourly_energy = ts_hourly_energy[0] if ts_hourly_energy else None
     ts_energy_cost = household.timeseries.filter(
-            time_step__id=TSTEP_MONTHLY,
-            variable__id=VAR_ENERGY_COST)[:1]
+        time_step__id=TSTEP_MONTHLY,
+        variable__id=VAR_ENERGY_COST)[:1]
     ts_energy_cost = ts_energy_cost[0] if ts_energy_cost else None
     ts_fifteen_energy = household.timeseries.filter(
-            time_step__id=TSTEP_FIFTEEN_MINUTES,
-            variable__id=VAR_ENERGY_PERIOD)[:1]
+        time_step__id=TSTEP_FIFTEEN_MINUTES,
+        variable__id=VAR_ENERGY_PERIOD)[:1]
     ts_fifteen_energy = ts_fifteen_energy[0] if ts_fifteen_energy else None
     ts_monthly_energy = household.timeseries.filter(
-            time_step__id=TSTEP_MONTHLY,
-            variable__id=VAR_ENERGY_PERIOD)[:1]
+        time_step__id=TSTEP_MONTHLY,
+        variable__id=VAR_ENERGY_PERIOD)[:1]
     ts_monthly_energy = ts_monthly_energy[0] if ts_monthly_energy else None
     ts_dma_daily_energy_pc = dma.timeseries.filter(
-            Q(time_step__id=TSTEP_DAILY) &
-            Q(name__icontains='capita') &
-            Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+        Q(time_step__id=TSTEP_DAILY) &
+           Q(name__icontains='capita') &
+        Q(variable__id=VAR_ENERGY_PERIOD))[:1]
     ts_dma_daily_energy_pc = ts_dma_daily_energy_pc[0] if ts_dma_daily_energy_pc else None
     ts_dma_monthly_energy_pc = dma.timeseries.filter(
-            Q(time_step__id=TSTEP_MONTHLY) &
-            Q(name__icontains='capita') &
-            Q(variable__id=VAR_ENERGY_PERIOD))[:1]
-    ts_dma_monthly_energy_pc = ts_dma_monthly_energy_pc[0] if ts_dma_monthly_energy_pc else None
+        Q(time_step__id=TSTEP_MONTHLY) &
+        Q(name__icontains='capita') &
+        Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+    ts_dma_monthly_energy_pc = ts_dma_monthly_energy_pc[0] if \
+        ts_dma_monthly_energy_pc else None
 
     # TODO: Remove this after full migration to rest api
     if len(ts_cost):
@@ -193,7 +193,8 @@ def household_view(request, household_id=None):
         'Daily energy per capita placeholder',
         {
             'id': 4,
-            'name': 'Water consumption per month, up to a year period (m<sup>3</sup>)',
+            'name': 'Water consumption per month, up to a year '
+                    'period (m<sup>3</sup>)',
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -216,7 +217,8 @@ def household_view(request, household_id=None):
         },
         {
             'id': 5,
-            'name': 'Water consumption per month, per capita, up to a year period (m<sup>3</sup>)',
+            'name': 'Water consumption per month, per capita, '
+                    'up to a year period (m<sup>3</sup>)',
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -231,7 +233,8 @@ def household_view(request, household_id=None):
     if ts_daily_energy:
         # There are energy time series, add them to the array
         index = charts.index('Daily energy placeholder')
-        charts[index]= {
+        charts[index] = \
+            {
                 'id': 9,
                 'name': 'Daily energy consumption (kWh)',
                 'display_min': True, 'display_max': True, 'display_avg': True,
@@ -244,7 +247,8 @@ def household_view(request, household_id=None):
             }
 
         index = charts.index('Fifteen energy placeholder')
-        charts[index]= {
+        charts[index] = \
+            {
                 'id': 10,
                 'name': 'Fifteen minutes energy consumption (kWh)',
                 'display_min': False, 'display_max': True, 'display_avg': False,
@@ -257,10 +261,12 @@ def household_view(request, household_id=None):
             }
 
         index = charts.index('Hourly energy placeholder')
-        charts[index]= {
+        charts[index] = \
+            {
                 'id': 11,
                 'name': 'Hourly energy consumption (kWh)',
-                'display_min': False, 'display_max': True, 'display_avg': False,
+                'display_min': False,
+                'display_max': True, 'display_avg': False,
                 'display_sum': True, 'time_span': 'week', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
@@ -271,7 +277,8 @@ def household_view(request, household_id=None):
             }
 
         index = charts.index('Daily energy per capita placeholder')
-        charts[index]= {
+        charts[index] = \
+            {
                 'id': 12,
                 'name': 'Daily energy consumption per capita (kWh)',
                 'display_min': True, 'display_max': True, 'display_avg': True,
@@ -283,7 +290,8 @@ def household_view(request, household_id=None):
             }
 
         index = charts.index('Monthly energy placeholder')
-        charts[index]= {
+        charts[index] = \
+            {
                 'id': 13,
                 'name': 'Monthly energy consumption (kWh)',
                 'display_min': True, 'display_max': True, 'display_avg': True,
@@ -297,7 +305,8 @@ def household_view(request, household_id=None):
             }
 
         index = charts.index('Monthly energy cost placeholder')
-        charts[index]= {
+        charts[index] =\
+            {
                 'id': 14,
                 'name': u'Energy cost per month, up to a year period (€)',
                 'display_min': True, 'display_max': True, 'display_avg': True,
@@ -310,7 +319,8 @@ def household_view(request, household_id=None):
             }
 
         index = charts.index('Monthly energy per capita placeholder')
-        charts[index]= {
+        charts[index] =\
+            {
                 'id': 15,
                 'name': 'Montlhly energy consumption per capita (kWh)',
                 'display_min': True, 'display_max': True, 'display_avg': True,
@@ -330,7 +340,7 @@ def household_view(request, household_id=None):
                 'Monthly energy cost placeholder',
                 'Monthly energy per capita placeholder',
                 
-                ):
+        ):
             charts.remove(placeholder)
 
     # chart_selectors items:
@@ -344,14 +354,14 @@ def household_view(request, household_id=None):
                 'selections': [(1, 'Fifteen minutes water '
                                    'consumption'),
                                (7, 'Hourly water consumption'),
-                               (6, 'Raw measurements'),],
+                               (6, 'Raw measurements'), ],
                 'title': 'High resolution data',
                 'default': 7
             },
             2: {
                 'selections': [(2, 'Daily water consumption'),
                                (3, 'Daily water consumption '
-                                   'per capita'),],
+                                   'per capita'), ],
                 'title': 'Daily data',
                 'default': 2
             },
@@ -359,7 +369,7 @@ def household_view(request, household_id=None):
                 'selections': [(4, 'Monthly water consumption'),
                                (8, 'Monthly water cost'),
                                (5, 'Monthly water consumption '
-                                   'per capita'),],
+                                   'per capita'), ],
                 'title': 'Monthly data',
                 'default': 4
             },
@@ -368,15 +378,15 @@ def household_view(request, household_id=None):
     if ts_daily_energy:
         # There are energy time series, add them to selectors
         chart_selectors[1]['selections'] += [
-                (10, 'Fifteen minutes energy consumption'),
-                (11, 'Hourly energy consumption'),]
+            (10, 'Fifteen minutes energy consumption'),
+            (11, 'Hourly energy consumption'), ]
         chart_selectors[2]['selections'] += [
-                (9, 'Daily energy consumption'),
-                (12, 'Daily energy consumption per capita'),]
+            (9, 'Daily energy consumption'),
+            (12, 'Daily energy consumption per capita'), ]
         chart_selectors[4]['selections'] += [
-                (13, 'Monthly energy consumption'),
-                (14, 'Monthly energy cost'),
-                (15, 'Monthly energy consumption per capita'),]
+            (13, 'Monthly energy consumption'),
+            (14, 'Monthly energy cost'),
+            (15, 'Monthly energy consumption per capita'), ]
 
     variables = [
         {
@@ -733,11 +743,12 @@ def dma_view(request, dma_id):
             },
         ]
 
-    js_data = {
+    js_data = \
+        {
             'timeseries_data_url': reverse('timeseries_data'),
             'charts': charts,
             'variables': variables
-    }
+        }
     js_data = simplejson.dumps(js_data)
     return render_to_response('dma.html',
             {'dma': dma,
@@ -748,8 +759,8 @@ def dma_view(request, dma_id):
 @login_required
 def super_index(request):
     return render_to_response('superuser.html',
-            {'dmas': DMA.objects.all()},
-        context_instance=RequestContext(request))
+                              {'dmas': DMA.objects.all()},
+                              context_instance=RequestContext(request))
 
 @login_required
 def index(request):
@@ -767,13 +778,12 @@ def household_properties(request):
         raise Http404('User does not have household')
     household = household[0]
     if request.method == "POST":
-        form = HouseholdForm(request.POST, request.FILES,
-                instance=household)
+        form = HouseholdForm(request.POST, request.FILES, instance=household)
         if form.is_valid():
             form.save()
             messages.success(request, 'Changes saved successfully')
-            return HttpResponseRedirect(household.get_absolute_url()+
-                    '#characteristicstab')
+            return HttpResponseRedirect(household.get_absolute_url() +
+                                        '#characteristicstab')
     else:
         form = HouseholdForm(instance=household)
     return render_to_response('household_properties_form.html',
@@ -803,26 +813,30 @@ def periods_distribution(request, *args, **kwargs):
 # exact match and the date is after the record found,
 # 1 if no exact match and the date is before the record.
     def find_line_at_date(adatetime, totlines):
-        if totlines <2:
+        if totlines < 2:
             return totlines
         i1, i2 = 1, totlines
-        d1=date_at_pos(i1)
-        d2=date_at_pos(i2)
-        if adatetime<=d1:
-            return (i1, 0 if d1==adatetime else 1)
-        if adatetime>=d2:
-            return (i2, 0 if d2==adatetime else -1)
-        while(True):
-            i = i1 + int(round( float(i2-i1)* timedeltadivide( adatetime-d1, d2-d1) ))
+        d1 = date_at_pos(i1)
+        d2 = date_at_pos(i2)
+        if adatetime <= d1:
+            return (i1, 0 if d1 == adatetime else 1)
+        if adatetime >= d2:
+            return (i2, 0 if d2 == adatetime else -1)
+        while True:
+            i = i1 + int(round(float(i2-i1) * timedeltadivide(adatetime-d1,
+                                                              d2-d1)))
             d = date_at_pos(i)
-            if d==adatetime: return (i, 0)
-            if (i==i1) or (i==i2): return (i, -1 if i==i1 else 1)
-            if d<adatetime:
+            if d == adatetime:
+                return (i, 0)
+            if (i == i1) or (i == i2):
+                return (i, -1 if i==i1 else 1)
+            if d < adatetime:
                 d1, i1 = d, i
-            if d>adatetime:
+            if d > adatetime:
                 d2, i2 = d, i
 
     gstats = {'default_period': 0, 'alternate_period': 0}
+
     def add_to_stats(params, date, value):
         test_component = getattr(date, params['period_unit'])
         try:
@@ -830,7 +844,7 @@ def periods_distribution(request, *args, **kwargs):
             period_to = int(params['period_to'])
         except ValueError:
             return
-        if test_component>=period_from and period_to>=test_component:
+        if period_from <= test_component <= period_to:
             key = 'default_period'
         else:
             key = 'alternate_period'
@@ -851,7 +865,8 @@ def periods_distribution(request, *args, **kwargs):
             return adate+steps * timedelta(minutes=60)
         elif unit == 'twohour':
             return adate+steps * timedelta(minutes=120)
-        else: raise Http404
+        else:
+            raise Http404
    
     if not (request.method == "GET" and request.GET.get('object_id')):
         raise Http404
@@ -872,20 +887,21 @@ def periods_distribution(request, *args, **kwargs):
     else:
         end_pos = bufcount(afilename)
         tot_lines = end_pos
-        if request.GET.has_key('last'):
-            if request.GET.has_key('date') and request.GET['date']:
+        if 'last' in request.GET.keys():
+            if 'date' in request.GET.keys() and request.GET['date']:
                 datetimestr = request.GET['date']
                 datetimefmt = '%Y-%m-%d'
-                if request.GET.has_key('time') and request.GET['time']:
+                if 'time' in request.GET.keys() and request.GET['time']:
                     datetimestr = datetimestr + ' '+request.GET['time']
                     datetimefmt = datetimefmt + ' %H:%M'
                 try:
                     first_date = datetime.strptime(datetimestr, datetimefmt)
                     last_date = inc_datetime(first_date, request.GET['last'], 1)
-                    (end_pos, is_exact) = find_line_at_date(last_date, tot_lines)
-                    if request.GET.has_key('exact_datetime'):
+                    (end_pos, is_exact) = find_line_at_date(last_date,
+                                                            tot_lines)
+                    if 'exact_datetime' in request.GET.keys():
                         if request.GET['exact_datetime'] == 'true':
-                            if is_exact!=0:
+                            if is_exact != 0:
                                 raise Http404
                 except ValueError:
                     raise Http404
@@ -894,14 +910,14 @@ def periods_distribution(request, *args, **kwargs):
                 first_date = inc_datetime(last_date, request.GET['last'], -1)
 # This is an almost bad workarround to exclude the first record from
 # sums, i.e. when we need the 144 10 minute values from a day.
-                if request.GET.has_key('start_offset'):
+                if 'start_offset' in request.GET.keys():
                     offset = float(request.GET['start_offset'])
-                    first_date+= timedelta(minutes=offset)
-            start_pos= find_line_at_date(first_date, tot_lines)[0]
+                    first_date += timedelta(minutes=offset)
+            start_pos = find_line_at_date(first_date, tot_lines)[0]
         else:
-            start_pos= 1
+            start_pos = 1
     params = {x: request.GET.get(x) for x in ('period_unit',
-            'period_from', 'period_to', )}
+                                              'period_from', 'period_to', )}
     if not all(params.values()):
         raise Http404
     if not params['period_unit'] in ('month', 'hour'):
@@ -934,20 +950,20 @@ def periods_distribution(request, *args, **kwargs):
                     continue
                 else:
                     raise
-            if v!='':
+            if v != '':
                 afloat = float(v)
                 add_to_stats(params, k, afloat)
 # Some times linecache tries to read a file being written (from 
 # timeseries.write_file). So every 5000 lines refresh the cache.
-            if (pos-start_pos)%5000==0:
+            if (pos-start_pos) % 5000 == 0:
                 linecache.checkcache(afilename)
-            pos+=fine_step
+            pos += fine_step
     finally:
         linecache.clearcache()
     response.content = simplejson.dumps({'stats': gstats})
     callback = request.GET.get("jsoncallback", None)    
     if callback:
-        response.content = '%s(%s)'%(callback, response.content,)
+        response.content = '%s(%s)' % (callback, response.content,)
     return response
 
 
