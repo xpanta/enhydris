@@ -1,0 +1,965 @@
+'''
+Created on 24 Feb 2014
+@author: adeel
+'''
+import datetime
+import pandas as pd
+import numpy as np
+import itertools as IT
+from dateutil import parser
+from django.views.generic import View
+from django.views.generic.base import TemplateView
+from django.template import RequestContext
+from django.core.context_processors import csrf
+from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
+from django.contrib.auth import logout as auth_logout
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render_to_response
+from py4j.java_gateway import JavaGateway, GatewayClient
+from django.db import connection
+from unexe.models import *
+import json, urlparse, traceback
+from classes.Iuser import iuser
+from classes.Iutility import iutility
+from classes.Ihousehold import ihousehold
+from classes.Iforecast import iforecast
+from classes.Iseries import iseries
+from classes.Ifile import ifile
+from classes.Idma import idma
+from classes.Iusecase import iusecase
+
+from enhydris.hcore.views import (TimeseriesDetailView as TDV,
+        bufcount)
+from enhydris.hcore.models import Timeseries, Gentity, Garea
+from enhydris.conf import settings
+from iwidget.models import (IWTimeseries, Household, DMA, PropertyType,
+        TSTEP_FIFTEEN_MINUTES, TSTEP_DAILY, TSTEP_MONTHLY,
+        VAR_CUMULATIVE, VAR_PERIOD, VAR_COST, TSTEP_HOURLY)
+from iwidget.utils import statistics_on_daily
+from pthelma.timeseries import Timeseries
+from enhydris.hcore.models import ReadTimeStep
+from django.db.models import Avg,Max,Min,Count,Sum
+
+#from enhydris.hcore.models import (Lookup as HLookup, Timeseries, Gpoint,
+#        Garea, Instrument)
+
+
+class test(TemplateView):
+    template_name = "index.html"
+
+    def get(self, request):
+        return HttpResponseRedirect('https://services.up-ltd.co.uk/iwidget/Login.aspx?c=NTUA')
+        #if request.user.is_authenticated(): #if already authenticated
+        #    return redirect(reverse('dashboard'))   #redirect to a dashboard
+        return self.render_to_response({})
+    
+class home(TemplateView):
+    template_name = "index.html"
+
+    def get(self, request):
+        if request.user.is_authenticated(): #if already authenticated
+            return redirect(reverse('dashboard'))   #redirect to a dashboard
+        return self.render_to_response({})
+
+class login(TemplateView):
+    template_name = "index.html"
+
+    def post(self, request):    
+        wuser = iuser()        
+        status = wuser.login(iutility.getPostValue('username',request), iutility.getPostValue('password',request), request)
+        #    if not (request.user.is_superuser or request.user.is_staff):
+        return HttpResponse(json.dumps(status),content_type='application/javascript')
+        #else:
+        #    return super_index(request)            
+        #return self.render_to_response({})
+    
+class logout(TemplateView):
+    template_name = "index.html"
+
+    def get(self, request):
+        auth_logout(request)
+        return redirect(reverse('home'))   #redirect to home page
+        return self.render_to_response({})
+
+#change user password
+class changepassword(TemplateView):
+    template_name = "dashboard.html"
+
+    def post(self, request):
+        if request.user.is_authenticated(): #only change password if authenticated
+            wuser = iuser()
+            status = wuser.changepassword(request.user,iutility.getPostValue('oldpasswd',request),iutility.getPostValue('newpasswd',request))
+            return HttpResponse(json.dumps(status),content_type='application/javascript')
+        else:   #otherwise return -1 to show unexpected error message
+            return HttpResponse(json.dumps(-1),content_type='application/javascript')
+  
+#update user profile
+class updateuser(TemplateView):
+    template_name = "dashboard.html"
+
+    def post(self, request):
+        if request.user.is_authenticated(): #only update user if authenticated
+            qs     = iutility.getPostqs(request)    #get quertystring
+            values  = dict(urlparse.parse_qsl(qs)) #parse qs values into dictonary
+            wuser = iuser()
+            return HttpResponse(json.dumps(wuser.updateuser(request.user,values)),content_type='application/javascript')
+        else:   #otherwise return -1 to show unexpected error message
+            return HttpResponse(json.dumps(-1),content_type='application/javascript')
+
+#this class return serialize json object to be process by client side (browser)
+class getuser(TemplateView):
+    template_name = "dashboard.html"
+
+    def post(self, request):
+        if request.user.is_authenticated(): #only update user if authenticated
+            wuser = iuser() #user class object
+            return HttpResponse(json.dumps(wuser.getuser(request.user)),content_type='application/javascript')
+        else:   #otherwise return -1 to show unexpected error message
+            return HttpResponse(json.dumps(-1),content_type='application/javascript')
+
+#this class return serialize json object to be process by client side (browser)
+class gethousehold(TemplateView):
+    template_name = "dashboard.html"
+
+    def post(self, request):
+        if request.user.is_authenticated(): #only update user if authenticated         
+            whousehold = ihousehold() #household class object
+            val=None
+            val = iutility.getPostValue("id",request)
+            if val=="None":
+                val=None
+            return HttpResponse(json.dumps(whousehold.gethousehold(request.user,val)),content_type='application/javascript')
+        else:   #otherwise return -1 to show unexpected error message
+            return HttpResponse(json.dumps(-1),content_type='application/javascript')
+
+#this class return serialize json object to be process by client side (browser)
+class updatehousehold(TemplateView):
+    template_name = "dashboard.html"
+
+    def post(self, request):
+        if request.user.is_authenticated(): #only update user if authenticated
+            whousehold = ihousehold() #household class object
+            qs      = iutility.getPostqs(request)    #get quertystring
+            values  = dict(urlparse.parse_qsl(qs)) #parse qs values into dictonary               
+            return HttpResponse(json.dumps(whousehold.updatehousehold(request.user,values)),content_type='application/javascript')
+        else:   #otherwise return -1 to show unexpected error message
+            return HttpResponse(json.dumps(-1),content_type='application/javascript')
+
+#Template class for super user profile and password update
+class usersuper(TemplateView):
+    template_name = "usersuper.html"
+        
+    def get(self,request,**kwargs):
+        return self.render_to_response({})
+
+#Template class for super user main page
+class superuser(TemplateView):
+    template_name = "superusers.html"
+        
+    def get(self,request,**kwargs):
+        return self.render_to_response({})
+
+#TemplateView class for consumer dashboard                                                                  
+class consumer(TemplateView):
+    template_name = "dashboard.html"
+    
+    '''
+    This method only executed if the logged user is not superuser or staff privelege level
+    If entered into method when logged in as super user then unexpected error might result.
+    This error needs to fix as well..
+    '''
+    def get(self,request,**kwargs):
+        #following code is to do with use case developed by NTUA
+        from iwidget.views import dashboard_view
+        try:
+            hid = self.kwargs['household_id']
+        except:
+            hid = None        
+            
+        values = dashboard_view(request,hid) #call method from django_iwidget. sometimes I need to replace this
+        household = values['household']
+        #end of NTUA use case
+        data = {"household":household,"overview":values['overview'],'charts': values["charts"],'js_data': values["js_data"],'chart_selectors':values["chart_selectors"],"hid":hid,}
+        
+        ##start of my code
+        user = request.user
+        if not (user.is_staff or user.is_superuser): #only execute these use cases if logged user is not admin
+            usecase= iusecase(user)
+            series = iseries()
+            household = user.households.all()[0]
+            '''
+            following code is to do with forecasting use case 5.3
+            '''
+            months = 12
+            #monthly series
+            ts_monthly = series.getmonthlyseries(household)
+            timeseries_month = series.readseries(ts_monthly)
+            
+            ts_monthlyid = ts_monthly.id
+            #daily series
+            ts_daily = series.getdailyseries(household)
+            timeseries_daily = series.readseries(ts_daily)
+            
+            #get start and end date of consumer timeseries or date
+            stdate = series.getstdate(timeseries_daily)
+            endate = series.getendate(timeseries_daily)
+            stdate = iutility.convertdate(str(stdate),'%Y-%m-%d','%d-%m-%Y')
+            endate = iutility.convertdate(str(endate),'%Y-%m-%d','%d-%m-%Y')
+            
+            #hourly series
+            '''
+            ts_hourly = series.gethourlyseries(household)
+            timeseries_hourly = series.readseries(ts_hourly)
+            dates, units = IT.izip(*timeseries_hourly) #much better for longer data
+            f =  pd.Series(units,index=dates)
+            today = datetime.date.today()
+            today = iutility.getstrTodate(str(today.year)+"-"+(today.strftime("%m"))+"-01","%Y-%m-%d")
+            finish= iutility.subtract_year_month(today,month=1)
+            start = iutility.subtract_year_month(today,month=4)
+            print finish
+            print start
+            '''
+            c_uc52data = usecase.usecase5_2()
+            
+            c_uc53data = usecase.usecase5_3(user,timeseries_month,timeseries_daily) ##use case 5.3
+            
+            '''
+            
+            if length>12:
+                tseries_month = timeseries_month[length-months:] #get the latest last 12 months
+            sum  = series.getCost(series.getSum(tseries_month))
+            high = json.dumps(series.getHighestCost(tseries_month)) #still need to write function to get cost
+            low  = json.dumps(series.getLowestCost(tseries_month))  #still need to write function to get cose
+            avg  = series.getCost(series.getAvg(tseries_month,len(tseries_month)))
+            tsmonth = json.dumps(series.getseriesTojsoncost(tseries_month,"cost"))
+            end of the code for use case 5.3
+            '''
+            
+            '''
+            code for use case 3.2 - compare consumer with other consumer in the same area or building or neighbour
+            '''
+            c_uc32data = usecase.usecase3_2()
+            dmasummary = ""            
+            '''
+            Default chart for showing on selection of tab.
+            
+            length = len(timeseries_month)
+            dma = household.dma
+            dmastats = DMAstats.objects.filter(dma__pk=dma.pk) #make sure to get the latest DMA stats by reading again from database in case values updated 
+            obj = {}
+            list1 = []
+            for st in dmastats:
+                #getting DMA status for the average unit/bill
+                obj["Units"] = str(st.avgunits)
+                obj["Cost"]  = str(series.getCost(st.avgunits))
+                obj["Period"]= str(st.statsperiod)+" Month"
+                obj["Data"]  = "DMA"
+                list1.append(obj)
+                obj = {}
+                tseries      = timeseries_month[length-st.statsperiod:]
+                obj["Units"] = str(series.getSum(tseries))
+                obj["Cost"]  = str(series.getCost(float(obj["Units"])))
+                obj["Period"]= str(st.statsperiod)+" Month"
+                obj["Data"]  = "You"
+                list1.append(obj)
+                obj = {}
+                
+            end of use case 3.2 code
+            '''     
+
+            '''
+            code for use case 3.3 - compare consumer with other consumer in the same area or building or neighbour
+            '''            
+            c_uc33data = usecase.usecase3_3()
+            '''
+            end of use case 3.3 code
+            '''
+            #"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,
+            
+            #data = {"household":household,"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,"tsid":ts_monthly.id,"dmastats":dmasummary,"uc32chart1":json.dumps(list1),"dmastats":dmastats,}    
+            data = {"household":household,"overview":values['overview'],'charts': values["charts"],'js_data': values["js_data"],'chart_selectors':values["chart_selectors"],"hid":hid,"tsid":ts_monthlyid,"stdate":stdate,"endate":endate,"c_uc32data":json.dumps(c_uc32data),"c_uc33data":json.dumps(c_uc33data),"c_uc52data":json.dumps(c_uc52data),"c_uc53data":json.dumps(c_uc53data)}
+ 
+        return self.render_to_response(data)            
+
+
+'''
+TemplateView class for consumer use case 3.2
+'''                                                                  
+class c_uc32(TemplateView):
+    template_name = "dashboard.html"  
+         
+    def post(self, request, *args, **kwargs):
+        #donutchart=[{"label":"You"   , "value":"", "color":"#80B1D3"},{"label":"Area" , "value":"", "color":"#C0C0C0"}]
+        comparechart=[{"Units":"","Data":"Area"},{"Units":"","Data":"You"}]
+        compare = iutility.getPostValue("compare",request)
+        year    = iutility.getPostValue("year",request)
+        period  = iutility.getPostValue("period",request)        
+
+        user = request.user #get authenticated user
+        household = user.households.all()[0] #get user household id   
+
+        d = idma() #class with dma related calcualtion
+        
+        #dma that will use for comparison
+        dma  = household.dma  #get dma of the user
+        #dma = DMA.objects.get(pk=11) #chosing other DMA for comparison, we will change this when we will get the different demographic database
+        household_dma = dma.households.all()        
+        
+        #hourly series
+        series     = iseries()
+        ts_monthly = series.getmonthlyseries(household)
+        timeseries_monthly = series.readseries(ts_monthly)
+        
+        hhold = ihousehold()
+        #print hhold.getseasonusage(user,year,compare)    
+        '''
+        We will only perform the following operation if the timeseries_hourly has sufficient data for analysis.
+        If there is not sufficient data then simply return nothing and deal with client side. At the moment there
+        is no check in the development environment as we know there are plenty of data for analysis
+        '''
+        #get dates and values in a separate list
+        dates, units = IT.izip(*timeseries_monthly) #much better for longer data, returning tuples
+         #create pandas Series (time series using two different list for timeseries data analysis
+        pdf = pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
+        pdf.index.name = "dates"
+        data = {}
+
+        if period=="season":
+            data["you"]  = hhold.getseasonusage(user,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
+            data["area"] = d.getseasonusage(household_dma,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]                    
+        elif period=="days": #if period is defined in range
+            stdate       = iutility.getPostValue("stdate",request)
+            endate       = iutility.getPostValue("endate",request)
+            data["you"]  = hhold.getperiodstats(user,stdate,endate)
+            data["area"] = d.getperiodstats(household_dma,stdate,endate)
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]                                
+        else:
+            data["you"]  = hhold.getmonthlyusage(user,int(period))
+            data["area"] = d.getmonthlyusage(household_dma,int(period))
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]   
+        '''
+        if period=="days": #if period is defined in range
+            stdate       = iutility.getPostValue("stdate",request)
+            endate       = iutility.getPostValue("endate",request)
+            if compare=="night":
+                data["you"]  = hhold.getnightstats(user,period=period,stdate=stdate,endate=endate)
+                data["area"] = d.getnightstats(household_dma,period=period,stdate=stdate,endate=endate)
+            else:
+                data["you"]  = hhold.getdaystats(user,period=period,stdate=stdate,endate=endate)
+                data["area"] = d.getdaystats(household_dma,period=period,stdate=stdate,endate=endate)            
+        else:  
+            if compare=="summer": #summer
+                data["you"]  = hhold.getsummerstats(user,year)   #you
+                data["area"] = d.getsummerstats(household_dma,year) #area
+            
+            elif compare=="winter": #winter ststictics comparison
+                data["you"]  = hhold.getwinterstats(user,year)   #you
+                data["area"] = d.getwinterstats(household_dma,year)
+                      
+            elif compare=="night": #night
+                data["you"]  = hhold.getnightstats(user,int(period))   #you
+                data["area"] = d.getnightstats(household_dma,int(period))
+    
+            elif compare=="day": #day
+                data["you"]  = hhold.getdaystats(user,int(period))   #you
+                data["area"] = d.getdaystats(household_dma,int(period))
+
+        if data["you"]:
+            dt = data["you"]
+            a = dt[len(dt)-1]
+            b = a["yourdata"]
+            donutchart[0]["value"] = b["sum"]                        
+            comparechart[1]["Units"] = b["sum"]
+            
+        if data["area"]:
+            dt = data["area"]
+            a = dt[len(dt)-1]
+            b = a["areadata"]
+            donutchart[1]["value"] = b["household"]
+            #data["donutchart"] = donutchart 
+            comparechart[0]["Units"] = b["household"]
+                      
+        '''            
+        if not data["you"] or not data["area"]:
+            data = None
+        else:
+            #data["donutchart"] = donutchart
+            data["comparechart"] = comparechart
+        
+        #print data["comparechart"]            
+        return HttpResponse(json.dumps(data),content_type='application/javascript')
+    
+'''
+TemplateView class for consumer use case 3.3
+'''                                                                  
+class c_uc33(TemplateView):
+    template_name = "dashboard.html"  
+         
+    def post(self, request, *args, **kwargs):
+        donutchart=[{"label":"You", "value":"", "color":"#80B1D3"},{"label":"Area" , "value":"", "color":"#C0C0C0"}]
+        comparechart=[{"Units":"","Data":"Area"},{"Units":"","Data":"You"}]
+        compare = iutility.getPostValue("compare",request)
+        year    = iutility.getPostValue("year",request)
+        period  = iutility.getPostValue("period",request)        
+        #season  = iutility.getPostValue("season",request) 
+        #season  = iutility.getPostValue("season",request)
+        
+        user = request.user #get authenticated user
+        household = user.households.all()[0] #get user household id
+        #dma that will use for comparison
+        dma = DMA.objects.get(pk=11) #chosing other DMA for comparison, we will change this when we will get the different demographic database         
+        #dma  = household.dma  #get dma of the user
+        household_dma = dma.households.all()
+        
+        d = idma() #class with dma related calcualtion
+            
+        #dma that will use for comparison
+        #dma = DMA.objects.get(pk=10) #chosing other DMA for comparison, we will change this when we will get the different demographic database
+        #household_dma = dma.households.all()        
+        
+        #hourly series
+        series     = iseries()
+        ts_monthly = series.getmonthlyseries(household)
+        timeseries_monthly = series.readseries(ts_monthly)
+                
+        hhold = ihousehold()
+        '''
+        We will only perform the following operation if the timeseries_hourly has sufficient data for analysis.
+        If there is not sufficient data then simply return nothing and deal with client side. At the moment there
+        is no check in the development environment as we know there are plenty of data for analysis
+        '''
+        #get dates and values in a separate list
+        dates, units = IT.izip(*timeseries_monthly) #much better for longer data, returning tuples
+         #create pandas Series (time series using two different list for timeseries data analysis
+        pdf =  pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
+        pdf.index.name = "dates"
+        data = {}
+        
+        if period=="season":
+            data["you"]  = hhold.getseasonusage(user,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
+            data["area"] = d.getseasonusage(household_dma,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]                    
+        elif period=="days": #if period is defined in range
+            stdate       = iutility.getPostValue("stdate",request)
+            endate       = iutility.getPostValue("endate",request)
+            data["you"]  = hhold.getperiodstats(user,stdate,endate)
+            data["area"] = d.getperiodstats(household_dma,stdate,endate)
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"] 
+        else:
+            data["you"]  = hhold.getmonthlyusage(user,int(period))
+            data["area"] = d.getmonthlyusage(household_dma,int(period))
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]             
+            ""
+        '''
+            if compare=="night":
+                data["you"]  = hhold.getnightstats(user,period=period,stdate=stdate,endate=endate)
+                data["area"] = d.getnightstats(household_dma,period=period,stdate=stdate,endate=endate)
+            else:
+                data["you"]  = hhold.getdaystats(user,period=period,stdate=stdate,endate=endate)
+                data["area"] = d.getdaystats(household_dma,period=period,stdate=stdate,endate=endate)             
+        else:    
+            if compare=="summer": #summer
+                data["you"]  = hhold.getsummerstats(user,year)   #you
+                data["area"] = d.getsummerstats(household_dma,year) #area
+            
+            elif compare=="winter": #winter ststictics comparison
+                data["you"]  = hhold.getwinterstats(user,year)   #you
+                data["area"] = d.getwinterstats(household_dma,year)
+                      
+            elif compare=="night": #night
+                data["you"]  = hhold.getnightstats(user,int(period))   #you
+                data["area"] = d.getnightstats(household_dma,int(period))
+    
+            elif compare=="day": #day
+                data["you"]  = hhold.getdaystats(user,int(period))   #you
+                data["area"] = d.getdaystats(household_dma,int(period))
+
+                      
+        if data["you"]:
+            dt = data["you"]
+            a = dt[len(dt)-1]
+            b = a["yourdata"]
+            donutchart[0]["value"]   = data["you"]["seasondata"]["household"]                        
+            comparechart[1]["Units"] = data["you"]["seasondata"]["household"]
+            
+        if data["area"]:
+            dt = data["area"]
+            a = dt[len(dt)-1]
+            b = a["areadata"]
+            donutchart[1]["value"] = b["household"]
+            #data["donutchart"] = donutchart 
+            comparechart[0]["Units"] = b["household"]
+                         
+        '''            
+        if not data["you"] or not data["area"]:
+            data = None
+        else:
+            #data["donutchart"] = donutchart
+            data["comparechart"] = comparechart
+        
+                    
+        return HttpResponse(json.dumps(data),content_type='application/javascript')
+        
+#TemplateView class for consumer dashboard                                                                  
+class c_uc52(TemplateView):
+    template_name = "dashboard.html"
+    
+    def post(self, request, *args, **kwargs):
+        #declaration
+        stdate = "" #start date
+        endate = "" #end date
+        ts_monthly = None #for timeseries
+        pdf        = None # for panda dataframe
+        period = ""
+        dtlist = [] #for holding list of dates from panda dataframe
+        list1  = [] #for holding list of data values from panda dataframe (tariff1)
+        list2  = [] #for holding list of data values from panda dataframe (tariff2)
+        tariff1data = {"sum":0.0,"avg":0.0,"high":0.0,"low":0.0}
+        tariff2data = {"sum":0.0,"avg":0.0,"high":0.0,"low":0.0}
+        comparechart=[{"Cost":"","Data":"Tariff1"},{"Cost":"","Data":"Tariff2"}]
+        data = {}        
+
+        #capture data
+        period = iutility.getPostValue("period",request)                
+
+        #extract timeseries data        
+        user       = request.user
+        household  = user.households.all()[0]
+        hhold      = ihousehold()
+        series     = iseries()
+        
+        #if period != "days":
+        if period=="season": 
+            data = hhold.getseasoncost(user,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
+        elif period=="days":
+            '''
+            range of dates for extracting timeseries data
+            '''
+            stdate = iutility.getPostValue("stdate",request)
+            endate = iutility.getPostValue("endate",request)
+            
+            #number of months to process data
+            period = iutility.diffmonth(iutility.getstrTodate(endate,"%Y-%m-%d"),iutility.getstrTodate(stdate,"%Y-%m-%d")) + 1
+            
+            '''
+            obtain timeseries for specified date range
+            '''
+            ts_monthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
+            if ts_monthly:            
+                '''
+                prepare panda dataframe for processing timeseries data
+                '''
+                #get dates and values in a separate list
+                dates, units = IT.izip(*ts_monthly) #much better for longer data, returning tuples
+                #create pandas Series (time series using two different list for timeseries data analysis
+                pdf =  pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
+                pdf.index.name = "dates"        
+
+                pdf = pdf[stdate:endate]
+                if period != len(pdf.index):
+                    data = None
+                elif pdf.empty:
+                    data = None
+                else:                
+                    '''
+                    prepare data to be used in client (browser)
+                    Note: This code can be optimised if processed using panda dataframe. To do this ihousehold class tariff1 and tariff2 needs to be rewrite using panda dataframe
+                    '''
+                    dates  = pd.to_datetime(pdf.index.values)
+                    units  = pdf.values
+                    
+                    for x in range(0, period):
+                        dtlist.append(str(dates[x].strftime('%Y-%m-%d')))         
+                        tariff1 = hhold.tariff1(float(units[x]))
+                        tariff1data["sum"] = tariff1data["sum"] + tariff1
+                        list1.append(round(tariff1,2))
+                                     
+                        tariff2 = hhold.tariff2(float(units[x]))
+                        tariff2data["sum"] = tariff2data["sum"] + tariff2
+                        list2.append(round(tariff2,2))     
+        
+                    tariff1data["sum"]      = round(tariff1data["sum"],2)
+                    tariff1data["avg"]      = round(tariff1data["sum"]/period,2)
+                    tariff1data["high"]     = {"date":iutility.convertdate(dtlist[list1.index(max(list1))],'%Y-%m-%d','%B-%Y'),"max":max(list1)} #max per nonth
+                    tariff1data["low"]      = {"date":iutility.convertdate(dtlist[list1.index(min(list1))],'%Y-%m-%d','%B-%Y'),"min":min(list1)} #min per nonth
+                      
+                    tariff2data["sum"]      = round(tariff2data["sum"],2)                    
+                    tariff2data["avg"]      = round(tariff2data["sum"]/period,2)
+                    tariff2data["high"]     = {"date":iutility.convertdate(dtlist[list1.index(max(list1))],'%Y-%m-%d','%B-%Y'),"max":max(list1)} #max per nonth
+                    tariff2data["low"]      = {"date":iutility.convertdate(dtlist[list1.index(min(list1))],'%Y-%m-%d','%B-%Y'),"min":min(list1)} #min per nonth
+                    
+                    comparechart[0]["Cost"] = tariff1data["sum"]            
+                    comparechart[1]["Cost"] = tariff2data["sum"]    
+                                           
+                    data["tariff1"]         = series.getlistTojson(dtlist,list1,"Date","Cost")
+                    data["tariff2"]         = series.getlistTojson(dtlist,list2,"Date","Cost")
+                    data["tariff1data"]     = tariff1data
+                    data["tariff2data"]     = tariff2data            
+                    data["comparechart"]    = comparechart
+                    '''
+                    add title to be displayed on top of graph
+                    '''
+                    #convert date from to easily read at client side (eg. December 2009
+                    stdate = iutility.convertdate(str(stdate),'%Y-%m-%d','%B-%Y')
+                    endate = iutility.convertdate(str(endate),'%Y-%m-%d','%B-%Y')
+                    data["title"]   = "TARIFF COMPARISON FROM "+stdate+" TO "+endate
+            else:
+                data = None
+        else:    
+            period = int(period)
+            ts_monthly = series.getseriesmonths(series.readseries(series.getmonthlyseries(household)),period) #get timeseries
+            if ts_monthly: #data available for the specified period
+                '''
+                prepare data for processing
+                '''
+                #get dates and values in a separate list
+                dates, units = IT.izip(*ts_monthly) #much better for longer data, returning tuples
+                #create pandas Series (time series using two different list for timeseries data analysis
+                pdf =  pd.DataFrame(list(units),index=list(dates),columns=["units"])    #dateframe unused          
+                pdf.index.name = "dates"               
+                    
+                '''
+                prepare data to be used in client (browser)
+                Note: This code can be optimised if processed using panda dataframe. To do this ihousehold class tariff1 and tariff2 needs to be rewrite using panda dataframe
+                '''             
+                for x in range(0, period):
+                    dtlist.append(str(dates[x].date()))
+                    
+                    tariff1 = hhold.tariff1(units[x])
+                    tariff1data["sum"] = tariff1data["sum"] + tariff1
+                    list1.append(round(tariff1,2))
+    
+                    tariff2 = hhold.tariff2(units[x])
+                    tariff2data["sum"] = tariff2data["sum"] + tariff2
+                    list2.append(round(tariff2,2))
+                
+                tariff1data["sum"]      = round(tariff1data["sum"],2)                                            
+                tariff1data["avg"]      = round(tariff1data["sum"]/period,2)
+                tariff1data["high"]     = {"date":iutility.convertdate(dtlist[list1.index(max(list1))],'%Y-%m-%d','%B-%Y'),"max":max(list1)} #max per nonth
+                tariff1data["low"]      = {"date":iutility.convertdate(dtlist[list1.index(min(list1))],'%Y-%m-%d','%B-%Y'),"min":min(list1)} #min per nonth
+                
+                tariff2data["sum"]      = round(tariff2data["sum"],2)                                  
+                tariff2data["avg"]      = round(tariff2data["sum"]/period,2)
+                tariff2data["high"]     = {"date":iutility.convertdate(dtlist[list2.index(max(list2))],'%Y-%m-%d','%B-%Y'),"max":max(list2)} #max per nonth
+                tariff2data["low"]      = {"date":iutility.convertdate(dtlist[list2.index(min(list2))],'%Y-%m-%d','%B-%Y'),"min":min(list2)} #min per nonth
+                                
+                comparechart[0]["Cost"] = tariff1data["sum"]            
+                comparechart[1]["Cost"] = tariff2data["sum"]
+                
+                data["tariff1"]         = series.getlistTojson(dtlist,list1,"Date","Cost")
+                data["tariff2"]         = series.getlistTojson(dtlist,list2,"Date","Cost")
+                data["tariff1data"]     = tariff1data
+                data["tariff2data"]     = tariff2data            
+                data["comparechart"]    = comparechart
+                '''
+                add title to be displayed on top of graph
+                '''
+                data["title"]   = "TARIFF COMPARISON FOR THE LAST "+str(period)+" MONTHS"                 
+            else:
+                data = None
+  
+            
+        return HttpResponse(json.dumps(data),content_type='application/javascript')
+
+    
+#TemplateView class for consumer dashboard                                                                  
+class getcompare(TemplateView):
+    template_name = "dashboard.html"
+    
+    def post(self, request, *args, **kwargs):
+        #get form values
+        comp = iutility.getPostValue("compare",request)
+        occu = iutility.getPostValue("occupants",request)
+        prop = iutility.getPostValue("property",request)
+            
+        user = request.user #get authenticated user
+        household = user.households.all()[0] #get user household id      
+        dma  = household.dma  #get dma of the user
+                
+        #monthly series
+        series = iseries()
+        ts_monthly = series.getmonthlyseries(household)
+        timeseries_month = series.readseries(ts_monthly)
+        length = len(timeseries_month)
+            
+        obj = {}
+        data= []
+
+        if comp=="high" or comp=="low" or comp=="avg":
+            if occu and prop:
+                dmastats = userDMAstats.objects.filter(household=household,options=3)                
+            if occu and not prop:
+                dmastats = userDMAstats.objects.filter(household=household,options=1)
+            elif not occu and prop:
+                dmastats = userDMAstats.objects.filter(household=household,options=2)
+            else:
+                dmastats = DMAstats.objects.filter(dma__pk=dma.pk)
+
+                                                  
+        #dmastats = DMAstats.objects.filter(dma__pk=dma.pk)
+        if not dmastats:
+            data = False
+        
+        ##getting DMA status for highest consumer      
+        if comp=="high" and dmastats:
+            for st in dmastats:
+                obj["Units"] = str(st.maxunits)
+                obj["Cost"]  = str(series.getCost(st.maxunits))
+                obj["Period"]= str(st.statsperiod)+" Month"
+                obj["Data"]  = "Consumer"
+                data.append(obj)
+                obj = {}
+                
+                tseries      = timeseries_month[length-st.statsperiod:]
+                obj["Units"] = str(series.getSum(tseries))
+                obj["Cost"]  = str(series.getCost(float(obj["Units"])))
+                obj["Period"]= str(st.statsperiod)+" Month"
+                obj["Data"]  = "You"
+                data.append(obj)
+                obj = {}
+
+            #running in a seprate loop so it will be easy to separate on the client side
+            for st in dmastats:
+                obj["period"]    = st.statsperiod
+                obj["household"] = st.sumhouseholds
+                obj["occupant"]  = st.sumoccupants
+                obj["average"]   = st.sumoccupants/st.sumhouseholds
+                data.append(obj)
+                obj = {}  
+                                
+            obj["title"] = "Your last 12 Months bill comparison vs highest consumers"
+            data.append(obj)                
+            
+        ##getting DMA status for lowest consumer
+        elif comp=="low" and dmastats:
+            for st in dmastats:
+                obj["Units"] = str(st.minunits)
+                obj["Cost"]  = str(series.getCost(st.minunits))
+                obj["Period"]= str(st.statsperiod)+" Month"
+                obj["Data"]  = "Consumer"
+                data.append(obj)
+                obj = {}
+                tseries      = timeseries_month[length-st.statsperiod:]
+                obj["Units"] = str(series.getSum(tseries))
+                obj["Cost"]  = str(series.getCost(float(obj["Units"])))
+                obj["Period"]= str(st.statsperiod)+" Month"
+                obj["Data"]  = "You"
+                data.append(obj)
+                obj = {}
+
+            #running in a seprate loop so it will be easy to separate on the client side
+            for st in dmastats:
+                obj["period"]    = st.statsperiod
+                obj["household"] = st.sumhouseholds
+                obj["occupant"]  = st.sumoccupants
+                obj["average"]   = st.sumoccupants/st.sumhouseholds
+                data.append(obj)
+                obj = {}  
+                                
+            obj["title"] = "Your last 12 Months bill comparison vs lowest consumers"
+            data.append(obj)
+            
+        elif comp=="avg" and dmastats:
+            #getting DMA status for the average unit/bill            
+            for st in dmastats:
+                obj["Units"] = str(st.avgunits)
+                obj["Cost"]  = str(series.getCost(st.avgunits))
+                obj["Period"]= str(st.statsperiod)+" Month"
+                obj["Data"]  = "DMA"
+                data.append(obj)
+                obj = {}
+                tseries      = timeseries_month[length-st.statsperiod:]
+                obj["Units"] = str(series.getSum(tseries))
+                obj["Cost"]  = str(series.getCost(float(obj["Units"])))
+                obj["Period"]= str(st.statsperiod)+" Month"
+                obj["Data"]  = "You"
+                data.append(obj)
+                obj = {}
+            
+            #running in a seprate loop so it will be easy to separate on the client side
+            for st in dmastats:
+                obj["period"]    = st.statsperiod
+                obj["household"] = st.sumhouseholds
+                obj["occupant"]  = st.sumoccupants
+                obj["average"]   = st.sumoccupants/st.sumhouseholds
+                data.append(obj)
+                obj = {}                
+                                
+            obj["title"] = "Your last 12 Months bill comparison vs other consumers"
+            data.append(obj)
+                
+        return HttpResponse(json.dumps(data),content_type='application/javascript')
+        
+#View class for detecting user type and redirect to relevant TemplateView
+class dashboard(View):
+    def get(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff): #if not a super user or staff
+            view = consumer.as_view() #return consumer
+            return view(request, *args, **kwargs)
+        else:
+            try:
+                hid = self.kwargs['household_id']   #check for household if in case superuser
+            except:
+                hid = None
+                
+            if not hid:     #if there is no household id
+                view = superuser.as_view()  #return to superuser view
+            else:
+                view = consumer.as_view()   #else return consumer view and process household_id inside that view
+                
+            return view(request, *args, **kwargs)      
+
+#TemplateView class for agent based modelling page only available to superuser        
+class policy(TemplateView):
+    template_name = "policy.html"
+        
+    def get(self,request,**kwargs):
+        return self.render_to_response({}) 
+
+#TemplateView class to show DMAs to superuser
+class dmas(TemplateView):
+    template_name = "dmas.html"
+    
+    def get(self,request,**kwargs):
+        from iwidget.views import dma_view
+        values = dma_view(request,self.kwargs['dma_id'])
+        data = {'dma':values["dma"],'charts': values["charts"],'js_data': values["js_data"]}
+        return self.render_to_response(data)  
+
+#TemplateView to show timeseries that ope in new window
+class timeseries(TemplateView):
+    template_name = "timeseries.html"
+        
+    def get(self,request,**kwargs):
+        object_id = self.kwargs['object_id']
+        user = request.user
+        try:
+            ts = IWTimeseries.objects.get(pk=object_id)
+        except IWTimeseries.DoesNotExist:
+            raise Http404('Timeseries object does not exist')
+        is_household = hasattr(ts.gentity, 'gpoint') and hasattr(ts.gentity.gpoint,
+                'household')
+        if not (user.is_staff or user.is_superuser) and \
+                (not is_household or ts.gentity.gpoint.household.user.id != user.id):
+            request.notifications.error("Permission denied")
+            return HttpResponseRedirect(reverse('index'))
+        '''  
+        context['related_station'] = self.object.related_station
+        context['enabled_user_content'] = settings.ENHYDRIS_USERS_CAN_ADD_CONTENT
+        context['display_copyright'] = settings.ENHYDRIS_DISPLAY_COPYRIGHT_INFO
+        context['anonymous_can_download_data'] = \
+            settings.ENHYDRIS_TSDATA_AVAILABLE_FOR_ANONYMOUS_USERS
+        return context
+        '''
+                  
+        return self.render_to_response({"timeseries":ts})    
+'''
+This class deals with the consumer use case 5.3 which is to do with bill forecasting.
+It is dependent on the Forecast model and Iforecast class and JAVA based Weka machine learning and data mining libray
+The bridge between JAVA and python is made using py4j which connect python through to Java by connect through JVM port
+'''
+class c_uc53(TemplateView):
+    template_name = "index.html"
+    
+    def post(self,request):
+        user = request.user #get authenticated user
+        household = user.households.all()[0] #get user household id
+        #series = iseries()
+        #ts_monthly = series.getmonthlyseries(household)
+        #timeseries_month = series.readseries(ts_monthly)
+        data = ""        
+        dailyfile = ""
+        yearfile = ""
+        type   = request.POST.get("algo")
+        period = request.POST.get("period")
+        series = iseries()
+        gateway = JavaGateway() 
+        entry = gateway.entry_point #connect to JVM
+        javats = entry.getTimeSeries(str(user.id)) #get this user javatimeseries object
+        ifcast = iforecast(javats)        
+        
+        forecast = Forecast.objects.get(user__pk=user.pk)
+        if period=="days": #daily forecast
+            ts_daily = series.getdailyseries(household)
+            timeseries_daily = series.readseries(ts_daily)
+            if forecast.dailyfile and len(timeseries_daily)>60: #forecast only when data has 60 days historical cost or usage
+                dailyfile = forecast.dailyfile
+            else:
+                return HttpResponse(json.dumps(False),content_type='application/javascript')
+        else: #yearly forecast
+            ts_monthly = series.getmonthlyseries(household)
+            timeseries_month = series.readseries(ts_monthly)
+            if forecast.yearfile and len(timeseries_month)>12: #forecast only when data has 12 months of historical cost or usage. later can be fixed for other intervals
+                yearfile = forecast.yearfile
+            else:
+                return HttpResponse(json.dumps(False),content_type='application/javascript')                                                  
+  
+        if period=="quarter":    
+            data = ifcast.getForecast(timeseries_month,3,type,yearfile)
+            '''
+            sum = ifcast.getCost(ifcast.getSum(data))
+            high= ifcast.getHighestCost(data)
+            low = ifcast.getLowestCost(data)
+            avg = ifcast.getCost(ifcast.getAvg(data,3))
+            data.append({"low":low})
+            data.append({"high":high})
+            data.append({"sum":sum}) 
+            data.append({"avg":avg})
+            data.append({"title":"NEXT 3 MONTHS BILL FORECAST"})
+            '''
+        elif period=="half":
+            data = ifcast.getForecast(timeseries_month,6,type,yearfile)
+            '''
+            sum = ifcast.getCost(ifcast.getSum(data))
+            high= ifcast.getHighestCost(data)
+            low = ifcast.getLowestCost(data)
+            avg = ifcast.getCost(ifcast.getAvg(data,6))
+            data.append({"low":low})
+            data.append({"high":high})
+            data.append({"sum":sum}) 
+            data.append({"avg":avg})
+            data.append({"title":"NEXT 6 MONTHS BILL FORECAST"})
+            '''        
+        elif period=="year":
+            data = ifcast.getForecast(timeseries_month,12,type,yearfile)
+            '''
+            sum = ifcast.getCost(ifcast.getSum(data))
+            high= ifcast.getHighestCost(data)
+            low = ifcast.getLowestCost(data)
+            avg = ifcast.getCost(ifcast.getAvg(data,12))
+            data.append({"low":low})
+            data.append({"high":high})
+            data.append({"sum":sum}) 
+            data.append({"avg":avg})
+            data.append({"title":"NEXT 12 MONTHS BILL FORECAST"})
+            '''        
+        else:
+            #print timeseries_daily, it is very slow and therefore not included, however it perfectly works, its browser display still needed fixing as 
+            #chart will be displayed in days rather than months
+            data = ifcast.getForecast(timeseries_daily,30,type,dailyfile,"days")
+            '''
+            sum = ifcast.getCost(ifcast.getSum(data))
+            high= ifcast.getHighestCost(data)
+            low = ifcast.getLowestCost(data)
+            avg = ifcast.getCost(ifcast.getAvg(data,30))
+            data.append({"low":low})
+            data.append({"high":high})
+            data.append({"sum":sum}) 
+            data.append({"avg":avg})                                    
+            data.append({"title":"Next 30 days forecast"}); 
+            '''
+        return HttpResponse(json.dumps(data),content_type='application/javascript')                          

@@ -200,7 +200,7 @@ def process_households(dmas):
     -database users
     -household entries
     -timeseries entries
-    -parse timeseries data and write to databaes
+    -parse timeseries data and write to database
 
     ``dmas`` should be the dictionary return by read_zones to create
     the household entities with the correct reference to DMA (zone).

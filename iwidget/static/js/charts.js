@@ -404,9 +404,11 @@ function flot_init(i) {
         });
     $("#chartarea"+cm[i]['id']).bind("plothover", function(event, pos, item){
         $("#charttooltip"+cm[i]['id']).html('<div>'+format_date(pos.x)+'</div>');
+        $("#charthover"+cm[i]['id']).html('<div class=""><kbd>'+format_date(pos.x)+'</kbd></div><br/>'); //added by Adeel on 18 March 2014
     });
     $("#chartarea"+cm[i]['id']).mouseout(function(){
         $("#charttooltip"+cm[i]['id']).html('');
+        $("#charthover"+cm[i]['id']).html(''); //added by Adeel on 18 March 2014
     });
     global_plot = plot;
     plot.setupGrid();

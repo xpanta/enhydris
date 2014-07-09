@@ -24,13 +24,13 @@ from django.utils.decorators import method_decorator
 from enhydris.hcore.views import (TimeseriesDetailView as TDV,
                                   bufcount, inc_month)
 from enhydris.conf import settings
-from iwidget.models import (IWTimeseries, Household, DMA, TSTEP_FIFTEEN_MINUTES,
-                          TSTEP_DAILY, TSTEP_MONTHLY, VAR_CUMULATIVE,
-                          VAR_PERIOD, VAR_COST, TSTEP_HOURLY,
-                          VAR_ENERGY_PERIOD, VAR_ENERGY_COST)
+from iwidget.models import (IWTimeseries, Household, DMA,
+                            TSTEP_FIFTEEN_MINUTES,
+                            TSTEP_DAILY, TSTEP_MONTHLY, VAR_CUMULATIVE,
+                            VAR_PERIOD, VAR_COST, TSTEP_HOURLY,
+                            VAR_ENERGY_PERIOD, VAR_ENERGY_COST)
 from iwidget.forms import HouseholdForm
-from iwidget.utils import (statistics_on_daily,
-                         energy_statistics_on_daily)
+from iwidget.utils import (statistics_on_daily, energy_statistics_on_daily)
 
 
 class TimeseriesDetailView(TDV):
@@ -46,7 +46,8 @@ class TimeseriesDetailView(TDV):
         is_household = hasattr(ts.gentity, 'gpoint') \
             and hasattr(ts.gentity.gpoint, 'household')
         if not (user.is_staff or user.is_superuser) and \
-                (not is_household or ts.gentity.gpoint.household.user.id != user.id):
+                (not is_household
+                 or ts.gentity.gpoint.household.user.id != user.id):
             request.notifications.error("Permission denied")
             return HttpResponseRedirect(reverse('index'))
         return super(TimeseriesDetailView, self).dispatch(request,
@@ -114,7 +115,7 @@ def household_view(request, household_id=None):
     ts_monthly_energy = ts_monthly_energy[0] if ts_monthly_energy else None
     ts_dma_daily_energy_pc = dma.timeseries.filter(
         Q(time_step__id=TSTEP_DAILY) &
-           Q(name__icontains='capita') &
+        Q(name__icontains='capita') &
         Q(variable__id=VAR_ENERGY_PERIOD))[:1]
     ts_dma_daily_energy_pc = ts_dma_daily_energy_pc[0] if ts_dma_daily_energy_pc else None
     ts_dma_monthly_energy_pc = dma.timeseries.filter(
@@ -970,3 +971,391 @@ def periods_distribution(request, *args, **kwargs):
 def test(request):
     logging.debug("test!!")
     return HttpResponse("OK")
+
+#''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''Following are added by Adeel (14 march 2014''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''
+Following piece of code is duplicated to use the existing views without making any changed to the main django_iwidget application. Views logic is impossible to reuse as they all
+return values to specific .html file templates. Therefore it is decided to duplicate the code in order to get the return value from logic implemented inside view rather
+changing someone else which usually becomes issue to trouble shoot.
+'''
+
+'''
+Following methods is the copy of def household_view(request, household_id=None) except this method return values not to template. The only change done is the return and two lines in the code
+to resolve the URL
+'''
+def dashboard_view(request, household_id=None):
+    user = request.user
+    if not household_id:
+        household = user.households.all()[0]
+    else:
+        try:
+            household = Household.objects.get(pk=household_id)
+        except Household.DoesNotExist:
+            raise Http404
+    if not (user.is_staff or user.is_superuser) and \
+            (household.user.id != user.id):
+        request.notifications.error("Permission denied")
+        return HttpResponseRedirect(reverse('index'))
+
+    dma = household.dma
+    ts_dma_daily_pc = dma.timeseries.filter(
+            Q(time_step__id=TSTEP_DAILY) &
+            Q(name__icontains='capita'))[0]
+    ts_dma_monthly_pc = dma.timeseries.filter(
+            Q(time_step__id=TSTEP_MONTHLY) &
+            Q(name__icontains='capita'))[0]
+    ts_raw = household.timeseries.filter(time_step__isnull=True,
+            variable__id=VAR_CUMULATIVE)[0]
+    ts_fifteen = household.timeseries.filter(
+            time_step__id=TSTEP_FIFTEEN_MINUTES,
+            variable__id=VAR_PERIOD)[0]
+    ts_hourly = household.timeseries.filter(
+            time_step__id=TSTEP_HOURLY,
+            variable__id=VAR_PERIOD)[0]
+    ts_daily = household.timeseries.filter(
+            time_step__id=TSTEP_DAILY,
+            variable__id=VAR_PERIOD)[0]
+    ts_monthly = household.timeseries.filter(
+            time_step__id=TSTEP_MONTHLY,
+            variable__id=VAR_PERIOD)[0]
+    ts_cost = household.timeseries.filter(
+            time_step__id=TSTEP_MONTHLY,
+            variable__id=VAR_COST)[:1]
+    # TODO: Remove this after full migration to rest api
+    if len(ts_cost):
+        ts_cost = ts_cost[0]
+    else:
+        # Fallback
+        ts_cost = ts_monthly
+    nocc = household.num_of_occupants
+    charts = [
+        {
+            'id': 1,
+            'name': 'Fifteen minutes water consumption (litres)',
+            'display_min': False, 'display_max': True, 'display_avg': False,
+            'display_sum': True, 'time_span': 'day', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': True,
+            'main_timeseries_id': ts_fifteen.id,
+            'span_options': ['month', 'week', 'day'],
+        },
+        {
+            'id': 7,
+            'name': 'Hourly water consumption (litres)',
+            'display_min': False, 'display_max': True, 'display_avg': False,
+            'display_sum': True, 'time_span': 'week', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False,
+            'main_timeseries_id': ts_hourly.id,
+            'has_pie': 1,
+            'span_options': ['year', 'month', 'week', 'day'],
+        },
+        {
+            'id': 6,
+            'name': 'Cumulative consumption - raw measurements (m<sup>3</sup>)',
+            'display_min': False, 'display_max': False, 'display_avg': False,
+            'display_sum': False, 'time_span': 'week', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False,
+            'main_timeseries_id': ts_raw.id,
+            'span_options': ['month', 'week', 'day'],
+        },
+        {
+            'id': 2,
+            'name': 'Daily water consumption (litres)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'month', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': True,
+            'main_timeseries_id': ts_daily.id, 'occupancy': nocc,
+            'span_options': ['year', 'month', 'week'],
+        },
+        {
+            'id': 3,
+            'name': 'Daily water consumption per capita (litres)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'month', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False,
+            'span_options': ['year', 'month', 'week'],
+        },
+        {
+            'id': 4,
+            'name': 'Water consumption per month, up to a year period (m<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False,
+            'main_timeseries_id': ts_monthly.id, 'occupancy': nocc,
+            'has_pie': 2,
+            'span_options': [],
+        },
+        {
+            'id': 8,
+            'name': u'Water cost per month, up to a year period (€)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': True,
+            'main_timeseries_id': ts_cost.id, 'occupancy': nocc,
+            'span_options': [],
+        },
+        {
+            'id': 5,
+            'name': 'Water consumption per month, per capita, up to a year period (m<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'initial_display': False,
+            'span_options': [],
+        },
+    ]
+    # chart_selectors items:
+    # key: id: the id attribue of chart instance in above chart list
+    #          Select input element will be above the chart
+    # value: selections: a list of ('chart_id', 'Displayed name')
+    #        title: a category title to display
+    #        default: default item from selections
+    chart_selectors = {
+            1: {
+                'selections': [(1, 'Fifteen minutes water '
+                                   'consumption'),
+                               (7, 'Hourly water consumption'),
+                               (6, 'Raw measurements'),],
+                'title': 'High resolution data',
+                'default': 1
+            },
+            2: {
+                'selections': [(2, 'Daily water consumption'),
+                               (3, 'Daily water consumption '
+                                   'per capita'),],
+                'title': 'Daily data',
+                'default': 2
+            },
+            4: {
+                'selections': [(4, 'Monthly water consumption'),
+                               (8, 'Monthly water cost'),
+                               (5, 'Monthly water consumption '
+                                   'per capita'),],
+                'title': 'Monthly data',
+                'default': 8
+            },
+    }
+    variables = [
+        {
+            'id': 1, 'chart_id': 1, 'name': 'var_name',
+            'timeseries_id': ts_fifteen.id,
+            'is_bar': True, 'bar_width': 7*60*1000,
+            'factor': 1000.000,
+        },
+        {
+            'id': 2, 'chart_id': 2, 'name': 'var_name',
+            'timeseries_id': ts_daily.id,
+            'is_bar': True, 'bar_width': 11*60*60*1000,
+            'factor': 1000.000,
+        },
+        {
+            'id': 3, 'chart_id': 4, 'name': 'var_name',
+            'timeseries_id': ts_monthly.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1,
+        },
+        {
+            'id': 4, 'chart_id': 6, 'name': 'var_name',
+            'timeseries_id': ts_raw.id,
+            'is_bar': False,
+            'factor': 1.000,
+        },
+        {
+            'id': 5, 'chart_id': 3, 'name': 'Household',
+            'timeseries_id': ts_daily.id,
+            'is_bar': True, 'bar_width': 11*60*60*1000,
+            'factor': 1000.000/nocc,
+        },
+        {
+            'id': 6, 'chart_id': 3, 'name': 'DMA',
+            'timeseries_id': ts_dma_daily_pc.id,
+            'factor': 1000.000,
+        },
+        {
+            'id': 7, 'chart_id': 5, 'name': 'Household',
+            'timeseries_id': ts_monthly.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1.000/nocc,
+        },
+        {
+            'id': 8, 'chart_id': 5, 'name': 'DMA',
+            'timeseries_id': ts_dma_monthly_pc.id,
+            'factor': 1.000,
+        },
+        {
+            'id': 9, 'chart_id': 7, 'name': 'var_name',
+            'timeseries_id': ts_hourly.id,
+            'is_bar': True, 'bar_width': 30*60*1000,
+            'factor': 1000.000,
+        },
+        {
+            'id': 10, 'chart_id': 8, 'name': 'var_name',
+            'timeseries_id': ts_cost.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1,
+        },
+    ]
+    pies = {
+                1: {'timeseries_id': ts_hourly.id,
+                    'period_unit': 'hour',
+                    'period_from': 1,
+                    'period_to': 6,
+                    'default_period': 'Nightly consumption 0:00-06:00',
+                    'alternate_period': 'Daily consumption 06:00-24:00'},
+                2: {'timeseries_id': ts_monthly.id,
+                    'period_unit': 'month',
+                    'period_from': 5,
+                    'period_to': 9,
+                    'default_period': 'Summer consumption (May-September)',
+                    'alternate_period': 'Winter consumption (October-April)'}
+    }
+
+
+    js_data = {
+            'timeseries_data_url': '/timeseries/data/',#reverse('timeseries_data'), commented by Adeel and replace with Static URL
+            'periods_stats_url': '/ajax/period_stats/',#reverse('periods_stats'), commented by Adeel and replace with Static URL
+            'charts': charts,
+            'variables': variables,
+            'pies': pies
+    }
+    js_data = simplejson.dumps(js_data)
+    form = HouseholdForm(instance=household)
+    for field in form.fields:
+        form.fields[field].required = False
+        form.fields[field].widget.attrs['disabled'] = 'disabled'
+        form.fields[field].help_text=u''
+
+    return {'household': household,
+             'charts': charts,
+             'form': form,
+             'js_data': js_data,
+             'chart_selectors': chart_selectors,
+             'overview': statistics_on_daily(ts_daily, nocc)}
+
+
+'''
+Following methods is the copy of def dma_view(request, dma_id) except this method return values not to template.
+'''
+@login_required
+def dmas_view(request, dma_id):
+    user = request.user
+    if not (user.is_staff or user.is_superuser):
+        request.notifications.error("Permission denied")
+        return HttpResponseRedirect(reverse('index'))
+    try:
+        dma = DMA.objects.get(pk=dma_id)
+    except DMA.DoesNotExist:
+        raise Http404('DMA does not exist')
+
+    ts_daily = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
+            ~Q(name__icontains='capita'))[0]
+    ts_monthly = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
+            ~Q(name__icontains='capita'))[0]
+    ts_daily_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
+            Q(name__icontains='capita'))[0]
+    ts_monthly_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
+            Q(name__icontains='capita'))[0]
+    charts = [
+        {
+            'id': 1,
+            'name': 'Daily water consumption (m<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'week', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'main_timeseries_id': ts_daily.id,
+            'span_options': ['year', 'month', 'week'],
+            'initial_display': True,
+        },
+        {
+            'id': 2,
+            'name': 'Water consumption per month, up to a year period (m<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'main_timeseries_id': ts_monthly.id,
+            'span_options': [],
+            'initial_display': True,
+        },
+        {
+            'id': 3,
+            'name': 'Daily water consumption per capita (litres)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'week', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'main_timeseries_id': ts_daily_pc.id,
+            'span_options': ['year', 'month', 'week'],
+            'initial_display': True,
+        },
+        {
+            'id': 4,
+            'name': 'Water consumption per month, up to a year period, per capita (<sup>3</sup>)',
+            'display_min': True, 'display_max': True, 'display_avg': True,
+            'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            'display_lastvalue': True,
+            'main_timeseries_id': ts_monthly_pc.id,
+            'span_options': [],
+            'initial_display': True,
+        },
+    ]
+    variables = [
+        {
+            'id': 1, 'chart_id': 1, 'name': 'var_name',
+            'timeseries_id': ts_daily.id,
+            'is_bar': True, 'bar_width': 11*60*60*1000,
+            'factor': 1.000,
+        },
+        {
+            'id': 2, 'chart_id': 2, 'name': 'var_name',
+            'timeseries_id': ts_monthly.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1.000,
+        },
+        {
+            'id': 3, 'chart_id': 3, 'name': 'var_name',
+            'timeseries_id': ts_daily_pc.id,
+            'is_bar': True, 'bar_width': 11*60*60*1000,
+            'factor': 1000.000,
+        },
+        {
+            'id': 4, 'chart_id': 4, 'name': 'var_name',
+            'timeseries_id': ts_monthly_pc.id,
+            'is_bar': True, 'bar_width': 14*24*60*60*1000,
+            'factor': 1.000,
+        },
+    ]
+    js_data = {
+            'timeseries_data_url': reverse('timeseries_data'),
+            'charts': charts,
+            'variables': variables
+    }
+    js_data = simplejson.dumps(js_data)
+    return  {'dma': dma,
+             'charts': charts,
+             'js_data': js_data}
+
+from django.views.generic.base import TemplateView
+#TemplateView class for agent based modelling page only available to superuser
+class policy(TemplateView):
+    template_name = "policy.html"
+
+    def get(self,request,**kwargs):
+        return self.render_to_response({})
+#''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''End of Adeel changes''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

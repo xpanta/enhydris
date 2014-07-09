@@ -1,54 +1,41 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load counting %}
-
-{% block header %}
-
-{% endblock %}
-
-{% block content_main %}
-        {% comment %}
-        {% if notifications %}
-        <ul class="notifications">
-                {% for message in notifications %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-        </ul>
-        {% endif %} 
-        {% endcomment %}
-
-    <div id="frontpage_text">
-        <h2>{% trans "Welcome to Enhydris" %}</h2>
-
-        <p>{% trans "If you want to take full advantage of our service, you could " %}
-            <a href="{% url "registration_register" %}">sign up</a> or <a
-            href="{% url "auth_login" %}">login</a> 
-            {% trans " if you're already a member!" %}</p>
-    </div>
-        <div id="frontpage">
-        <div id="frontpage_stats">
-            <span class="header"> {% trans "Current Statistics" %} </span>
-            <hr />
-            <p> {% trans "Currently there are " %} <span>{% do_count "auth.User" %}</span> {% trans "users registered on the site" %} </p>
-            <p> {% trans "Currently there are " %} <span>{% do_count "hcore.Station" %}</span> {% trans "stations hosted on the site" %} </p>
-            <p> {% trans "Currently there are " %} <span>{% do_count "hcore.Instrument" %}</span> {% trans "instruments hosted on the site" %} </p>
-            <p> {% trans "Currently there are " %} <span>{% do_count "hcore.Timeseries" %}</span> {% trans "timeseries hosted on the site" %} </p>
-        </div>
-        
-        <div id="frontpage_activity" style="margin-top:1em;">
-            <span class="header"> {% trans "Recent Activity" %} </span>
-            <hr />
-            {% get_latest_stations 5  %}
-			{% if latest_stations %}
-				{% for station in latest_stations %}
-				<p><span><a href="{% url "station_detail" station.id %}">{{station.name}}</a></span> {% trans "was modifed at" %}
-				{{station.last_modified|date:"l, j N P"}}</p> 
-				{% endfor %}
-			{% else %}
-				<p><i>No data available yet</i><p>
-			{% endif %} 
-        </div>
-
-        </div>
-        
+{% block pagetitle %}iWidget User Login{% endblock %}
+{% block pagecontent %}
+<script type="text/javascript">
+</script>
+<!--<div class="row">-->
+	<div class="col-md-4 col-md-offset-4">
+    	<div class="panel panel-default">
+		<div class="panel-heading">
+		    <div class="panel-title">{% trans "Please sign in" %}</div>
+		 </div>
+		 <div class="panel-body">
+		 <div id="login-msg"></div>
+		 <form accept-charset="UTF-8" action="{% url 'login' %}" method="POST" role="form" id="login-form">
+			{% csrf_token %}
+                 	<fieldset>
+				<div class="input-group form-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+			    		<input class="form-control" placeholder="Username" name="username" id="username" type="text" required="true">
+			    	</div>
+			    	<div class="input-group form-group">
+			    		<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+			    		<input class="form-control" placeholder="Password" name="password" id="password" type="password" value="" required="true">
+			    	</div>
+			    	<div class="form-group"><a href="#">{% trans "Forget Password" %}</a></div>
+			    	<!-- 
+			    	<div class="checkbox">
+			    	  	<label><input name="remember" type="checkbox" value="Remember Me"> Remember Me</label>
+			    	</div>
+					-->
+				<div class="form-group">						
+			    		<button class="btn btn-lg btn-primary btn-block" type="button" onClick="apputil.sendToserver('#login-form');">{% trans "Login" %}</button>
+			    </div>
+		    	</fieldset>
+		</form>
+		</div>
+	</div>
+	</div>
+<!--</div>-->
 {% endblock %}

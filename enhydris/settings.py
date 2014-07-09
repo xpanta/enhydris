@@ -7,7 +7,7 @@ TEMPLATE_DEBUG = True
 DEBUG = True
 PROJECT_DIR = os.path.dirname(__file__)
 
-ROOT_URLCONF = 'enhydris.urls'
+ROOT_URLCONF = 'unexe.urls'
 
 LANGUAGES = (('en', 'English'), ('el', 'Greek'))
 LANGUAGE = 'en'
@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'registration',
     'profiles',
     'ajax_select',
+    'sekizai',
     'captcha',
     'django_tables2',
 
@@ -146,6 +147,7 @@ INSTALLED_APPS = (
     'tl',
     'uc011',
     'iwidget',
+    'unexe',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -172,6 +174,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
     'django_notify.context_processors.notifications',
+    "django.core.context_processors.csrf",
+    'sekizai.context_processors.sekizai',
+    'unexe.context_processors.initialise',
 )
 
 TEMPLATE_DIRS = (
@@ -215,7 +220,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'iwidget.log',
+            'filename': 'ierror.log',
             'formatter': 'verbose'
         },
     },

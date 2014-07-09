@@ -1,0 +1,94 @@
+body
+{
+	/*move one level up and provide image file path */
+	font-size:1.3em; /* 13px */
+	background-image:url('../../images/iwidget_bg.jpg');
+}
+
+/* bootstrap tab content major in the bottom not visible - adjustment - there is no space high*/
+.tab-content
+{
+	margin:0 0 10px 0; /*add margin - bottom only */
+}
+
+/* bootstrap panel height adjustment - it is too high*/
+.panel-heading {
+	padding:5px 5px 1px 5px;
+}
+.transparent {
+	zoom: 1;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+}
+
+.leftcol {
+  padding:5px;
+  left:10px;
+  color:#555555;
+  background:#ffffff;
+  border-radius: 4px;
+  z-index:5000;
+}
+
+/* tab color */
+.nav-tabs>li>a {
+  color:#333333;
+}
+
+.tabcontent {
+	background:#ffffff;
+	border-radius: 0 4px 4px 0;
+	padding:5px;
+}
+
+/*map dimension*/
+#map {
+	height:150px;
+	margin-top:5px;
+}
+
+/* bootstrap <hr> adjustment of upper and lower space*/
+hr {
+	margin:5px 0 5px 0;
+}
+
+.clickable
+{
+    cursor: pointer;
+}
+
+.clickable .glyphicon
+{
+    background: rgba(0, 0, 0, 0.15);
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 4px
+}
+
+a.clickable { color: inherit; }
+a.clickable:hover { text-decoration:none; }
+svg .tooltip { opacity: 1; }
+
+#overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background: #000;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    z-index:6000;
+}
+#loading {
+    width: 50px;
+    height: 57px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -28px 0 0 -25px;  
+}
+
+.select-size{
+	height:-20px;	
+}
