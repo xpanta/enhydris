@@ -180,7 +180,14 @@ class consumer(TemplateView):
         values = dashboard_view(request,hid) #call method from django_iwidget. sometimes I need to replace this
         household = values['household']
         #end of NTUA use case
-        data = {"household":household,"overview":values['overview'],'charts': values["charts"],'js_data': values["js_data"],'chart_selectors':values["chart_selectors"],"hid":hid,}
+        data = {
+            "household": household,
+            "overview": values['overview'],
+            'charts': values["charts"],
+            'js_data': values["js_data"],
+            'chart_selectors': values["chart_selectors"],
+            "hid": hid,
+        }
         
         ##start of my code
         user = request.user
@@ -278,7 +285,20 @@ class consumer(TemplateView):
             #"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,
             
             #data = {"household":household,"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,"tsid":ts_monthly.id,"dmastats":dmasummary,"uc32chart1":json.dumps(list1),"dmastats":dmastats,}    
-            data = {"household":household,"overview":values['overview'],'charts': values["charts"],'js_data': values["js_data"],'chart_selectors':values["chart_selectors"],"hid":hid,"tsid":ts_monthlyid,"stdate":stdate,"endate":endate,"c_uc32data":json.dumps(c_uc32data),"c_uc33data":json.dumps(c_uc33data),"c_uc52data":json.dumps(c_uc52data),"c_uc53data":json.dumps(c_uc53data)}
+            data = {
+                "household": household,
+                "overview": values['overview'],
+                'charts': values["charts"],
+                'js_data': values["js_data"],
+                'chart_selectors': values["chart_selectors"],
+                "hid": hid,
+                "tsid": ts_monthlyid,
+                "stdate": stdate,
+                "endate": endate,
+                "c_uc32data": json.dumps(c_uc32data),
+                "c_uc33data": json.dumps(c_uc33data),
+                "c_uc52data": json.dumps(c_uc52data),
+                "c_uc53data": json.dumps(c_uc53data)}
  
         return self.render_to_response(data)            
 
@@ -835,9 +855,13 @@ class dmas(TemplateView):
     template_name = "dmas.html"
     
     def get(self,request,**kwargs):
-        from iwidget.views import dma_view
-        values = dma_view(request,self.kwargs['dma_id'])
-        data = {'dma':values["dma"],'charts': values["charts"],'js_data': values["js_data"]}
+        from iwidget.views import dmas_view
+        values = dmas_view(request,self.kwargs['dma_id'])
+        data = {
+            'dma': values["dma"],
+            'charts': values["charts"],
+            'js_data': values["js_data"]
+        }
         return self.render_to_response(data)  
 
 #TemplateView to show timeseries that ope in new window

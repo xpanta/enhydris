@@ -2,7 +2,7 @@
 function IwidgetUtil()
 {
 	//variables to hold important URL locations
-	this.baseURL   = 'http://83.212.168.149:8005/';
+	this.baseURL   = 'http://localhost:8000/';
 	this.mediaURL  = this.baseURL+'media/';
 	this.staticURL = this.baseURL+'static/';
 	this.usericon  = this.staticURL+'images/usericon.png'; //icon to show user position on map

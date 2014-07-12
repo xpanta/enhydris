@@ -13,7 +13,7 @@
 	<!-- Bootstrap minified Optional theme -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 	<!-- jQuery UI css -->
- 	<!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />  -->	
+ 	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
 	<!-- leaflet maps -->
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
 	<!-- 
@@ -44,7 +44,7 @@
     	<![endif]-->
 
 	<!--jQuery UI -->
-	<!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>  -->
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 	<!--leaflet map base file-->
 	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 	<!--stamen is B&W base map layer-->
@@ -123,7 +123,7 @@ $(window).load(function() {
 	*/
 	ajaxutil.ajaxEffect();
 	{% if user.is_authenticated %}
-		{% if not user.is_staff or user.is_admin %} 
+		{% if not user.is_staff and user.is_admin %}
 			var initval = new Array();
 			initval[0] 	= "{{household.address}}"; //household address
 			initval[1] 	= "{{household.num_of_occupant}}"; //
@@ -177,7 +177,7 @@ $(window).load(function() {
 <div class="row">
 {# {% if not user.is_staff or user.is_admin %} #}
 {% block content %}
-	{% if not user.is_staff or user.is_admin %}
+	{% if not user.is_staff and not user.is_superuser %}
 		{% block sidebar %}{% endblock %} <!-- Reserved for side bar page -->
 	{% else %}
 		{% block sidebar_main %}{% endblock %} <!-- Reserved for side bar page -->

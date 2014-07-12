@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from unexe.views import *
 from django.contrib import admin
 from iwidget import views as iwidget_views
+from iwidget.views import TimeseriesDetailView
 
 #from enhydris.iwidget.views import (timeseries_detail, index,
 #        household_view, dma_view, household_properties)
