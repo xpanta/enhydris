@@ -41,6 +41,8 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(PROJECT_DIR, "staticfiles/")
 STATIC_URL = '/static/'
 
+POSTGIS_VERSION = (2, 1, 2)
+
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
