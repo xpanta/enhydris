@@ -43,6 +43,7 @@ from django.db.models import Avg,Max,Min,Count,Sum
 
 #from enhydris.hcore.models import (Lookup as HLookup, Timeseries, Gpoint,
 #        Garea, Instrument)
+# added some comments!
 
 
 class test(TemplateView):
