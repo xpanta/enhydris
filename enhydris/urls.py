@@ -9,7 +9,8 @@ from enhydris.hcore.forms import RegistrationForm
 from enhydris.hcore.views import terms, login
 
 from iwidget.views import (TimeseriesDetailView, index, household_view,
-                         dma_view, household_properties, periods_distribution)
+                           dma_view, household_properties,
+                           periods_distribution, user_logout)
 
 admin.autodiscover()
 

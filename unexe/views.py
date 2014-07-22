@@ -65,7 +65,6 @@ class home(TemplateView):
 
 class login(TemplateView):
     template_name = "index.html"
-
     def post(self, request):    
         wuser = iuser()        
         status = wuser.login(iutility.getPostValue('username',request), iutility.getPostValue('password',request), request)
@@ -925,7 +924,7 @@ class c_uc53(TemplateView):
                 dailyfile = forecast.dailyfile
             else:
                 return HttpResponse(json.dumps(False),content_type='application/javascript')
-        else: #yearly forecast
+        else: #yearly fordcast
             ts_monthly = series.getmonthlyseries(household)
             timeseries_month = series.readseries(ts_monthly)
             if forecast.yearfile and len(timeseries_month)>12: #forecast only when data has 12 months of historical cost or usage. later can be fixed for other intervals
@@ -968,10 +967,10 @@ class c_uc53(TemplateView):
             avg = ifcast.getCost(ifcast.getAvg(data,12))
             data.append({"low":low})
             data.append({"high":high})
-            data.append({"sum":sum}) 
+            data.append({"sum":sum})
             data.append({"avg":avg})
             data.append({"title":"NEXT 12 MONTHS BILL FORECAST"})
-            '''        
+            '''
         else:
             #print timeseries_daily, it is very slow and therefore not included, however it perfectly works, its browser display still needed fixing as 
             #chart will be displayed in days rather than months
@@ -983,8 +982,8 @@ class c_uc53(TemplateView):
             avg = ifcast.getCost(ifcast.getAvg(data,30))
             data.append({"low":low})
             data.append({"high":high})
-            data.append({"sum":sum}) 
-            data.append({"avg":avg})                                    
-            data.append({"title":"Next 30 days forecast"}); 
+            data.append({"sum":sum})
+            data.append({"avg":avg})
+            data.append({"title":"Next 30 days forecast"});
             '''
         return HttpResponse(json.dumps(data),content_type='application/javascript')                          

@@ -1359,3 +1359,9 @@ class policy(TemplateView):
     def get(self,request,**kwargs):
         return self.render_to_response({})
 #''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''End of Adeel changes''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+def user_logout(request):
+    from django.contrib.auth import logout
+    logout(request)
+    return HttpResponseRedirect(reverse('login'))
