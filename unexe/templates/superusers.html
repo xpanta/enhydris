@@ -1,0 +1,25 @@
+{% extends "sidebar.html" %}
+{% load i18n %}
+{% load general_tags %}
+{% block pagetitle %}{% trans "Administrator Control Panel" %}{% endblock %}
+{% block pagecontent %}
+<div class="col-md-9">
+<div class="panel panel-default">
+	<div class="panel-heading"><div class="panel-title">{% trans " Home" %}</div></div>
+	<div class="panel-body">
+	<div class="row">
+	    <div class="col-md-12"> 
+		<div class="panel panel-primary">
+	        <div class="panel-heading">
+	           <span class="glyphicon glyphicon-info-sign"></span> <strong>{% trans "Administrator Control Panel" %}</strong>
+	        </div>
+	        <div class="panel-body">
+	        	{% trans "Welcome to Administrator control panel. Here you can view DMA details and assess policy effects. Please use the side menu bar to navigate" %}.
+	        </div>
+        </div>
+        </div>
+    </div>
+    </div>
+	</div>
+</div>
+{% endblock %}

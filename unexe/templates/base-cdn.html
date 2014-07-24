@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% load sekizai_tags %}
+{% load i18n %}
+{% render_block "css" %}
+{% render_block "js" %}
+
+{% addtoblock "css" %}
+	<!-- Bootstrap minified CSS -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	<!-- Bootstrap minified Optional theme -->
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+	<!-- jQuery UI css -->
+ 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+	<!-- leaflet maps -->
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+	<!-- 
+	css for bootstrap time and date - http://bootstrapformhelpers.com/timepicker/
+	-->
+	<link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-formhelpers.min.css">		
+	<!-- nvd3.js base css -->
+	<link rel="stylesheet" href="{{STATIC_URL}}css/nv.d3.min.css" />	
+    <!-- Base css for iwidget app -->
+    <link rel="stylesheet" href="{{STATIC_URL}}css/dev-css/base.css">
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+
+	<!-- d3js minimised charting library - should be placed before jquery -->
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<!-- jQuery minified JavaScript -->
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<!-- d3js based JavaScript charting library -->
+	<script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>	
+	<!-- Bootstrap minified JavaScript -->
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    	<!--[if lt IE 9]>
+      		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    	<![endif]-->
+
+	<!--jQuery UI -->
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+	<!--leaflet map base file-->
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+	<!--stamen is B&W base map layer-->
+	<script type="text/javascript" src="{{STATIC_URL}}js/tile.stamen.js"></script>
+	<!--added for form validation-->
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+	<!--added for on-hover bootstrap menu-->
+	<script src="{{STATIC_URL}}js/bootstrap-hover-dropdown.js"></script>
+    <!--dojo base file-->
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.2/dojo/dojo.js"></script>
+	<!--jquery UI file
+	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	-->    
+	<!-- flot library CDN link minified JavaScript -->
+	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script> -->
+	<!-- library to get hidden elements value -->
+	<!-- <script src="{{STATIC_URL}}js/jquery.actual.min.js"></script> -->
+	<!-- 
+	library for bootstrap time and date - http://bootstrapformhelpers.com/timepicker/
+	-->
+	<script src="{{STATIC_URL}}js/bootstrap-formhelpers.min.js"></script>	
+	<!--jquery plugin to show ajax effect-->
+	<script src="{{STATIC_URL}}js/jquery.blockUI.js"></script>		
+    <!--d3js donut chart-->
+    <script src="{{STATIC_URL}}js/Donut3D.js"></script>
+    <!--d3js chart legend-->
+    <script src="{{STATIC_URL}}js/d3.legend.js"></script>
+    <!--nvd3.js base file-->
+    <script src="{{STATIC_URL}}js/nv.d3.min.js"></script>    	    	
+    <!--Base js iwidget-->
+    <script src="{{STATIC_URL}}js/dev-js/base.js"></script>
+
+{% endaddtoblock %}
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png/ico" href="{{STATIC_URL}}images/favicon.ico">
+	<title>{% trans "iWidget" %} - {%block pagetitle %}{% endblock %}</title>
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<script type="text/javascript">
+
+function household(href)
+{
+	//href is the menu index of settings tab
+	$('#settings li a').eq(href).tab('show');
+	apputil.sethousehold("{{hid}}"); //call to this function populate the form
+	return false;
+}
+
+function user(href)
+{
+	//href is the menu index of settings tab
+	$('#settings li a').eq(href).tab('show');
+	apputil.setuser(); //call to this function populate the form
+	return false;	
+}
+
+function water()
+{
+	//var chartwidth = document.getElementById("panel").offsetWidth; //get the width of the app container set by responsive bootstrap
+	//alert(chartwidth);	
+}
+
+$(window).load(function() {
+	/* initialising function when the page is loaded
+	 * It takes an arrange of important values from Context variable and 
+	 * set it in array (initval) to pass it to the init() function
+	*/
+	ajaxutil.ajaxEffect();
+	{% if user.is_authenticated %}
+		{% if not user.is_staff and user.is_admin %}
+			var initval = new Array();
+			initval[0] 	= "{{household.address}}"; //household address
+			initval[1] 	= "{{household.num_of_occupant}}"; //
+			apputil.init(initval);
+		{% else %}
+			//if superuser
+			apputil.initpanel(); //method that make panel foldable
+			apputil.inithousehold(); //method that loads the household form value
+			//disable form control as Admin or superuser not allowed
+			$(iwidgetutil.householdform+ " select").prop('disabled', true);
+			$(iwidgetutil.householdform+ " input").prop('disabled', true);
+			$(iwidgetutil.householdform +" button").prop('disabled', true);
+		{% endif %} 
+	{% endif %}
+});
+</script>	
+</head>
+<body>
+<div class="col-md-12 hide" id="overlay"><img id="loading" src="{{STATIC_URL}}/images/spinner.gif"></div>
+<div id="container" class="container-fluid">
+	<div class="page-header">
+   		<a href="http://www.i-widget.eu" target="__blank">
+			<img src="{{STATIC_URL}}images/iwidget_biglogo.png" class="img-rounded" alt="iwidget logo" />
+		</a>
+		<div class="pull-right">
+    		<form action="/i18n/setlang/" method="post" class="form-inline">
+      			{% csrf_token %}
+      			<input name="next" type="hidden" value="/dashboard" />
+      			<select name="language" class="form-control" onchange="this.form.submit()">
+        		{% for lang in LANGUAGES %}
+          			<option value="{{ lang.0 }}">{{ lang.1 }}</option>
+        		{% endfor %}
+      			</select>
+      		
+		{% if user.is_authenticated %}	
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+    				{% trans "Welcome" %}: <span class="glyphicon glyphicon-user"></span> {{user.first_name}} <span class="caret"></span>
+  			</button>
+  			<ul class="dropdown-menu" role="menu">
+			<li><a href="#"><span class="glyphicon glyphicon-info-sign"></span> {% trans "About" %}</a></li>
+			<li class="divider"></li>
+			<li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Logout" %}</a></li>
+  			</ul>
+		</div>
+		{% endif %}
+		  </form>
+		</div>
+		<div class="clearfix"></div>
+        </div>
+<div class="row">
+{# {% if not user.is_staff or user.is_admin %} #}
+{% block content %}
+	{% if not user.is_staff and not user.is_superuser %}
+		{% block sidebar %}{% endblock %} <!-- Reserved for side bar page -->
+	{% else %}
+		{% block sidebar_main %}{% endblock %} <!-- Reserved for side bar page -->
+	{% endif %}
+		{% block pagecontent %}{% endblock %} <!-- Contains the main content -->
+{% endblock %}
+</div>
+</div> <!--container-->
+</body>
+</html>

@@ -1,0 +1,52 @@
+{% load i18n %}
+	    	<div id="password-panel" class="panel panel-default">
+			<div class="panel-heading"><div class="panel-title">{% trans "PASSWORD" %}</div></div>
+			<div class="panel-body">
+			<div id="password-msg"></div>
+			<form class="form-horizontal" accept-charset="UTF-8" action="{% url 'changepassword' %}" method="POST" role="form" id="password-form">
+				{% csrf_token %}     		
+				<p class="text-warning">{% trans "Required" %} (*)</p>
+ 				<div class="form-group">
+					<label class="col-md-2 control-label">{% trans "Old Password" %}: *</label>
+				    <div class="col-md-10"><input class="form-control" placeholder="Old Password" name="oldpasswd" id="oldpasswd" type="password" required="true"></div>
+				</div>
+ 
+				<div class="form-group">
+					<label class="col-md-2 control-label">{% trans "New Password" %}: *</label>
+				    <div class="col-md-4"><input class="form-control" placeholder="New Password" name="newpasswd" id="newpasswd" type="password" required="true"></div>
+					<label class="col-md-2 control-label">{% trans "Confirm New Password" %}: *</label>
+				    <div class="col-md-4"><input class="form-control" placeholder="Confirm New Password" name="newpasswdagain" id="newpasswdagain" type="password" required="true" equalTo="#newpasswd"></div>				    
+				</div>
+			    <div class="form-group">
+			    <div class="col-md-offset-4 col-md-12">
+			      <button type="button" class="btn btn-lg btn-primary col-md-4" onClick="apputil.sendToserver('#password-form');"><span class="glyphicon glyphicon-floppy-disk"></span> {% trans "Submit" %}</button>
+			    </div>
+			    </div>
+			</form>
+			</div>
+			</div> <!-- password-panel -->
+	    	<div id="profile-panel" class="panel panel-default">
+			<div class="panel-heading"><div class="panel-title">{% trans "PROFILE" %}</div></div>
+			<div class="panel-body">
+			<div id="profile-msg"></div>
+			<form class="form-horizontal" accept-charset="UTF-8" action="{% url 'updateuser' %}" method="POST" role="form" id="profile-form">
+				{% csrf_token %}     		
+				<p class="text-warning">{% trans "Required" %} (*)</p>
+ 				<div class="form-group">
+					<label class="col-md-2 control-label">{% trans "First Name" %}: *</label>
+				    <div class="col-md-4"><input class="form-control" placeholder="First Name" name="first_name" id="first_name" type="text" value="{{user.first_name}}" required="true"></div>
+					<label class="col-md-2 control-label">{% trans "Last Name" %}: *</label>
+				    <div class="col-md-4"><input class="form-control" placeholder="Last Name" name="last_name" id="last_name" type="text" value="{{user.last_name}}" required="true"></div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label">{% trans "Email" %}: *</label>
+				    <div class="col-md-4"><input class="form-control" placeholder="Email" name="email" id="email" type="text" value="{{user.email}}" required="true" email="true"></div>				    
+				</div>
+			    <div class="form-group">
+			    <div class="col-md-offset-4 col-md-12">
+			      <button type="button" class="btn btn-lg btn-primary col-md-4" onClick="apputil.sendToserver('#profile-form');"><span class="glyphicon glyphicon-floppy-disk"></span> {% trans "Submit" %}</button>
+			    </div>
+			    </div>
+			</form>			
+			</div>
+			</div> <!-- profile-panel -->

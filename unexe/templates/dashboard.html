@@ -1,0 +1,154 @@
+{% extends "sidebar.html" %}
+{% load i18n %}
+{% load general_tags %}
+{% block pagetitle %}{% trans "Control Panel" %}{% endblock %}
+{% block pagecontent %}
+
+<script>
+$(window).load(function() {
+	//call to method to remember selected tab
+	domutil.tabfocus("#controltab");
+	
+	//detect tab click
+	$("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+	    var id = $(e.target).attr("href").substr(1);
+	    window.location.hash = id;
+	});
+
+	//detect tab menu items click
+	$("ul.nav-tabs > li > ul > li > a").on("shown.bs.tab", function (e) {
+	    var id = $(e.target).attr("href").substr(1);
+	    window.location.hash = id;
+	    
+	    var data = null;
+	    if(domutil.hasCssclass("#c_uc53container","hide") && id=="cuc53") //tab id value, need to make global to make effectively and avoid error
+	    {
+	    	data = jQuery.parseJSON("{{c_uc53data|escapejs}}");
+	    	if(data==null)
+	    		return;	    	
+	    	domutil.removeCssclass("#c_uc53container","hide");
+	    	uc53Chart(data);
+	    }//--end if
+	    
+	    if(domutil.hasCssclass("#c_uc32container","hide") && id=="cuc32") //tab id value, need to make global to make effectively and avoid error
+	    {
+	    	data = jQuery.parseJSON("{{c_uc32data|escapejs}}");	
+	    	if(data==null)
+	    		return;		    	
+	    	domutil.removeCssclass("#c_uc32container","hide");
+	    	uc32Chart(data);
+	    }//--end if
+	    
+	    if(domutil.hasCssclass("#c_uc33container","hide") && id=="cuc33") //tab id value, need to make global to make effective and avoid error
+	    {
+	    	data = jQuery.parseJSON("{{c_uc33data|escapejs}}");	
+	    	if(data==null)
+	    		return;		    	
+	    	domutil.removeCssclass("#c_uc33container","hide");
+	    	uc33Chart(data);
+	    }//--end if	 	
+
+	    if(domutil.hasCssclass("#c_uc52container","hide") && id=="cuc52") //tab id value, need to make global to make effective and avoid error
+	    {
+	    	data = jQuery.parseJSON("{{c_uc52data|escapejs}}");
+	    	if(data==null)
+	    		return;
+	    	
+	    	domutil.removeCssclass("#c_uc52container","hide");
+	    	uc52Chart(data);
+	    }//--end if	
+	    
+	});	
+});
+</script>
+<div class="col-md-9">
+
+	<!-- tab based navigation -->
+	<ul class="tabs nav nav-tabs" id="controltab">
+ 		<li class="active"><a href="#summary" data-toggle="tab"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
+		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Water Analysis (Use cases)" %} <span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu" id="waterusecase"> 		
+				<li><a href="#water" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case No.---" %}</a></li>
+				{% if not user.is_staff and not user.is_superuser %}
+					<li><a href="#cuc53" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.3 (Forecast Water Bill)" %}</a></li>
+                    <li><a href="#cuc31" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.1 (Compare Current and Historical Water Consumption)" %}</a></li>
+					<li><a href="#cuc32" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.2 (Compare Water Consumption with other Consumers)" %}</a></li>
+					<li><a href="#cuc33" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.3 (Compare water consumption with standard profiles)" %}</a></li>
+					<li><a href="#cuc52" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.2 (Receive information on specific and alternatives pricing schemes)" %}</a></li>										
+				{% endif %}
+			</ul>
+		</li>
+		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Energy Analysis (Use cases)" %} <span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu" id="energyusecase"> 		
+				<li><a href="#energy" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case No.---" %}</a></li>				
+			</ul>
+		</li>		
+		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> {% trans "Settings" %} <span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu" id="settings">
+				<li><a href="#Wsettings" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> Water Settings</a></li>
+				<li><a href="#Esettings" data-toggle="tab"><span class="glyphicon glyphicon-flash"></span> Energy Settings</a></li>
+				<!-- 2 in the javascript method is the index of the menu tab -->
+				<li><a href="#Hsettings" data-toggle="tab" onclick="household(2); return false;"><span class="glyphicon glyphicon-edit"></span>{% trans " Household Settings" %}</a></li>
+				<!-- 3 in the javascript method is the index of the menu tab -->
+				{% if not user.is_staff and not user.is_superuser %}
+					<li><a href="#Usettings" data-toggle="tab" onclick="user(3); return false;"><span class="glyphicon glyphicon-user"></span>{% trans " User Settings" %}</a></li>
+				{% endif %} 
+			</ul>
+		</li>
+	</ul>
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div class="tab-pane active tabcontent" id="summary">
+			{% include "summary.html" %}
+        </div><!--home-->
+
+		<div class="tab-pane tabcontent" id="water">
+            	 {% include "usecase/wateranalysis.html" %} 
+		</div><!--water-->
+		
+		{% if not user.is_staff and not user.is_superuser %}
+			<!--use case5.2-->
+			<div class="tab-pane tabcontent" id="cuc52">
+	            	 {% include "usecase/c_uc5.2.html" %}   
+			</div>
+				
+			<!--use case 5.3-->
+			<div class="tab-pane tabcontent" id="cuc53">
+	            	 {% include "usecase/c_uc5.3.html" %} 
+			</div>
+
+            <!--use case3.1-->
+            <div class="tab-pane tabcontent" id="cuc31">
+                {% include "uc_03_1_index.html" %}
+            </div>
+			<!--use case3.2-->
+			<div class="tab-pane tabcontent" id="cuc32">
+	            	 {% include "usecase/c_uc3.2.html" %} 
+			</div>
+
+			<!--use case3.3-->
+			<div class="tab-pane tabcontent" id="cuc33">
+	            	 {% include "usecase/c_uc3.3.html" %} 
+			</div>			
+		{% endif %}
+		
+		<div class="tab-pane tabcontent" id="energy">
+				 {% include "energyanalysis.html" %}
+		</div><!--energy-->
+		
+		<div class="tab-pane tabcontent" id="Wsettings">Water Settings</div>
+		<div class="tab-pane tabcontent" id="Esettings">Energy Settings</div>
+		
+		<div class="tab-pane tabcontent" id="Hsettings">
+			{% include "households.html" %}   
+		</div> <!-- household settings --> 	
+
+		{% if not user.is_staff and not user.is_superuser %}
+			<div class="tab-pane tabcontent" id="Usettings">
+			{% include "user.html" %} 
+			</div> <!-- end Usettings -->
+		{% endif %}
+	</div><!--tab-content-->
+</div>
+{% endblock %}
+

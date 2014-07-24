@@ -1,0 +1,284 @@
+{% load i18n %}	
+{% block household %} 
+{% if user.is_staff or user.is_superuser %}
+	<ol class="breadcrumb">
+	  <li><a href="/">Home</a></li>
+	  <li class="active">Household</li>
+	  <p class="pull-right text-center bg-primary"><strong>{% trans "Administrator View - Household id" %}: {{ household.user }}</strong></p>
+	</ol>				
+{% endif %}	   	
+	    	<div id="household-panel" class="panel panel-default">
+			<div class="panel-heading"><div class="panel-title">{% trans "Household" %}</div></div>
+			<div class="panel-body">
+			<div id="household-msg"></div>
+			<form accept-charset="UTF-8" action="{% url 'updatehousehold' %}" method="POST" role="form" id="household-form">
+				<p class="text-warning">{% trans "Required" %} (*)</p>
+				{% csrf_token %}   
+			  	<div class="input-group col-md-12">
+			  		<div class="col-md-6">
+				    <label>{% trans "Number of Occupants" %} *</label>
+				    <select class="form-control numddl" name="num_of_occupants" id="num_of_occupants" required="true"></select>
+			   		</div>
+			  		<div class="col-md-6">
+				    <label>{% trans "Water pricing scheme" %}</label>
+				    <select class="form-control" id="water_pricing"></select>
+			   		</div>			   		
+ 			  	</div>	
+ 			  	<hr/>			
+				<p class="text-center bg-primary"><strong>{% trans "FAMILY COMPOSITION" %}</strong></p>
+				<p class="text-primary"><strong>{% trans "Family composition by Age" %}:</strong></p>
+ 				<div class="input-group">
+ 					<div class="col-md-2">
+				    <label>{%trans "Under" %} 16</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Between" %} 16 - 25</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{%trans "Between" %} 26-35</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Between" %} 36 - 45</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Between" %} 46 - 55</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Between" %} 56 - 65</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+			  </div>
+			  <div class="input-group col-md-2">
+			  		<div class="col-md-12">
+				    <label>{% trans "Over" %} 65</label>
+				    <select class="form-control numddl"></select>
+			   		</div>
+ 			  </div>
+ 			  <hr/>
+			  <p class="text-primary"><strong>{% trans "Family composition by Gender" %}:</strong></p>
+ 			  <div class="input-group col-md-4">
+ 					<div class="col-md-6">
+				    <label>{%trans "Male" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-6">
+				    <label>{% trans "Female" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+			  </div> 	
+			  <hr/>			
+			  <p class="text-primary"><strong>{% trans "Family composition by Professional Situation" %}:</strong></p>
+ 			  <div class="input-group">
+ 					<div class="col-md-2">
+				    <label>{%trans "Working Full Time" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Working Part Time" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{%trans "Retired" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Studying" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>				    
+ 					<div class="col-md-2">
+				    <label>{%trans "Unemployed" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Without Professional activity (e.g: housewives)" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>				    
+			  </div>
+			  <hr/>			
+			  <p class="text-primary"><strong>{% trans "Family composition by Education Level" %}:</strong></p>
+ 			  <div class="input-group">
+ 					<div class="col-md-2">
+				    <label>{%trans "Primary School" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Junior High School" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{%trans "High School" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-3">
+				    <label>{% trans "Graduation (Bachelor Degree)" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>				    
+ 					<div class="col-md-3">
+				    <label>{%trans "Post-Graduation (Masters and PhD)" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+			  </div>			  	  		  
+			  <hr/>
+  			  <p class="text-center bg-primary"><strong>{% trans "PROPERTY CHARACTERISTICS" %}</strong></p>
+ 			  <div class="input-group">
+ 					<div class="col-md-2">
+				    <label>{%trans "Property Type" %}</label>
+				    <select class="form-control" name="property_type" id="property_type"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Period of Construction" %}</label>
+				    <select class="form-control" id="contruction_period"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{%trans "Ownership Status" %}</label>
+				    <select class="form-control" id="ownership_status"></select>
+				    </div>
+ 					<div class="col-md-6">
+				    <label>{% trans "Water heating sources" %}</label><br/>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox1" value="option1"> Electricity
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox2" value="option2"> Gas
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Solid Fuel
+					</label>				    
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Biomass
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> LPG
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Solar
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Oil
+					</label>																				
+				    </div>
+			  </div>
+			  <hr/>
+ 			  <div class="input-group">
+ 					<div class="col-md-2">
+				    <label>{%trans "Property area (m<sup>2</sup>)" %}</label>
+				    <select class="form-control"><option>Please Select</option></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Garden area (m<sup>2</sup>)" %}</label>
+				    <select class="form-control"><option>Please Select</option></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{%trans "Pervious area (m<sup>2</sup>)" %}</label>
+				    <select class="form-control"><option>Please Select</option></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{%trans "Roof area (m<sup>2</sup>)" %}</label>
+				    <select class="form-control"><option>Please Select</option></select>
+				    </div>				    
+ 					<div class="col-md-4">
+				    <label>{% trans "Outdoor facilities" %}</label><br/>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox1" value="option1"> Garden
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox2" value="option2"> Pool
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Roof
+					</label>				    
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Car washing
+					</label>																				
+				    </div>				    				    
+			  </div>  	
+			  <hr/>			
+			  <p class="text-center bg-primary"><strong>{% trans "APPLIANCE CHARACTERISTICS" %}</strong></p>
+			  <p class="text-primary"><strong>{% trans "Home Appliances" %}:</strong></p>
+ 			  <div class="input-group">
+ 					<div class="col-md-2">
+				    <label>{%trans "Washing Machine" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Dishwasher" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{%trans "Bath" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Shower" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>				    
+ 					<div class="col-md-2">
+				    <label>{%trans "Toilet" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+ 					<div class="col-md-2">
+				    <label>{% trans "Boiler" %}</label>
+				    <select class="form-control numddl"></select>
+				    </div>
+			  </div>	
+			  <div class="input-group col-md-2">
+			  		<div class="col-md-12">
+				    <label>{% trans "Sink (Kitchen and WC)" %} 65</label>
+				    <select class="form-control numddl"></select>
+			   		</div>
+ 			  </div>				    			    
+			  <hr/>		
+			  <p class="text-primary"><strong>{% trans "Water Effecient Appliances" %}:</strong></p>
+ 			  <div class="input-group">
+ 					<div class="col-md-12">
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox1" value="option1"> Dual flush toilets
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox2" value="option2"> Low flow taps
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Efficient showerheads
+					</label>				    
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Water/Energy efficient washing machine
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Water/Energy efficient dishwasher
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Drip irrigation or Sprinkler timers
+					</label>																				
+				    </div> 			  
+			  </div>			  			  		    				
+			  <hr/>		
+			  <p class="text-primary"><strong>{% trans "Water Demand Management Systems" %}:</strong></p>
+ 			  <div class="input-group">
+ 					<div class="col-md-12">
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox1" value="option1"> Rainwater Harvesting System
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox2" value="option2"> Greywater Treatment System
+					</label>
+					<label class="checkbox-inline">
+					  <input type="checkbox" id="inlineCheckbox3" value="option3"> Combination of RHS and GTS
+					</label>				    																			
+				    </div> 			  
+			  </div>
+			  <hr/>
+			  <div class="form-group">
+			  <div class="col-md-offset-4">						
+			   		<button class="btn btn-lg btn-primary col-md-5" type="button" onClick="apputil.sendToserver('#household-form');"><span class="glyphicon glyphicon-floppy-disk"></span>{% trans " Submit" %}</button>
+			  </div>			   		
+			  </div>
+			  			  			  
+ 		   </form>			
+		   </div>
+		   </div> <!-- household-panel -->
+{% endblock %}		   

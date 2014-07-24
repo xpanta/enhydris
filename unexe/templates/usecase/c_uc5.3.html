@@ -1,0 +1,141 @@
+{% load sekizai_tags %}
+{% load i18n %}
+{% block water %}
+<!-- template file for consumer use case 5.3 to forecast next energy bill -->
+<!--
+I am not sure if following code is required. Leave it in case super user is allowed to view 
+{% if user.is_staff or user.is_superuser %}
+	<ol class="breadcrumb">
+	  <li><a href="/">Home</a></li>
+	  <li class="active">Household</li>
+	  <p class="pull-right text-center bg-primary"><strong>{% trans "Administrator View - Household id" %}: {{ household.user }}</strong></p>
+	</ol>				
+{% endif %}	
+ -->
+
+<script type="text/javascript">
+/*
+ * This function add the default last 12 months bill cost for the use case 5.3.
+ * This method can't be put in inside base.js file  (AppUtil class) as it is fetching
+ * data from the django context template variables
+ */
+function uc53Chart(data)
+{
+	var w   = domutil.getdivwidth("c_uc53monthchart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
+	var dim = {"width":w,"height":450}; //width and height of chart container
+  	chartutil.barplot("#c_uc53monthchart",dim,data["data"],data["price_break"]); //plot the bar chart
+  	
+	//add title
+	$("#c_uc53title").html('<p class="bg-primary text-center"><strong>'+data["title"]+'</strong></p>');
+	
+	//adding chart details
+	$("#c_uc53bsum").html("Total: £"+data["billdata"]["sum"]);
+	$("#c_uc53bavg").html("<div class='text-warning'>Average Monthly Bill: £"+data["billdata"]["avg"]+"</div");
+	$("#c_uc53bhigh").html("<div class='text-danger'>Highest Monthly Bill: £"+data["billdata"]["high"]["max"]+" in "+data["billdata"]["high"]["date"]+"</div");
+	$("#c_uc53blow").html("<div class='text-success'>Lowest Monthly Bill: £"+data["billdata"]["low"]["min"]+" in "+data["billdata"]["low"]["date"]+"</div");
+	
+}//--end function
+
+$(window).load(function() {
+	var data = jQuery.parseJSON("{{c_uc53data|escapejs}}");
+	if(data==null)
+		return;
+	
+	//load the function when DOM is ready
+	var id = window.location.hash;
+    if(domutil.hasCssclass("#c_uc53conatiner","hide") && id=="#cuc53") //tab id value, need to make global to make effective and avoid error
+    {	  	
+    	domutil.removeCssclass("#c_uc53conatiner","hide");
+    	uc53Chart(data);
+    }//--end if	  	
+});      
+</script>
+{% if c_uc53data|escapejs == "null" %}
+<div class="jumbotron">
+  <h2>{% trans "Welcome to iWIDGET" %}!</h2>
+  <p>{% trans "Not enough data is available for analysis (Consumer use case C_UC5.3)" %}</p>
+</div>
+{% else %} 
+<!-- water analysis -->
+<div class="panel panel-default">
+	<!-- chart menu/toolbar -->
+
+	<div class="panel-heading clearfix">
+    	<div class="pull-right">
+    		<img src="{{STATIC_URL}}/images/pdf.png" alt="Export to PDF" title="Export to PDF" />
+            <img src="{{STATIC_URL}}/images/save.png" alt="Save Raw Data" title="Save Raw Data" />
+        </div>
+
+		<div class="col-md-10">
+		<!-- <strong>{% trans "Forecast" %}</strong> -->
+		<div id="c_uc53-msg"></div>
+		<form class="form-inline" id="c_uc53-form" role="form" method="POST" action="{% url 'c_uc53' %}">
+			{% csrf_token %}
+		<!-- 	 
+		<select id="c_uc53algo" class="form-control" required="true">
+		<option value="" selected>{% trans "Please Select" %}</option>
+		<option value="mlp">Forecast (Multi-layer perceptrons -ANN)</option>
+		<option value="lr">Forecast (Linear Regression)</option>
+		<option value="gr">Forecast (Guassian Regression)</option>
+		</select>
+		 -->
+		<label class="radio inline">
+			<!-- <input type="radio" name="duration" id="duration" value="days" /> 30 days -->
+		</label>
+		<label class="radio inline">
+			<input type="radio" name="c_uc53duration" id="c_uc53duration" value="quarter"/> Next 3 Months
+		</label>
+		<label class="radio inline">
+			<input type="radio" name="c_uc53duration" id="c_uc53duration" value="half"/> Next 6 Months
+		</label>		
+		<label class="radio inline">
+			<input type="radio" name="c_uc53duration" id="c_uc53duration" value="year" checked="checked" /> Next 12 Months
+		</label>
+		<button type="button" class="btn btn-primary" onClick="apputil.sendToserver('#c_uc53-form');">Forecast</button>
+		</form>     
+		</div>
+    </div>
+	<!-- End chart menu/toolbar -->
+	
+	<!--  charts and table -->
+	<div class="panel-body" id="panel">	
+		<div id="c_uc53cont" class="row hide">
+		<div id="c_uc53ftitle"><p class="bg-primary text-center"><strong></strong></p></div>
+		<div class="col-md-8" id="c_uc53chartcont"></div>
+		<div class="col-md-4">
+		    <div class="panel panel-primary">
+		        <div class="panel-heading">{% trans "FORECAST SUMMARY" %}</div>
+		        <ul class="list-group list-group-flush text-center">
+		            <li class="list-group-item" id="c_uc53fsum"></li>
+		            <li class="list-group-item" id="c_uc53favg"></li>
+		            <li class="list-group-item" id="c_uc53fhigh"></li>
+		            <li class="list-group-item" id="c_uc53flow"></li>
+		            <li class="list-group-item"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>
+		        </ul>
+		    </div>
+		</div>		
+		</div>
+	
+		<div class="row hide" id="c_uc53conatiner">
+		<div id="c_uc53title"><p class="bg-primary text-center"><strong></strong></p></div>
+		<div class="col-md-8" id="c_uc53monthchart"></div>	  
+		<div class="col-md-4">
+		    <div class="panel panel-primary">
+		        <div class="panel-heading">{% trans "BILL SUMMARY" %}
+		        </div>
+		        <ul class="list-group list-group-flush text-center">
+		            <li class="list-group-item csum"  id="c_uc53bsum"></li>
+		            <li class="list-group-item cavg"  id="c_uc53bavg"></li>
+		            <li class="list-group-item chigh" id="c_uc53bhigh"></li>
+		            <li class="list-group-item clow"  id="c_uc53blow"></li>
+		            <li class="list-group-item"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>
+		        </ul>
+		    </div>
+		</div>
+		</div>		
+	</div>
+	<!--  End charts and table -->
+</div>
+{% endif %}
+<!-- End water analysis -->
+{% endblock %}

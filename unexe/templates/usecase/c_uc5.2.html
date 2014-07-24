@@ -1,0 +1,244 @@
+{% load sekizai_tags %}
+{% load i18n %}
+{% block c_uc5.2 %}
+<script type="text/javascript">
+var start = dateutil.getdateyear("{{stdate}}");
+var end   = dateutil.getdateyear("{{endate}}");
+var yearlist = dateutil.getyearlist(parseInt(start),parseInt(end));
+
+function uc52Chart(data)
+{
+	var w = domutil.getdivwidth("c_uc52chartcont"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
+	var dim = {"width":w,"height":450}; //width and height of chart container
+	
+	chartutil.c_uc52linechart("#c_uc52chartcont",dim,data["tariff1"],data["tariff2"]);
+	
+	w = domutil.getdivwidth("c_uc52compchart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
+	dim = {"width":w,"height":450}; //width and height of chart container
+	
+	chartutil.c_uc52comparechart("#c_uc52compchart",dim,data["comparechart"]);
+	
+	var stdate = JSON.stringify(data["tariff1"][0].Date);
+	var endate = JSON.stringify(data["tariff1"][1].Date);
+
+	stdate = dateutil.strtodate(stdate.substring(1,stdate.length-1)); //create date object
+	endate = dateutil.strtodate(endate.substring(1,endate.length-1)); //create date object
+	
+	$("#styear").val(stdate.getFullYear()); 	//set the dropdown value
+	$("#stmonth").val(stdate.getMonth()+1); 	//set the dropdown value 
+	$("#endyear").val(endate.getFullYear()); 	//set the dropdown value
+	$("#endmonth").val(endate.getMonth()+1);	//set the dropdown value
+	
+	//add title
+	$("#c_uc52title").html('<p class="bg-primary text-center"><strong>'+data["title"]+'</strong></p>');
+	
+	//adding chart details (tariff1)
+	$("#c_uc52t1sum").html("Total: £"+data["tariff1data"]["sum"]);
+	$("#c_uc52t1avg").html("<div class='text-warning'>Average Per Month: £"+data["tariff1data"]["avg"]+"</div");
+	$("#c_uc52t1high").html("<div class='text-danger'>Highest: £"+data["tariff1data"]["high"]["max"]+" in "+data["tariff1data"]["high"]["date"]+"</div");
+	$("#c_uc52t1low").html("<div class='text-success'>Lowest: £"+data["tariff1data"]["low"]["min"]+" in "+data["tariff1data"]["low"]["date"]+"</div");
+
+	
+	//adding chart details (tariff2)
+	$("#c_uc52t2sum").html("Total: £"+data["tariff2data"]["sum"]);
+	$("#c_uc52t2avg").html("<div class='text-warning'>Average Per Month: £"+data["tariff2data"]["avg"]+"</div");	
+	$("#c_uc52t2high").html("<div class='text-danger'>Highest: £"+data["tariff2data"]["high"]["max"]+" in "+data["tariff2data"]["high"]["date"]+"</div");
+	$("#c_uc52t2low").html("<div class='text-success'>Lowest: £"+data["tariff2data"]["low"]["min"]+" in "+data["tariff2data"]["low"]["date"]+"</div");
+}//--end uc52Chart()
+
+$(window).load(function() {
+	
+	var data = jQuery.parseJSON("{{c_uc52data|escapejs}}");
+	if(data==null)
+		return;   
+	
+	// on page load allways set the default selection to reflect display of chart 
+	$("input[name=c_uc52_per][value='days']").prop('checked', 'checked');
+	
+	//populate the year list	
+	domutil.setselect("#styear",yearlist);
+	domutil.setselect("#endyear",yearlist);
+	domutil.setselect("#c_uc52_seasonyear",yearlist);	
+	
+	//get tab value and if this tab is selected then draw the chart 
+	var id = window.location.hash;
+    if(domutil.hasCssclass("#c_uc52container","hide") && id=="#cuc52") //tab id value, need to make global to make effective and avoid error
+    {
+    	domutil.removeCssclass("#c_uc52container","hide"); 	
+    	uc52Chart(data);
+    }//--end if	
+});
+
+//$('#myForm input').on('change', function() {
+//		alert($('input[name=radioName]:checked', '#myForm').val()); 
+//});
+
+function c_uc52toggle()
+{
+	var radioval = domutil.getradiovalue('c_uc52_per');
+	if(radioval=="season")
+	{
+		domutil.removeCssclass('#c_uc52_season','hide');
+		domutil.setCssclass('#c_uc52_daterange','hide');
+	}
+	else if(radioval=="days")
+	{
+		//alert("days..")
+		domutil.setCssclass('#c_uc52_season','hide');
+		domutil.removeCssclass('#c_uc52_daterange','hide');		
+	}
+	else
+	{
+		domutil.setCssclass('#c_uc52_daterange','hide');
+		domutil.setCssclass('#c_uc52_season','hide');
+	}
+}
+</script>
+{% if c_uc52data|escapejs == "null" %}
+<div class="jumbotron">
+  <h2>{% trans "Welcome to iWIDGET" %}!</h2>
+  <p>{% trans "Not enough data is available for analysis (Consumer use case C_UC5.2)" %}</p>
+</div>
+{% else %} 
+<div class="panel panel-default">
+	<!-- chart menu/toolbar -->
+	<div class="panel-heading clearfix">
+	 <div class="row">
+    	<div class="pull-right col-md-1">
+    		<img src="{{STATIC_URL}}/images/pdf.png"  alt="Export to PDF" title="Export to PDF" />
+            <img src="{{STATIC_URL}}/images/save.png" alt="Save Raw Data" title="Save Raw Data" />
+        </div>
+        
+		<div class="col-md-10">
+		<div id="c_uc52-msg"></div>
+		<form class="form-inline" id="c_uc52-form" role="form" method="POST" action="{% url 'c_uc52' %}">
+			{% csrf_token %}  
+		<!-- 
+		Select Tariff:
+		<select id="c_uc52_analysis" class="select-size form-control" required="true" multiple>
+			<option value="tariffA">{% trans "Tariff A" %}</option>
+			<option value="tariffB">{% trans "Tariff B" %}</option>
+		</select>
+		 -->
+		<label class="radio inline">
+			<input type="radio" name="c_uc52_per" id="c_uc52_per" value="season" onchange="c_uc52toggle();" /> Select Season
+		</label>		 
+		<label class="radio inline">
+			<input type="radio" name="c_uc52_per" id="c_uc52_per" value="days" checked="checked" onchange="c_uc52toggle();" /> Specify Period
+		</label>
+		<label class="radio inline">
+			<input type="radio" name="c_uc52_per" id="c_uc52_per" value="3" onchange="c_uc52toggle();"/> 3 Months
+		</label>
+		<label class="radio inline">
+			<input type="radio" name="c_uc52_per" id="c_uc52_per" value="6" onchange="c_uc52toggle();"/> 6 Months
+		</label>		
+		<label class="radio inline">
+			<input type="radio" name="c_uc52_per" id="c_uc52_per" value="12" onchange="c_uc52toggle();"/> 12 Months
+		</label>	
+		<button type="button" class="btn btn-primary" onClick="apputil.sendToserver('#c_uc52-form');">{% trans "Analyse" %}</button>
+		</form>     
+		</div>
+	 </div>
+	 <br/>
+	 <div class="row" id="_uc52_daterange">
+	 	<div class="form-inline col-md-6 hide" id="c_uc52_season">
+			<select id="c_uc52_seasons" class="form-control" required="true">
+			<option value="summer">Summer</option>
+			<option value="winter">Winter</option>
+			<option value="autumn">Autumn</option>
+			<option value="spring">Spring</option>			
+			</select>
+			
+			<select id="c_uc52_seasonyear" class="form-control" required="true">
+			</select>	 				 	
+	 	</div>
+		 <div class="form-inline col-md-6" id="c_uc52_daterange">
+		 	<div class="form-group">
+			<select id="stmonth" class="form-control" required="true">
+			<option value="1">January</option>
+			<option value="2">February</option>
+			<option value="3">March</option>
+			<option value="4">April</option>
+			<option value="5">May</option>
+			<option value="6">June</option>
+			<option value="7">July</option>
+			<option value="8">August</option>
+			<option value="9">September</option>
+			<option value="10">October</option>
+			<option value="11">November</option>
+			<option value="12">December</option>
+			</select>
+			</div>
+			<div class="form-group">
+			<select id="styear" class="form-control" required="true"></select>			
+			</div>
+			TO
+		 	<div class="form-group">
+			<select id="endmonth" class="form-control" required="true">
+			<option value="1">January</option>
+			<option value="2">February</option>
+			<option value="3">March</option>
+			<option value="4">April</option>
+			<option value="5">May</option>
+			<option value="6">June</option>
+			<option value="7">July</option>
+			<option value="8">August</option>
+			<option value="9">September</option>
+			<option value="10">October</option>
+			<option value="11">November</option>
+			<option value="12">December</option>
+			</select>
+			</div>		
+		 	<div class="form-group">
+			<select id="endyear" class="form-control" required="true">
+
+			</select>
+			</div>					
+		</div>	 	
+	 </div>
+    </div>
+	<!-- End chart menu/toolbar -->
+	
+	<!--  charts and table -->
+	<div class="panel-body" id="panel">	
+		<div class="row hide" id="c_uc52container">
+		<div id="c_uc52title"><p class="bg-primary text-center"><strong></strong></p></div>
+		<div class="col-md-6" id="c_uc52chartcont"></div>
+		<div class="col-md-3" id="c_uc52compchart"></div>	  
+		<div class="col-md-3">
+		    <div class="panel panel-primary">
+		        <div class="panel-heading">{% trans "Tariff1 (Cost Summary)" %}
+		        </div>
+		        <ul class="list-group list-group-flush text-center">
+		        	<li class="list-group-item" id="c_uc52t1sum"></li>
+		            <li class="list-group-item" id="c_uc52t1avg"></li>
+		            <li class="list-group-item" id="c_uc52t1high"></li>
+		            <li class="list-group-item" id="c_uc52t1low"></li>
+		            <li class="list-group-item"><a target="_blank" href="{% url 'timeseries_detail' tsid %}">{% trans "Open time series" %}</a></li>
+		        </ul>
+		    </div>
+
+		    <div class="panel panel-primary">
+		        <div class="panel-heading">{% trans "Tariff2 (Cost Summary)" %}
+
+		        </div>
+		        <ul class="list-group list-group-flush text-center">
+		        	<li class="list-group-item" id="c_uc52t2sum"></li>
+		            <li class="list-group-item" id="c_uc52t2avg"></li>
+		            <li class="list-group-item" id="c_uc52t2high"></li>
+		            <li class="list-group-item" id="c_uc52t2low"></li>
+		            <li class="list-group-item"><a target="_blank" href="{% url 'timeseries_detail' tsid %}">{% trans "Open time series" %}</a></li>
+		        </ul>
+		    </div>
+		    <strong>* {% trans "You are subscribed to Tariff1" %}</strong>
+		</div>					
+		</div>
+		<div class="row hide c_uc52containe">
+			<div class="col-md-6" id="c_uc52donutchart"></div>
+		</div>			
+	</div>
+	<!--  End charts and table -->
+</div>
+{% endif %}
+<!-- End use case 5.2 -->
+{% endblock %}

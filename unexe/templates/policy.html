@@ -1,0 +1,46 @@
+{% extends "sidebar.html" %}
+{% load i18n %}
+{% load general_tags %}
+{% block pagetitle %}{% trans "Poloicy Effect Assessment" %}{% endblock %}
+{% block pagecontent %}
+<script>
+// executes when complete page is fully loaded, including all frames, objects and images
+$(window).load(function() {
+	apputil.appletsize();
+});
+</script>
+<div class="col-md-9">
+<div class="panel panel-default">
+	<div class="panel-heading"><div class="panel-title">{% trans "Policy Effect Assessment - Netlogo Model" %}</div></div>
+	<div class="panel-body">	
+	<div class="row">
+		<ol class="breadcrumb">
+		  <li><a href="/">Home</a></li>
+		  <li class="active">Policy</li>
+		</ol>		
+		<div class="col-md-12" id="app">
+		<p><strong>{% trans "Click " %}<a href="#info">{% trans "here" %}</a> {% trans " to see Model description" %}</strong></p>  
+		<hr/>
+	 		<applet id="myapplet" code="org.nlogo.lite.Applet" archive="{{ STATIC_URL }}NetLogoLite.jar" height="1000">
+			<param name="DefaultModel" value="{{ STATIC_URL }}uc_6_2_v15.nlogo">
+			<param name="java_arguments" value="-Djnlp.packEnabled=true">
+			</applet>
+		<hr/>	
+		</div>
+	    <div class="col-md-12"> 
+		<div class="panel panel-primary">
+	        <div class="panel-heading clickable">
+	           <span class="glyphicon glyphicon-info-sign"></span> <strong>{% trans "Netlogo Model" %}</strong>
+	           <span class="pull-right clickable"><i class="glyphicon glyphicon-minus"></i></span>
+	        </div>
+	        <div class="panel-body" id="fold">
+	        	<a name="info"></a>
+	        	{% include "info.html" %}
+	        </div>
+        </div>
+        </div>		
+	</div>
+    </div>
+	</div>
+</div>
+{% endblock %}

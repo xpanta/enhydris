@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from enhydris.hcore.models import (Lookup as HLookup, Timeseries, Gpoint,
-        Garea, Instrument)
+                                   Garea, Instrument)
 from tl.models import Brand
 
 # These are the ids of Timestep Objects in db. Timestep entities

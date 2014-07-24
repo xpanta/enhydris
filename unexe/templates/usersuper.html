@@ -1,0 +1,10 @@
+{% extends "sidebar.html" %}
+{% load sekizai_tags %}
+{% load i18n %}
+{% block pagetitle %}{% trans "User Settings" %}{% endblock %}
+{% block pagecontent %}
+
+<div class="col-md-9">
+	{% include "user.html" %} 
+</div>
+{% endblock %}

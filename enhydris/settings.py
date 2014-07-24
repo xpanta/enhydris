@@ -147,7 +147,7 @@ INSTALLED_APPS = (
     'enhydris.api',
     'enhydris.permissions',
     'tl',
-    'uc011',
+    'uc_03_1',
     'iwidget',
     'unexe',
 )

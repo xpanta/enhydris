@@ -1,0 +1,105 @@
+{% load i18n %}	
+{% block summary %}       
+{% if user.is_staff or user.is_superuser %}
+	<ol class="breadcrumb">
+	  <li><a href="/">Home</a></li>
+	  <li class="active">Household</li>
+	  <p class="pull-right text-center bg-primary"><strong>{% trans "Administrator View - Household id" %}: {{ household.user }}</strong></p>
+	</ol>				
+{% endif %}	
+<div class="panel panel-default">
+	<div class="panel-heading"><div class="panel-title">{% trans "WATER" %}</div></div>
+	<div class="panel-body">
+	<div class="row">
+	    <div class="col-md-12"> 
+		<div class="panel panel-primary">
+	        <div class="panel-heading clickable">
+	           <span class="glyphicon glyphicon-info-sign"></span> <strong>Be Smart with Water in the House</strong>
+	           <span class="pull-right clickable"><i class="glyphicon glyphicon-minus"></i></span>
+	        </div>
+	        <div class="panel-body" id="fold">
+				{% trans "Learn how you can improve the water efficiency of your household and how best to reduce your water consumption, through the new iWIDGET On-line Course on Water" %}! 
+				{% trans "Join the" %} <a href="http://www.i-widget-elearning.eu/iWidget/" target="__blank">{% trans "Be Smart with Water in the House" %}</a> {% trans "course using the link below and become an active player in water efficiency challenge" %}.			
+	        </div>
+        </div>
+        </div>
+    </div>	  
+    <div class="row">  
+	               <div class="col-md-6">
+	                 	<p class="text-center bg-primary"><strong>{% trans "WATER CONSUMPTION" %}</strong></p>
+	                   <div class="table-responsive">
+						<table class="table table-condensed table-striped table-hover">
+						<thead class="bg-primary">
+						<tr><th>{% trans "Measurement Period" %}</th><th>{% trans "Current Year" %} ({{ overview.today_timestamp.year }})</th>
+						<th>{% trans "Previous Year" %} ({{ overview.today_timestamp.year|add:"-1" }})</th><th>{% trans "Target consumption" %} (*)</th><th>{% trans "Goal achievement" %}</th></tr>
+						</thead>
+						<tbody>
+							<tr>
+							<td>{% trans "Last Measured Day" %} (({{overview.today_timestamp|date:"j/m/o"}}))</td>
+							<td><strong>{{ overview.today|floatformat:1 }} litres</strong></td>
+							<td>{{ overview.today_last_year|floatformat:1 }} litres</td>
+							<td>{{ overview.target_daily|floatformat:1 }} litres</td>
+							<td>{% if overview.today > overview.target_daily %} <span class="glyphicon glyphicon-warning-sign"></span> {% else %} <span class="glyphicon glyphicon-ok"></span> {% endif %}</td>
+							</tr>
+							<tr>
+							<td>{% trans "Last Seven Days" %} ({{ overview.last_7_days_timestamp|date:"j/m" }} - {{ overview.today_timestamp|date:"j/m" }})</td>
+	                   		<td><strong>{{ overview.last_7_days|floatformat:1 }} litres</strong></td>
+	                   		<td>{{ overview.last_7_days_last_year|floatformat:1 }} litres</td>
+	                   		<td>{{ overview.target_weekly|floatformat:1 }} litres</td>							
+	                   		<td>{% if overview.last_7_days > overview.target_weekly %} <span class="glyphicon glyphicon-warning-sign"></span> {% else %} <span class="glyphicon glyphicon-ok"></span> {% endif %}</td>
+							</tr>
+							<tr>
+							<td>{% trans "Current month" %} ({{overview.today_timestamp|date:"F"}})</td>
+	                   		<td><strong>{{ overview.current_month|floatformat:1 }} m<sup>3</sup></strong></td>
+	                   		<td>{{ overview.current_month_last_year|floatformat:1 }} m<sup>3</sup></td>
+	                   		<td>{{ overview.target_month|floatformat:1 }} m<sup>3</sup></td>
+							<td>{% if overview.current_month > overview.target_month %} <span class="glyphicon glyphicon-warning-sign"></span> {% else %} <span class="glyphicon glyphicon-ok"></span> {% endif %}</td>
+							</tr>
+							<tr>
+							<td>{% trans "Current year" %} ({{overview.today_timestamp|date:"o"}})</td>
+	                   		<td><strong>{{ overview.current_year|floatformat:1 }} m<sup>3</sup></strong></td>
+	                   		<td>{{ overview.last_year|floatformat:1 }} m<sup>3</sup></td>
+	                   		<td>{{ overview.target_year|floatformat:1 }} m<sup>3</sup></td>
+							<td>{% if overview.curret_year > overview.target_year %} <span class="glyphicon glyphicon-warning-sign"></span> {% else %} <span class="glyphicon glyphicon-ok"></span> {% endif %}</td>
+							</tr>
+						</tbody>
+						</table>
+					</div>
+				<strong><em>(*) {% trans "Target consumption is a value calculated by an average water use of 120 litres per person per day multiplied by the number of inhabitants of your household" %} ({{ nocc }}). 120 {% trans "litres per person per day is an indicative optimum value for sustainable water consumption" %}.</em></strong>
+				</div>
+				<div class="col-md-6">	
+					<p class="text-center bg-primary"><strong>{% trans "WATER COST" %}</strong></p>
+	                   <div class="table-responsive">
+						<table class="table table-condensed table-striped table-hover">
+						<thead class="bg-primary"><tr><th>{% trans "Accounting period" %}</th><th>{% trans "Current Year" %}({{ overview.today_timestamp.year }})</th><th>{% trans "Previous Year" %} ({{ overview.today_timestamp.year|add:"-1" }})</th></tr></thead>
+						<tbody>
+							<tr>
+							<td>{% trans "Last Seven Day" %} ({{ overview.last_7_days_timestamp|date:"j/m" }} - {{ overview.today_timestamp|date:"j/m" }})</td>
+	                   		<td><strong>{{ overview.last_7_days_cost|floatformat:2 }} &euro;</strong></td>
+	                   		<td>{{ overview.last_7_days_last_year_cost|floatformat:2 }} &euro;</td>
+							</tr>
+							<tr>
+							<td>{% trans "Current month" %} ({{overview.today_timestamp|date:"F"}})</td>
+	                   		<td><strong>{{ overview.current_month_cost|floatformat:2 }} &euro;</strong></td>
+	                   		<td>{{ overview.current_month_last_year_cost|floatformat:2 }} &euro;</td>
+							</tr>
+							<tr>
+							<td>{% trans "Current year" %} ({{overview.today_timestamp|date:"o"}})</td>
+							<td><strong>{{ overview.current_year_cost|floatformat:2 }} &euro;</strong></td>
+	                   		<td>{{ overview.last_year_cost|floatformat:2 }} &euro;</td>
+							</tr>
+						</tbody>
+						</table>
+					</div>	
+				</div>
+		</div> <!--row -->									
+	</div>
+</div> <!-- water panel -->
+	          		
+<div class="panel panel-default">
+	<div class="panel-heading"><div class="panel-title">{% trans "ELECTRICITY" %}</div></div>
+	<div class="panel-body">
+	</div>
+</div>
+
+{% endblock %}	               

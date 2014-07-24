@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block pagetitle %}{% endblock %}
+{% block sidebar %}
+    <div class="col-md-3 leftcol">
+        <div class="panel panel-default">
+            <div class="panel-heading"><small><a href="3" onclick="user($(this).attr('href')); return false;" class="pull-right">Update</a></small> <div class="panel-title">{% trans "USER" %}</div></div>
+            <div class="panel-body">
+                Username: {{user}}<br/>Last Login: {{user.last_login}}<br/>Password: ******* <small><a href="3" onclick="user($(this).attr('href')); return false;">[Change]</a></small>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><small><a href="2" onclick="household($(this).attr('href')); return false;" class="pull-right">Update</a></small> <div class="panel-title">{% trans "HOUSEHOLD" %}</div></div>
+            <div class="panel-body">
+                <!--
+                        <form class="form-inline">
+                        {% trans "Household" %}: 
+                        <select class="form-control" onchange="household($(this).val())">
+                        <option value="2">Add Household...</option><option selected>First household</option>
+                        </select>
+                        </form><br/>
+                         -->
+                {% trans "Number of Occupants" %}: {{household.num_of_occupants}} | {% trans "Property type" %}: {{household.property_type}}
+                <hr/>
+                <div id="map"></div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><div class="panel-title">{% trans "SUBSCRIPTION" %}</div></div>
+            <div class="panel-body">
+                {% trans "Water Tariff: Tariff1" %}<br/>{% trans "Rate: Fixed rate with Volumetric charge" %}<hr/>
+                Energy Tariff: Night Saver<br/>Rate: 3.25/Unit
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block sidebar_main %}
+    <div class="col-md-3 leftcol">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <small><a href="{% url 'usersuper' %}" class="pull-right">Update</a></small>
+                <div class="panel-title">{% trans "ADMINISTRATOR" %}</div>
+            </div>
+            <div class="panel-body">
+                Username: {{user}}<br/>Last Login: {{user.last_login}}<br/>Password: ******* <small><a href="{% url 'usersuper' %}">[Change]</a></small>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><div class="panel-title">{% trans "OPTIONS" %}</div></div>
+            <div class="panel-body">
+                <ul class="nav nav-list">
+
+                    <li><label class="tree-toggler nav-header">{% trans "Policy effects" %}</label>
+                        <ul class="nav nav-list tree"><li><a href="{% url 'policy' %}">{% trans "Start Assessment" %}</a></li></ul>
+                    </li>
+                    <li><label class="tree-toggler nav-header">{% trans "Zones (DMAs)" %}</label>
+                        <ul class="nav nav-list tree">
+                            {% for dma in dmas %}
+                                <li><a href="{% url 'dmas' dma.id %}">{% trans "DMA with id=" %}{{ dma }} - {{ dma.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

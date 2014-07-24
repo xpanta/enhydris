@@ -31,7 +31,7 @@ class iusecase():
         hholdstats = hhold.getUsage(self.User)
         #print hholdstats
         household = self.User.households.all()[0]
-        dma = DMA.objects.get(pk=11) #chosing other DMA for comparison, we will change this when we will get the different demographic database
+        dma = DMA.objects.get(pk=3) #chosing other DMA for comparison, we will change this when we will get the different demographic database
         household_dma = dma.households.all()
         d = idma()
         series = iseries()
