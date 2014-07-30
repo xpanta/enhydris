@@ -1,0 +1,177 @@
+
+                if 'monthly' in step:
+                    for val in total_data:
+                        dt = datetime.strptime(val[0], "%Y/%m")
+                        txt = "%s of %s" % (months[dt.month]-1, dt.year)
+                        total_data_table.append([txt, val[1]])
+
+
+
+                x += 1
+                for val in night_data:
+                    dt = datetime.strptime(val[0], "%Y/%m")
+                    txt = "%s of %s" % (months[dt.month-1], dt.year)
+                    night_data_table.append([txt, val[1]])
+                for val in day_data:
+                    dt = datetime.strptime(val[0], "%Y/%m")
+                    txt = "%s of %s" % (months[dt.month-1], dt.year)
+                    day_data_table.append([txt, val[1]])
+            if 'daily' in step:
+                for val in total_data:
+                    dt = datetime.strptime(val[0], "%m/%d")
+                    tx = "%s, %s (%s)" % (dt.day, dt.month, days[dt.weekday()])
+                    total_data_table.append([tx, val[1]])
+                for val in night_data:
+                    dt = datetime.strptime(val[0], "%m/%d")
+                    tx = "%s, %s (%s)" % (dt.day, dt.month, days[dt.weekday()])
+                    night_data_table.append([tx, val[1]])
+                for val in day_data:
+                    dt = datetime.strptime(val[0], "%m/%d")
+                    tx = "%s, %s (%s)" % (dt.day, dt.month, days[dt.weekday()])
+                    day_data_table.append([tx, val[1]])
+
+
+
+
+
+
+
+__author__ = 'chris'
+from datetime import datetime, timedelta
+from calendar import monthrange
+from iwidget.models import TSTEP_DAILY, VAR_PERIOD
+ts_m = household.timeseries.filter(time_step__id=TSTEP_DAILY,
+                                   variable__id=VAR_PERIOD)[0]
+timeseries1 = series.readseries(ts_m)
+from itertools import izip
+dates, units = izip(*timeseries1)
+dt_list = []
+list1 = []
+end = dates[-1].date()  # last day
+start = end
+if prd_d == "7days":
+    start = end - timedelta(days=7)
+elif prd_d == "month":
+    start = end.replace(day=1)
+elif prd_d == "custom1":
+    pass
+elif prd_d == "custom2":
+    pass
+for x in range(0, len(dates)):
+    dt = dates[x].date()
+    cd = dt.day
+    if start <= dt <= end:
+        txt = "%s/%s (%s)" % (dt.day, months[dt.month-1],
+                              days[dt.weekday()])
+        ticks.append([cd, txt])
+        consumption = float(units[x])
+        if consumption > max_val:
+            max_val = consumption
+        chart_data.append([cd, round(consumption, 4)])
+if step == "daily_capita":
+    title += " (per capita)"
+    for x in range(len(chart_data)):
+        cd = chart_data[x]
+        cd[1] /= float(household.num_of_occupants)
+elif step in ["monthly", "monthly_capita", "monthly_cost"]:
+# monthly series
+# define start and end date and find total or day/night
+from iwidget.models import TSTEP_HOURLY, VAR_PERIOD
+from dateutil.relativedelta import relativedelta
+from unexe.classes.Ihousehold import ihousehold
+from itertools import izip
+from math import isnan
+from datetime import datetime
+hh = ihousehold()
+ts_m = household.timeseries.filter(time_step__id=TSTEP_HOURLY,
+                                   variable__id=VAR_PERIOD)[0]
+timeseries1 = series.readseries(ts_m)
+dates, units = izip(*timeseries1)
+end = dates[-1].date()  # last day
+if prd_m not in ["custom1", "custom2"]:
+    start = end - relativedelta(months=int(prd_m))
+else:
+    from calendar import monthrange
+    x1 = request.GET.get("stm1")
+    x2 = request.GET.get("sty1")
+    y1 = request.GET.get("endm1")
+    y2 = request.GET.get("endy1")
+    # create a list with all allowed dates
+    start = datetime.today()
+    start = start.replace(month=int(x1), year=int(x2), day=1)
+    cc = monthrange(end.year, end.month)  # find last day
+    end = end.replace(month=int(y1), year=int(y2), day=cc[1])
+# Now that we have determined start and end dates
+# we can get the total amount of litres the household consumed
+# if we need day and night values we will need to do extra work
+# because hour data is only in hourly timeseries. We need to parse
+# hourly data and integrate them into monthly groups
+total_dict = {}
+day_dict = {}
+night_dict = {}
+for x in range(0, len(dates)):
+    if start <= dates[x].date() <= end:
+        mo = str(dates[x].date().month)
+        yr = str(dates[x].date().year)
+        hour = int(dates[x].time().hour)
+        key = "%s/%s" % (yr, mo)
+        consumption = float(units[x])
+        if isnan(consumption):
+            consumption = 0
+        try:
+            total_dict[key] += consumption
+        except KeyError:  # if not there, put it!
+            total_dict[key] = consumption
+        if view == 'day_night':
+            if 6 <= hour <= 18:
+                try:
+                    day_dict[key] += consumption
+                    night_dict[key] += 0
+                except KeyError:  # if not there, put it!
+                    day_dict[key] = consumption
+                    night_dict[key] = 0  # i do this 4 consistency
+            else:
+                try:
+                    night_dict[key] += consumption
+                    day_dict[key] += 0
+                except KeyError:  # if not there, put it!
+                    night_dict[key] = consumption
+                    day_dict[key] = 0
+
+# If we need monthly cost then we need to multiply consumption
+# with tarrif
+if 'cost' in step:
+    for k in total_dict.keys():
+        cost = hh.tariff1(total_dict[k])
+        total_dict[k] = cost
+    for k in day_dict.keys():
+        cost = hh.tariff1(day_dict[k])
+        day_dict[k] = cost
+    for k in night_dict.keys():
+        cost = hh.tariff1(night_dict[k])
+        night_dict[k] = cost
+
+# We need to sort the values. What we do next is this:
+# We take the total dict keys (year/month) and we sort them
+# using strptime that takes a string and creates a datetime object.
+# This way total values are sorted correctly.
+tdk = total_dict.keys()
+key_dates = sorted(tdk, key=lambda a: datetime.strptime(a, "%Y/%m"))
+for dt in key_dates:
+    val = float(total_dict[dt])
+    chart_data.append([x, val])
+    if val > max_val:
+        max_val = val
+    if view == 'day_night':
+        night_data.append([x, night_dict[dt]])
+        day_data.append([x, day_dict[dt]])
+    ticks.append([x, dt])
+    x += 1
+# if per capita was selected, divide consumption
+# by number of occupants
+if step == "monthly_capita":
+    title += " (per capita)"
+    for x in range(len(chart_data)):
+        cd = chart_data[x]
+        cd[1] /= float(household.num_of_occupants)
+

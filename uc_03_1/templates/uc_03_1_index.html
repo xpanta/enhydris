@@ -1,10 +1,301 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% load sekizai_tags %}
+{% load i18n %}
+<div class="panel panel-default">
+    <!-- chart menu/toolbar -->
+    <div class="panel-heading clearfix" id="chartcontrol">
+        <div class="row">
+            <div class="pull-right col-md-1">
+                <img src="{{STATIC_URL}}/images/pdf.png" alt="Export to PDF" title="Export to PDF" /><img src="{{STATIC_URL}}/images/save.png" alt="Save Raw Data" title="Save Raw Data" />
+            </div>
 
-</body>
-</html>
+            <div class="col-md-3">
+                <p><strong>{% trans "Choose Data Resolution" %}</strong></p>
+                <select class="chart-selector form-control" name="resolution1" id="resolution1" onchange="toggleDeserialization();">
+                    <option value="15min" {% if action == "15min" %}selected{% endif %}>Fifteen minute (1 day only)</option>
+                    <option value="hourly" {% if action == "hourly" %}selected{% endif %}>Hourly (1 day only)</option>
+                    <option value="daily" {% if action == "daily" %}selected{% endif %}>Daily</option>
+                    <option value="daily_capita" {% if action == "daily_capita" %}selected{% endif %}>Daily Per Capita</option>
+                    <option value="monthly" {% if action == "monthly" %}selected{% endif %}>Monthly</option>
+                    <option value="monthly_capita" {% if action == "monthly_capita" %}selected{% endif %}>Monthly Per Capita</option>
+                    <option value="monthly_cost" {% if action == "monthly_cost" %}selected{% endif %}>Monthly Cost</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div id="res37" class="des2">
+                    <p><strong>{% trans "Choose Data Resolution" %}</strong></p>
+                    <select class="chart-selector form-control" name="resolution2" id="resolution2" onchange="togglePeriod()">
+                        <option value="total" {% if action2 == "total" %}selected{% endif %}>Total</option>
+                        <option value="day_night" {% if action2 == "day_night" %}selected{% endif %}>Day / Night</option>
+                        <option id="only10" value="summer_winter" {% if action2 == "summer_winter" %}selected{% endif %}>Summer / Winter</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <p>{% trans "Click button to view charts" %}</p>
+                <button onclick="fetchCharts('{{ request.user.username }}')" class="btn btn-primary" type="button">Compare</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="prd_sw">
+                <p><strong>{% trans "Please Select Period" %}</strong></p>
+                <label>
+                    <input type="radio" id="period_sw" name="period_sw" value="7days" onclick="hideDateYearSW()"/> This Year
+                </label>
+                <label>
+                    <input type="radio" id="period_d" name="period_d" value="month" onclick="hideDateYearSW()"  /> Previous Year
+                </label>
+                <label>
+                    <input type="radio" id="period_d" name="period_d" value="custom1" onclick="showDateYearSW1();" /> Specify Period
+                </label>
+                <label>
+                    <input type="radio" id="period_d" name="period_d" value="custom2" onclick="showDateYearSW2()" /> Specify Two Periods
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="prd_day">
+                <p><strong>{% trans "Please Select Period" %}</strong></p>
+                <label>
+                    <input type="radio" id="period_d" name="period_d" value="7days" onclick="hideCalendars()"/> Last 7 Days
+                </label>
+                <label>
+                    <input type="radio" id="period_d" name="period_d" value="month" onclick="hideCalendars()"  /> Last Month Days
+                </label>
+                <label>
+                    <input type="radio" id="period_d" name="period_d" value="custom1" onclick="showCalendar1();" /> Specify Period
+                </label>
+                <label>
+                    <input type="radio" id="period_d" name="period_d" value="custom2" onclick="showCalendar2()" /> Specify Two Periods
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="prd_mon">
+                <p><strong>{% trans "Please Select Period" %}</strong></p>
+                <label>
+                    <input type="radio" id="period_m" name="period_m" value="3" onclick="hideDateYear()"/> Last 3 Months
+                </label>
+                <label>
+                    <input type="radio" id="period_m" name="period_m" value="6" onclick="hideDateYear()"  /> Last 6 Months
+                </label>
+                <label>
+                    <input type="radio" id="period_m" name="period_m" value="12" onclick="hideDateYear()" /> Last 12 Months
+                </label>
+                <label>
+                    <input type="radio" id="period_m" name="period_m" value="custom1" onclick="showDateYear1();" /> Specify Period
+                </label>
+                <label>
+                    <input type="radio" id="period_m" name="period_m" value="custom2" onclick="showDateYear2()" /> Specify Two Periods
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 date_year" id="date_year1">
+                <div class="form-inline col-md-6" id="c_uc32_daterange">
+                    FROM
+                    <div class="form-group">
+                        <select id="c_uc31stmonth" class="form-control" required="true">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="c_uc31styear" class="form-control" required="true"></select>
+                    </div>
+                    TO
+                    <div class="form-group">
+                        <select id="c_uc31endmonth" class="form-control" required="true">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="c_uc31endyear" class="form-control" required="true"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 calendar" id="calendar1">
+                <div class="form-group col-md-3">
+                    <p>From: <input type="text" id="from1" class="datepicker"></p>
+                </div>
+                <div class="form-group col-md-3">
+                    <p>To: <input type="text" id="to1" class="datepicker"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 calendar" id="calendar2">
+                <div class="form-group col-md-3">
+                    <p>From: <input type="text" id="from2" class="datepicker"></p>
+                </div>
+                <div class="form-group col-md-3">
+                    <p>To: <input type="text" id="to2" class="datepicker"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 date_year" id="date_year2">
+                <div class="form-inline col-md-6" id="c_uc32_daterange">
+                    FROM
+                    <div class="form-group">
+                        <select id="c_uc31stmonth2" class="form-control" required="true">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="c_uc31styear2" class="form-control" required="true"></select>
+                    </div>
+                    TO
+                    <div class="form-group">
+                        <select id="c_uc31endmonth2" class="form-control" required="true">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="c_uc31endyear2" class="form-control" required="true"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body" id="chart_panel">
+
+    </div>
+</div>
+    <script>
+        $(".datepicker").datepicker({dateFormat: "yy-mm-dd"});
+        $(".des2").hide();
+        $("#prd_mon").hide();
+        $("#prd_day").hide();
+        $("#prd_sw").hide();
+        $(".date_year").hide();
+        $(".calendar").hide();
+        toggleDeserialization(); // update in case of refresh!
+
+        function fetchCharts(username){
+            var step = $("#resolution1").val();
+            var view = $("#resolution2").val();
+            var period_m = $("input[name=period_m]:checked").val();
+            var period_d = $("input[name=period_d]:checked").val();
+            var stmonth1 = $("#c_uc31stmonth").val();
+            var styear1 = $("#c_uc31styear").val();
+            var endmonth1 = $("#c_uc31endmonth").val();
+            var endyear1 = $("#c_uc31endyear").val();
+            var stmonth2 = $("#c_uc31stmonth2").val();
+            var styear2 = $("#c_uc31styear2").val();
+            var endmonth2 = $("#uc31endmonth2").val();
+            var endyear2 = $("#c_uc31endyear2").val();
+            var from1 = $("#from1").val(); //daily from (date value)
+            var to1 = $("#to1").val(); //daily to (date value)
+            $("#chart_panel").empty().load("/uc_03_1/compare/" + username + "/?ajax=&step=" + step + "&view=" + view + "&period_m="
+                    + period_m + "&stm1=" + stmonth1 + "&sty1=" + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1+ "&stm1="
+                    + stmonth1 + "&sty1=" + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1 + "&sty1="
+                    + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1+ "&stm2=" + stmonth2 + "&sty2="
+                    + styear2 + "&endm2=" + endmonth2 + "&endy2=" + endyear2 + "&period_d=" + period_d + "&from1=" + from1 +"&to1=" + to1);
+        }
+
+        function toggleDeserialization(){
+            $(".des2").hide();
+            var val = $('#resolution1').val();
+            if (val == 'daily' || val == 'daily_capita' || val == 'monthly' || val == 'monthly_capita' || val == 'monthly_cost'){
+                $("#res37").show();
+            }
+            if (val == 'monthly' || val == 'monthly_capita' || val == 'monthly_cost'){
+                $("#only10").show();
+            }else{
+                $("#only10").hide();
+            }
+            //show period if applicable, too
+            togglePeriod();
+        }
+        function togglePeriod(){
+            $("#prd_mon").hide();
+            $("#prd_day").hide();
+            $("#prd_sw").hide();
+            var val1 = $('#resolution1').val();
+            var val2 = $('#resolution2').val();
+            if ((val1 == 'monthly' || val1 == 'monthly_capita' || val1 == 'monthly_cost') && (val2 == 'total' || val2 == 'day_night')){
+                $("#prd_mon").show();
+            }
+            if ((val1 == 'daily' || val1 == 'daily_capita')){
+                $("#prd_day").show();
+            }
+            if ((val2 == 'summer_winter')){
+                $("#prd_sw").show();
+            }
+        }
+
+        function hideDateYear(){
+            $(".date_year").hide();
+        }
+
+        function showDateYear1(){
+            $(".date_year").hide();
+            $("#date_year1").show();
+        }
+
+        function showDateYear2(){
+            $(".date_year").hide();
+            $("#date_year1").show();
+            $("#date_year2").show();
+        }
+
+        function hideCalendars(){
+            $(".calendar").hide();
+        }
+
+        function showCalendar1(){
+            $(".calendar").hide();
+            $("#calendar1").show();
+        }
+
+        function showCalendar2(){
+            $(".calendar").hide();
+            $("#calendar1").show();
+            $("#calendar2").show();
+        }
+    </script>

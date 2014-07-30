@@ -1,0 +1,160 @@
+{% load i18n %}
+<div id="c_uc31cont" class="row">
+    <div id="c_uc31title"><p class="bg-primary text-center"><strong>{{ title }}</strong></p></div>
+    <div class="col-md-12" id="placeholder" style="width: 100%; height: 450px;">
+
+    </div>
+</div>
+<div class="row">
+    <div class="{% if view != "day_night" %}col-md-12{% else %}col-md-6{% endif %}">
+        <table class="table">
+            <tr>
+                <th>
+                    {% trans "Measurement Period" %}
+                </th>
+                <th>
+                    {% trans "Total Consumption" %}
+                </th>
+                {% if view == "day_night"  %}
+                    <th>
+                        {% trans "Day Consumption" %}
+                    </th>
+                    <th>
+                        {% trans "Night Consumption" %}
+                    </th>
+                {% endif %}
+            </tr>
+            {% for d in cons_table_data %}
+                <tr>
+                    <td>
+                        {{ d.0 }}
+                    </td>
+                    <td>
+                        {{ d.1 }}
+                    </td>
+                    {% if view == "day_night"  %}
+                        <td>
+                            {{ d.2 }}
+                        </td>
+                        <td>
+                            {{ d.3 }}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% if view == "day_night" %}
+        <div class="col-md-6" id="pie" style="width: 40%; height: 400px; padding-top: 40px; margin-top: 40px">
+
+        </div>
+    {% endif %}
+</div>
+<script>
+    var previousPoint = null;
+    $.fn.UseTooltip = function () {
+        $(this).bind("plothover", function (event, pos, item) {
+            if (item) {
+                if (previousPoint != item.dataIndex) {
+                    previousPoint = item.dataIndex;
+
+                    $("#tooltip").remove();
+
+                    var x = item.datapoint[0];
+                    var y = item.datapoint[1];
+
+                    showTooltip(item.pageX, item.pageY,
+                                    "Water Consumption was: <br/><strong>" + y + "</strong> (" + item.series.label + ")");
+                }
+            }
+            else {
+                $("#tooltip").remove();
+                previousPoint = null;
+            }
+        });
+    };
+
+    function showTooltip(x, y, contents) {
+        $('<div id="tooltip">' + contents + '</div>').css({
+            position: 'absolute',
+            display: 'none',
+            top: y + 5,
+            left: x + 20,
+            border: '2px solid #4572A7',
+            padding: '2px',
+            size: '10',
+            'border-radius': '6px 6px 6px 6px',
+            'background-color': '#fff',
+            opacity: 0.80
+        }).appendTo("body").fadeIn(200);
+    }
+    $("#placeholder").UseTooltip();
+
+    $.plot("#placeholder", [
+        { label: "Total Consumption in cubic meters", data: {{ total_data }} },
+        {% if view == 'day_night' %}
+            { label: "Night Consumption in cubic meters", data: {{ night_data }} },
+            { label: "Day Consumption in cubic meters", data: {{ day_data }} }
+        {% endif %}
+    ],
+    {
+        series: {
+            lines: { show: true },
+            points: { show: true }
+        },
+        xaxis: {
+/*            ticks: [
+                [1, "Jan" ], [ 2, "Feb" ],
+                [ 3, "Mar" ], [ 4, "Apr" ],
+                [ 5, "May" ], [ 6, "Jun" ],
+                [ 7, "Jul" ], [ 8, "Aug" ],
+                [ 9, "Sep" ], [ 10, "Oct" ],
+                [ 11, "Nov" ], [ 12, "Dec" ]
+            ],*/
+            ticks: [
+                {% for tick in ticks %}
+                    [{{ tick.0 }}, "{{ tick.1 }}"],
+                {% endfor %}
+            ],
+            tickDecimals: 0
+        },
+        yaxis: {
+            ticks: 10,
+            min: 0,
+            max: {{ max_val }},
+            tickDecimals: 5
+        },
+        grid: {
+            hoverable: true,
+            clickable: false,
+            backgroundColor: { colors: [ "#fff", "#eee" ] },
+            borderWidth: {
+                top: 1,
+                right: 1,
+                bottom: 2,
+                left: 2
+            }
+        }
+    });
+    {% if view == "day_night" %}
+        var pie_data = [
+            { label: "Night Consumption",  data: {{ night_total }}, color: "#7580cc" },
+            { label: "Day Consumption",  data: {{ day_total }}, color: "#cc823d"}
+        ];
+
+        var pie_chart = $("#pie");
+
+        $.plot(pie_chart, pie_data, {
+            series: {
+                pie: {
+                    show: true
+                }
+            },
+            legend: {
+                show: false
+            }
+        });
+    {% endif %}
+
+</script>
+

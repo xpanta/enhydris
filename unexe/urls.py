@@ -68,3 +68,10 @@ urlpatterns = patterns('',
     url(r'^household/properties/update/$',
         iwidget_views.household_properties, {}, 'household_properties'),
 )
+
+""" url confs from other use cases go here """
+
+urlpatterns += patterns(
+    "",
+    url(r'^uc_03_1/',include('uc_03_1.urls')),
+)
