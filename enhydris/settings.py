@@ -24,8 +24,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'iwidget',
-        'USER': 'chris',
-        'PASSWORD': 'tre5183',
+        'USER': 'iwidget',
+        'PASSWORD': 'iwidget_password',
         'HOST': 'localhost',
         'PORT': '5432',
     }

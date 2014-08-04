@@ -8,13 +8,13 @@
 
 {% addtoblock "css" %}
 	<!-- Bootstrap minified CSS -->
-    <link rel="stylesheet" href="{{ STATIC_URL }}js/bootstrap-3.1.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<!-- Bootstrap minified Optional theme -->
-	<link rel="stylesheet" href="{{ STATIC_URL }}js/bootstrap-3.1.1/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 	<!-- jQuery UI css -->
- 	<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" />
+ 	<!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />  -->	
 	<!-- leaflet maps -->
-	<link rel="stylesheet" href="{{ STATIC_URL }}js/leaflet-0.7.3/leaflet.css" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
 	<!-- 
 	css for bootstrap time and date - http://bootstrapformhelpers.com/timepicker/
 	-->
@@ -28,13 +28,13 @@
 {% addtoblock "js" %}
 
 	<!-- d3js minimised charting library - should be placed before jquery -->
-	<script src="{{ STATIC_URL }}js/d3/d3.min.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<!-- jQuery minified JavaScript -->
-	<script src="{{ STATIC_URL }}js/jquery-1.11.1.min.js"></script>
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 	<!-- d3js based JavaScript charting library -->
-	<script src="{{ STATIC_URL }}js/dimple.v2.0.0.min.js"></script>
+	<script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>	
 	<!-- Bootstrap minified JavaScript -->
-	<script src="{{ STATIC_URL }}js/bootstrap-3.1.1/js/bootstrap.min.js"></script>
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -44,17 +44,17 @@
     	<![endif]-->
 
 	<!--jQuery UI -->
-	<script src="{{ STATIC_URL }}js/jquery-ui-1.10.4/js/jquery-ui-1.10.4.min.js"></script>
+	<!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>  -->
 	<!--leaflet map base file-->
-	<script src="{{ STATIC_URL }}js/leaflet-0.7.3/leaflet.js"></script>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 	<!--stamen is B&W base map layer-->
 	<script type="text/javascript" src="{{STATIC_URL}}js/tile.stamen.js"></script>
 	<!--added for form validation-->
-	<script src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
 	<!--added for on-hover bootstrap menu-->
 	<script src="{{STATIC_URL}}js/bootstrap-hover-dropdown.js"></script>
     <!--dojo base file-->
-    <script src="{{ STATIC_URL }}js/dojo.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.2/dojo/dojo.js"></script>
 	<!--jquery UI file
 	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 	-->    

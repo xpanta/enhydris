@@ -45,7 +45,14 @@ from django.db.models import Avg,Max,Min,Count,Sum
 #        Garea, Instrument)
 # added some comments!
 
+class ukcsregistration(TemplateView):
+    template_name = "casestudy/ukcsregistration.html"
 
+    def get(self, request):
+        #if request.user.is_authenticated(): #if already authenticated
+        #    return redirect(reverse('dashboard'))   #redirect to a dashboard
+        return self.render_to_response({})
+    
 class test(TemplateView):
     template_name = "index.html"
 
