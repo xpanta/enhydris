@@ -152,7 +152,7 @@ $(window).load(function() {
     		<form action="/i18n/setlang/" method="post" class="form-inline">
       			{% csrf_token %}
       			<input name="next" type="hidden" value="/dashboard" />
-      			<select name="language" class="form-control" onchange="this.form.submit()">
+      			<select name="language" class="form-control" onchange="this.form.submit()" disabled>
         		{% for lang in LANGUAGES %}
           			<option value="{{ lang.0 }}">{{ lang.1 }}</option>
         		{% endfor %}
