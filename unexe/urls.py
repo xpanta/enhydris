@@ -52,6 +52,8 @@ urlpatterns = patterns('',
     url(r'^c_uc32$', login_required(c_uc32.as_view()),
         name='c_uc32'),  # getcompare
     
+    url(r'^ukcsregistration$', ukcsregistration.as_view(),name='ukcsregistration'), 
+                       
     url(r'^admin/',include(admin.site.urls)),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     
