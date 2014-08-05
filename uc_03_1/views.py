@@ -5,21 +5,33 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 #!TODO import ugetext for internationalizing texts
+day_start = 6
+day_end = 24
+night_start = 0
+night_end = 6
 
 
 @login_required
 def compare(request, username):
     months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
               "Sep", "Oct", "Nov", "Dec"]
+    winter = [1, 2, 3, 4, 9, 10, 11, 12]
+    summer = [5, 6, 7, 8]
     days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     user = request.user
-    timeseries1 = timeseries2 = jsondata = None
+    timeseries1 = timeseries2 = None
     total_data = []
     day_data = []
     night_data = []
+    summer_data = []
+    winter_data = []
+    summer_dict = {}
+    winter_dict = {}
     ticks = []  # x-axis labels
     title = ""
     view = ""
+    winter_total = 0
+    summer_total = 0
     day_total = 0
     night_total = 0
     max_val = 0  # maximum consumption (for charts)
@@ -82,29 +94,48 @@ def compare(request, username):
             ts_m = household.timeseries.filter(time_step__id=TSTEP_HOURLY,
                                                variable__id=VAR_PERIOD)[0]
             timeseries1 = series.readseries(ts_m)
+            # We need to find start and end dates to perform
+            # consumption calculations for that dates
             dates, units = izip(*timeseries1)
             end = dates[-1].date()  # last day
             start = end  # let's initialise it first
-            if 'custom' not in period:
-                from lib.common import get_start_date
-                start = get_start_date(end, step, period)
+            if view == 'summer_winter':
+                from lib.common import get_year_start_end
+                prd_sw = request.GET.get('period_sw', 'current')
+                if 'custom' not in prd_sw:
+                    param = request.GET.get('period_sw', 0)
+                    val = int(param)
+                    start, end = get_year_start_end(val, end)
+                elif prd_sw == 'custom1':
+                    from_yr = request.GET.get('sw_styr1', end.year)
+                    to_yr = request.GET.get('sw_endyr1', end.year)
+                    start = datetime.today()\
+                        .replace(day=1, month=1, year=int(from_yr)).date()
+                    end = datetime.today()\
+                        .replace(day=31, month=12, year=int(to_yr)).date()
+                elif prd_sw == 'custom2':
+                    pass
             else:
-                if 'monthly' in step and period == 'custom1':
-                    from lib.common import get_custom_start_end_dates
-                    x1 = request.GET.get("stm1")
-                    x2 = request.GET.get("sty1")
-                    y1 = request.GET.get("endm1")
-                    y2 = request.GET.get("endy1")
-                    start, end = get_custom_start_end_dates(x1, x2, y1, y2)
-                elif 'monthly' in step and period == 'custom2':
-                    pass
-                elif 'daily' in step and period == 'custom1':
-                    st_date1 = request.GET.get('from1')
-                    end_date1 = request.GET.get('to1')
-                    start = datetime.strptime(st_date1, "%Y-%m-%d").date()
-                    end = datetime.strptime(end_date1, "%Y-%m-%d").date()
-                elif 'daily' in step and period == 'custom2':
-                    pass
+                if 'custom' not in period:
+                    from lib.common import get_start_date
+                    start = get_start_date(end, step, period)
+                else:
+                    if 'monthly' in step and period == 'custom1':
+                        from lib.common import get_custom_start_end_dates
+                        x1 = request.GET.get("stm1")
+                        x2 = request.GET.get("sty1")
+                        y1 = request.GET.get("endm1")
+                        y2 = request.GET.get("endy1")
+                        start, end = get_custom_start_end_dates(x1, x2, y1, y2)
+                    elif 'monthly' in step and period == 'custom2':
+                        pass
+                    elif 'daily' in step and period == 'custom1':
+                        st_date1 = request.GET.get('from1')
+                        end_date1 = request.GET.get('to1')
+                        start = datetime.strptime(st_date1, "%Y-%m-%d").date()
+                        end = datetime.strptime(end_date1, "%Y-%m-%d").date()
+                    elif 'daily' in step and period == 'custom2':
+                        pass
 
             # Now that we have determined start and end dates
             # we can get the total amount of litres the household consumed
@@ -117,6 +148,7 @@ def compare(request, username):
             for x in range(0, len(dates)):
                 if start <= dates[x].date() <= end:
                     hour = int(dates[x].time().hour)
+                    month = int(dates[x].date().month)
                     if 'monthly' in step:
                         mo = str(dates[x].date().month)
                         yr = str(dates[x].date().year)
@@ -135,7 +167,7 @@ def compare(request, username):
                         total_dict[key] = consumption
                     # add day / night values if asked
                     if view == 'day_night':
-                        if 6 <= hour <= 18:
+                        if day_start <= hour <= day_end:
                             try:
                                 day_dict[key] += consumption
                                 night_dict[key] += 0
@@ -149,6 +181,22 @@ def compare(request, username):
                             except KeyError:  # if not there, put it!
                                 night_dict[key] = consumption
                                 day_dict[key] = 0
+                    elif view == 'summer_winter':
+                        if month in winter:
+                            try:
+                                winter_dict[key] += consumption
+                                summer_dict[key] += 0
+                            except KeyError:  # if not there, put it!
+                                winter_dict[key] = consumption
+                                summer_dict[key] = 0  # i do this 4 consistency
+                        else:
+                            try:
+                                summer_dict[key] += consumption
+                                winter_dict[key] += 0
+                            except KeyError:  # if not there, put it!
+                                summer_dict[key] = consumption
+                                winter_dict[key] = 0
+
             # If we need monthly cost then we need to multiply consumption
             # with tarrif
             if 'cost' in step:
@@ -176,7 +224,8 @@ def compare(request, username):
             # We need to sort the values. What we do next is this:
             # We take the total dict keys (year/month) and we sort them
             # using strptime that takes a string and creates a datetime object.
-            # This way total values are sorted correctly.
+            # This way dict values are sorted correctly and added to a list
+            # for the chart to be displayed correctly.
             tdk = total_dict.keys()
             key_dates = []
             if 'monthly' in step:
@@ -198,6 +247,11 @@ def compare(request, username):
                     day_data.append([x, day_dict[dt]])
                     night_total += night_dict[dt]
                     day_total += day_dict[dt]
+                elif view == 'summer_winter':
+                    summer_data.append([x, summer_dict[dt]])
+                    winter_data.append([x, winter_dict[dt]])
+                    summer_total += summer_dict[dt]
+                    winter_total += winter_dict[dt]
                 ticks.append([x, dt])
                 x += 1
                 # Prepare nicely data for the consumptions tables
@@ -221,6 +275,10 @@ def compare(request, username):
                         arr.append(night_dict[dt])
                         arr.append(day_dict[dt])
                     cons_table_data.append(arr)
+            # if view is for summer / winter then max_val should be
+            # something else.
+            if view == 'summer_winter':
+                max_val = max(summer_total, winter_total)
     data = {
         'username': username,
         'timeseries1': timeseries1,
@@ -235,6 +293,10 @@ def compare(request, username):
         'cons_table_data': cons_table_data,
         'night_total': night_total,
         'day_total': day_total,
+        'summer_total': summer_total,
+        'winter_total': winter_total,
+        'summer_data': summer_data,
+        'winter_data': winter_data,
     }
     variables = RequestContext(request, data)
     return render_to_response("_charts_.html", variables)

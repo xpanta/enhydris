@@ -1,7 +1,18 @@
 __author__ = 'chris'
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+
+
+def get_year_start_end(when, end):
+    """
+        when: current or previous year (0, -1)
+    """
+    yr = end - relativedelta(years=when)
+    start = yr.replace(month=1, day=1)
+    end = yr.replace(month=12, day=31)
+
+    return start, end
 
 
 def get_start_date(end_date, step, period):

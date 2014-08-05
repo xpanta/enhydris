@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-#!/usr/bin/python
+# -*- coding: utf-8 -*- #!/usr/bin/python
 
 # iWidget application for openmeteo Enhydris software
 # This software is provided with the AGPL license

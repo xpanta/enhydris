@@ -39,10 +39,10 @@
             <div class="col-md-12" id="prd_sw">
                 <p><strong>{% trans "Please Select Period" %}</strong></p>
                 <label>
-                    <input type="radio" id="period_sw" name="period_sw" value="7days" onclick="hideYearSW()"/> This Year
+                    <input type="radio" id="period_sw" name="period_sw" value="0" onclick="hideYearSW()"/> This Year
                 </label>
                 <label>
-                    <input type="radio" id="period_sw" name="period_sw" value="month" onclick="hideYearSW()"  /> Previous Year
+                    <input type="radio" id="period_sw" name="period_sw" value="1" onclick="hideYearSW()"  /> Previous Year
                 </label>
                 <label>
                     <input type="radio" id="period_sw" name="period_sw" value="custom1" onclick="showYearSW1();" /> Specify Period
@@ -158,28 +158,24 @@
         <div class="row">
             <div class="col-md-12 sw_year" id="sw_year1">
                 <div class="form-group">
-                    FROM:
-                    <select id="c_uc31swyear1from" class="form-control" required="true"></select>
-                </div>
-            </div>
-            <div class="col-md-12 sw_year" id="sw_year2">
-                <div class="form-group">
-                    TO:
-                    <select id="c_uc31swyear1to" class="form-control" required="true"></select>
+                    <div class="form-group col-md-3">
+                        <p>From: <select id="c_uc31swyear1from" class="form-control"></select></p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p>To: <select id="c_uc31swyear1to" class="form-control"></select></p>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12 sw_year" id="sw_year1">
-                <div class="form-group">
-                    FROM:
-                    <select id="c_uc31swyear2from" class="form-control" required="true"></select>
-                </div>
-            </div>
             <div class="col-md-12 sw_year" id="sw_year2">
                 <div class="form-group">
-                    TO:
-                    <select id="c_uc31swyear2to" class="form-control" required="true"></select>
+                    <div class="form-group col-md-3">
+                        <p>From: <select id="c_uc31swyear2from" class="form-control"></select></p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p>To: <select id="c_uc31swyear2to" class="form-control"></select></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -243,6 +239,7 @@
         $("#prd_sw").hide();
         $(".date_year").hide();
         $(".calendar").hide();
+        $(".sw_year").hide();
         toggleDeserialization(); // update in case of refresh!
 
         function fetchCharts(username){
@@ -250,6 +247,7 @@
             var view = $("#resolution2").val();
             var period_m = $("input[name=period_m]:checked").val();
             var period_d = $("input[name=period_d]:checked").val();
+            var period_sw= $("input[name=period_sw]:checked").val();
             var stmonth1 = $("#c_uc31stmonth").val();
             var styear1 = $("#c_uc31styear").val();
             var endmonth1 = $("#c_uc31endmonth").val();
@@ -258,12 +256,18 @@
             var styear2 = $("#c_uc31styear2").val();
             var endmonth2 = $("#uc31endmonth2").val();
             var endyear2 = $("#c_uc31endyear2").val();
+            var sw_styear1 = $("#c_uc31swyear1from").val();
+            var sw_endyear1 = $("#c_uc31swyear1to").val();
+            var sw_styear2 = $("#c_uc31swyear2from").val();
+            var sw_endyear2 = $("#c_uc31swyear2to").val();
+
             var from1 = $("#from1").val(); //daily from (date value)
             var to1 = $("#to1").val(); //daily to (date value)
             $("#chart_panel").empty().load("/uc_03_1/compare/" + username + "/?ajax=&step=" + step + "&view=" + view + "&period_m="
                     + period_m + "&stm1=" + stmonth1 + "&sty1=" + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1+ "&stm1="
                     + stmonth1 + "&sty1=" + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1 + "&sty1="
-                    + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1+ "&stm2=" + stmonth2 + "&sty2="
+                    + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1+ "&stm2=" + stmonth2 + "&sty2=" + "&period_sw=" + period_sw
+                    + "&sw_styr1=" + sw_styear1 + "&sw_endyr1=" + sw_endyear1+ "&sw_styr2=" + sw_styear2 + "&sw_endyr2=" + sw_endyear2
                     + styear2 + "&endm2=" + endmonth2 + "&endy2=" + endyear2 + "&period_d=" + period_d + "&from1=" + from1 +"&to1=" + to1);
         }
 
@@ -285,6 +289,9 @@
             $("#prd_mon").hide();
             $("#prd_day").hide();
             $("#prd_sw").hide();
+            $(".date_year").hide();
+
+            $('.sw_year').hide();
             var val1 = $('#resolution1').val();
             var val2 = $('#resolution2').val();
             if ((val1 == 'monthly' || val1 == 'monthly_capita' || val1 == 'monthly_cost') && (val2 == 'total' || val2 == 'day_night')){

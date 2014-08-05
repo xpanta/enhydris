@@ -30,14 +30,14 @@
                         {{ d.0 }}
                     </td>
                     <td>
-                        {{ d.1 }}
+                        {{ d.1|floatformat:3 }} m&#179;
                     </td>
                     {% if view == "day_night"  %}
                         <td>
-                            {{ d.2 }}
+                            {{ d.2|floatformat:2 }} m&#179;
                         </td>
                         <td>
-                            {{ d.3 }}
+                            {{ d.3|floatformat:2 }} m&#179;
                         </td>
                     {% endif %}
                 </tr>
@@ -90,52 +90,90 @@
     }
     $("#placeholder").UseTooltip();
 
-    $.plot("#placeholder", [
-        { label: "Total Consumption in cubic meters", data: {{ total_data }} },
-        {% if view == 'day_night' %}
-            { label: "Night Consumption in cubic meters", data: {{ night_data }} },
-            { label: "Day Consumption in cubic meters", data: {{ day_data }} }
-        {% endif %}
-    ],
-    {
-        series: {
-            lines: { show: true },
-            points: { show: true }
-        },
-        xaxis: {
-/*            ticks: [
-                [1, "Jan" ], [ 2, "Feb" ],
-                [ 3, "Mar" ], [ 4, "Apr" ],
-                [ 5, "May" ], [ 6, "Jun" ],
-                [ 7, "Jul" ], [ 8, "Aug" ],
-                [ 9, "Sep" ], [ 10, "Oct" ],
-                [ 11, "Nov" ], [ 12, "Dec" ]
-            ],*/
-            ticks: [
-                {% for tick in ticks %}
-                    [{{ tick.0 }}, "{{ tick.1 }}"],
-                {% endfor %}
+    {% if view == 'summer_winter' %}
+        $.plot("#placeholder", [
+                { label: " - Summer Consumption in m&#179;", data: [ [1, {{ summer_total|floatformat:2 }}] ] },
+                { label: " - Winter Consumption in m&#179;", data: [ [2, {{ winter_total|floatformat:2 }}] ] }
             ],
-            tickDecimals: 0
-        },
-        yaxis: {
-            ticks: 10,
-            min: 0,
-            max: {{ max_val }},
-            tickDecimals: 5
-        },
-        grid: {
-            hoverable: true,
-            clickable: false,
-            backgroundColor: { colors: [ "#fff", "#eee" ] },
-            borderWidth: {
-                top: 1,
-                right: 1,
-                bottom: 2,
-                left: 2
+            {
+                series: {
+                    bars: {
+                        show: true,
+                        align: "center",
+                        fill: true,
+                        barWidth: 0.6
+                    }
+                },
+                xaxis: {
+                    min: 0,
+                    max: 5,
+                    ticks: [
+                        [1, "Summer" ], [ 2, "Winter" ]
+                     ],
+                    tickDecimals: 0
+                },
+                yaxis: {
+                    ticks: 10,
+                    min: 0,
+                    max: {{ max_val }},
+                    tickDecimals: 5
+                },
+                grid: {
+                    hoverable: true,
+                    clickable: false,
+                    backgroundColor: { colors: [ "#fff", "#eee" ] },
+                    borderWidth: {
+                        top: 1,
+                        right: 1,
+                        bottom: 2,
+                        left: 2
+                    }
+                }
+            });
+    {% else %}
+        $.plot("#placeholder", [
+             { label: " - Total Consumption in m&#179;", data: {{ total_data }} },
+            {% if view == 'day_night' %}
+                { label: " - Night Consumption in m&#179;", data: {{ night_data }} },
+                { label: " - Day Consumption in m&#179;", data: {{ day_data }} }
+            {% endif %}
+        ],
+        {
+            series: {
+                lines: { show: true },
+                points: { show: true }
+            },
+            xaxis: {
+    /*            ticks: [
+                    [1, "Jan" ], [ 2, "Feb" ],
+                ],*/
+                ticks: [
+                    {% for tick in ticks %}
+                        [{{ tick.0 }}, "{{ tick.1 }}"],
+                    {% endfor %}
+                ],
+                tickDecimals: 0
+            },
+            yaxis: {
+                ticks: 10,
+                min: 0,
+                max: {{ max_val }},
+                tickDecimals: 5
+            },
+            grid: {
+                hoverable: true,
+                clickable: false,
+                backgroundColor: { colors: [ "#fff", "#eee" ] },
+                borderWidth: {
+                    top: 1,
+                    right: 1,
+                    bottom: 2,
+                    left: 2
+                }
             }
-        }
-    });
+        });
+    {% endif %}
+
     {% if view == "day_night" %}
         var pie_data = [
             { label: "Night Consumption",  data: {{ night_total }}, color: "#7580cc" },

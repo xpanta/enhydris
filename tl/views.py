@@ -1,7 +1,7 @@
 #UWOTTL, Copyright (c) 2012, National Technical University of Athens
 
 from django.http import HttpResponse
-from uwottl.tl.models import Specification, Brand
+from models import Specification, Brand
 
 def specification_list(request, *args, **kwargs):
     specs = {'queryset': Specification.objects.all().extra(order_by =\
