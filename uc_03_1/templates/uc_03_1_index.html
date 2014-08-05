@@ -39,16 +39,16 @@
             <div class="col-md-12" id="prd_sw">
                 <p><strong>{% trans "Please Select Period" %}</strong></p>
                 <label>
-                    <input type="radio" id="period_sw" name="period_sw" value="7days" onclick="hideDateYearSW()"/> This Year
+                    <input type="radio" id="period_sw" name="period_sw" value="7days" onclick="hideYearSW()"/> This Year
                 </label>
                 <label>
-                    <input type="radio" id="period_d" name="period_d" value="month" onclick="hideDateYearSW()"  /> Previous Year
+                    <input type="radio" id="period_sw" name="period_sw" value="month" onclick="hideYearSW()"  /> Previous Year
                 </label>
                 <label>
-                    <input type="radio" id="period_d" name="period_d" value="custom1" onclick="showDateYearSW1();" /> Specify Period
+                    <input type="radio" id="period_sw" name="period_sw" value="custom1" onclick="showYearSW1();" /> Specify Period
                 </label>
                 <label>
-                    <input type="radio" id="period_d" name="period_d" value="custom2" onclick="showDateYearSW2()" /> Specify Two Periods
+                    <input type="radio" id="period_sw" name="period_sw" value="custom2" onclick="showYearSW2()" /> Specify Two Periods
                 </label>
             </div>
         </div>
@@ -156,6 +156,34 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-md-12 sw_year" id="sw_year1">
+                <div class="form-group">
+                    FROM:
+                    <select id="c_uc31swyear1from" class="form-control" required="true"></select>
+                </div>
+            </div>
+            <div class="col-md-12 sw_year" id="sw_year2">
+                <div class="form-group">
+                    TO:
+                    <select id="c_uc31swyear1to" class="form-control" required="true"></select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 sw_year" id="sw_year1">
+                <div class="form-group">
+                    FROM:
+                    <select id="c_uc31swyear2from" class="form-control" required="true"></select>
+                </div>
+            </div>
+            <div class="col-md-12 sw_year" id="sw_year2">
+                <div class="form-group">
+                    TO:
+                    <select id="c_uc31swyear2to" class="form-control" required="true"></select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-12 date_year" id="date_year2">
                 <div class="form-inline col-md-6" id="c_uc32_daterange">
                     FROM
@@ -207,6 +235,7 @@
     </div>
 </div>
     <script>
+
         $(".datepicker").datepicker({dateFormat: "yy-mm-dd"});
         $(".des2").hide();
         $("#prd_mon").hide();
@@ -271,6 +300,20 @@
 
         function hideDateYear(){
             $(".date_year").hide();
+        }
+
+        function hideYearSW(){
+            $(".sw_year").hide();
+        }
+
+        function showYearSW2(){
+            $(".sw_year").hide();
+            $("#sw_year1").show();
+            $("#sw_year2").show();
+        }
+        function showYearSW1(){
+            $(".sw_year").hide();
+            $("#sw_year1").show();
         }
 
         function showDateYear1(){
