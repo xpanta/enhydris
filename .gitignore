@@ -1,5 +1,7 @@
 *.swp
 .idea
+*.pyc
+*.pyo
 .idea/*
 iwidget.log
 enhydris/settings.py
