@@ -75,6 +75,11 @@ def statistics_on_daily(ts_daily, occupancy = 1):
         timeseries,
         last_7_days_timestamp,
         today)*1000.0
+
+    """
+        ADDED YESTERDAY's CONSUMPTION VALUE BY CHRIS PANTAZIS
+    """
+    result['yesterday'] = timeseries[today-timedelta(days=1)]*1000.0
     """
         ADDED CURRENT WEEK CONSUMPTION VALUE BY CHRIS PANTAZIS
     """

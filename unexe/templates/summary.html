@@ -32,17 +32,17 @@
                             <thead class="bg-primary">
                             <tr>
                                 <th>{% trans "Measurement Period" %}</th>
-                                <th>{% trans "Consumption" %}</th>
+                                <th>{% trans "Consumption This Period" %}</th>
                                 <th>{% trans "Consumption Previous Period (**)" %}</th>
-                                <th>{% trans "Current Target" %}</th>
+                                <th>{% trans "Current Target" %} (***)</th>
                                 <th>{% trans "Goal Achievement" %}</th>
                             </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>{% trans "Current Day" %} ({{overview.today_timestamp|date:"j/m/o"}})</td>
-                                    <td>{{ overview.today|floatformat:2 }}</td>
-                                    <td>{{ overview.yesteday|floatformat:2 }}</td>
+                                    <td style="font-weight: bold">{% trans "Current Day" %} <br/> ({{overview.today_timestamp|date:"j/m/o"}})</td>
+                                    <td>{{ overview.today|floatformat:2 }} lit</td>
+                                    <td>{{ overview.yesterday|floatformat:2 }} lit</td>
                                     <td>
                                         {% for v in overview.today_lpd %}
                                             <img src="{{ STATIC_URL }}icon/smile.png" />
@@ -53,9 +53,9 @@
                                     <td>--</td>
                                 </tr>
                                 <tr>
-                                    <td>{% trans "Current Week" %}}})</td>
-                                    <td>{{ overview.current_week|floatformat:2 }}</td>
-                                    <td>{{ overview.last_week|floatformat:2 }}</td>
+                                    <td style="font-weight: bold">{% trans "Current Week" %}</td>
+                                    <td>{{ overview.current_week|floatformat:2 }} lit</td>
+                                    <td>{{ overview.last_week|floatformat:2 }} lit</td>
                                     <td>
                                         {% for v in overview.current_week_lpd %}
                                             <img src="{{ STATIC_URL }}icon/smile.png" />
@@ -66,9 +66,9 @@
                                     <td>--</td>
                                 </tr>
                                 <tr>
-                                    <td>{% trans "Current Month" %}}})</td>
-                                    <td>{{ overview.current_month|floatformat:2 }}</td>
-                                    <td>{{ overview.last_month|floatformat:2 }}</td>
+                                    <td style="font-weight: bold">{% trans "Current Month" %} (*)</td>
+                                    <td>{{ overview.current_month|floatformat:2 }} m&#179;</td>
+                                    <td>{{ overview.last_month|floatformat:2 }} m&#179;</td>
                                     <td>
                                         {% for v in overview.current_month_lpd %}
                                             <img src="{{ STATIC_URL }}icon/smile.png" />
@@ -79,9 +79,9 @@
                                     <td>--</td>
                                 </tr>
                                 <tr>
-                                    <td>{% trans "Current Year" %}}})</td>
-                                    <td>{{ overview.current_year|floatformat:2 }}</td>
-                                    <td>{{ overview.last_year|floatformat:2 }}</td>
+                                    <td style="font-weight: bold">{% trans "Current Year" %} (*)</td>
+                                    <td>{{ overview.current_year|floatformat:2 }} m&#179;</td>
+                                    <td>{{ overview.last_year|floatformat:2 }} m&#179;</td>
                                     <td>
                                         {% for v in overview.current_year_lpd %}
                                             <img src="{{ STATIC_URL }}icon/smile.png" />
@@ -95,12 +95,15 @@
                         </table>
                     </div>
                     <p>
-                        <strong><em>(*) {% trans "Target consumption is a value calculated by target water use (in litres per person per day) multiplied by the number of occupants of your house. There are 6 target levels:" %} .</em></strong>
+                        <strong><em>(*)  m&#179; {% trans " is 1000 litres" %}</em></strong>
                     </p>
                     <p>
-                        <strong><em>(**) The presented information corresponds to previous period of the same length, e.g. previous day, week, month, year</em></strong>
+                        <strong><em>(**) {%  trans "The presented information corresponds to previous period of the same length, e.g. previous day, week, month, year" %}</em></strong>
                     </p>
 
+                    <p>
+                        <strong><em>(***) {% trans "Target consumption is a value calculated by target water use (in litres per person per day) multiplied by the number of occupants of your house. There are 6 target levels:" %} .</em></strong>
+                    </p>
                     <table>
                         <tr>
                             <th>Consumption Level</th>
