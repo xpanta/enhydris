@@ -33,14 +33,14 @@
             <h3>{% trans "Water consumption" %}</h3>
             <table class="padded-table">
                 <tr>
-                    <th>{% trans "Measurement<br>period" %}</th>
+                    <th>{% trans "Measurement<br>period!!!" %}</th>
                     <th>{% trans "Current year" %}<br>({{ overview.today_timestamp.year }})</th>
                     <th>{% trans "Same period in previous year" %}<br>({{ overview.today_timestamp.year|add:"-1" }})</th>
                     <th>{% trans "Target consumption (*)" %}</th>
                     <th>{% trans "Goal achievement" %}</th>
                 </tr>
                 <tr>
-                    <td>{% trans "Last full measured day " %} ({{overview.today_timestamp|date:"j/m/o"}})</td>
+                    <td style="font-weight: bold">{% trans "Last full measured day " %} {{overview.today_timestamp|date:"j/m/o"}}</td>
                     <td><strong>{{ overview.today|floatformat:1 }} litres</strong></td>
                     <td>{{ overview.today_last_year|floatformat:1 }} litres</td>
                     <td>{{ overview.target_daily|floatformat:1 }} litres</td>
@@ -125,12 +125,12 @@
                 </tr>
                 <tr>
                     <td>{% trans "Current year " %} ({{overview.today_timestamp|date:"o"}})</td>
-                    <td><strong>{{ overview.current_year_cost|floatformat:2 }} €</strong</td>
+                    <td><strong>{{ overview.current_year_cost|floatformat:2 }} €</strong></td>
                     <td>{{ overview.last_year_cost|floatformat:2 }} €</td>
                 </tr>
             </table>
             <p>
-                <strong></em>
+                <strong>
                 {% blocktrans with nocc=household.num_of_occupants %}
                 (*) "Target consumption" is a value calculated by an average water
                 use of 120 litres per person per day multiplied by the number
@@ -138,7 +138,7 @@
                 120 litres per person per day is an indicative optimum value
                 for sustainable water consumption.
                 {% endblocktrans %} 
-                </strong/></em>
+                </strong>
             </p>
         </div>
 
@@ -239,18 +239,18 @@
                     </tr>
                     <tr>
                         <td>{% trans "Current year " %} ({{energy_overview.today_timestamp|date:"o"}})</td>
-                        <td><strong>{{ energy_overview.current_year_cost|floatformat:2 }} €</strong</td>
+                        <td><strong>{{ energy_overview.current_year_cost|floatformat:2 }} €</strong></td>
                         <td>{{ energy_overview.last_year_cost|floatformat:2 }} €</td>
                     </tr>
                 </table>
                 <p>
-                    <strong></em>
+                    <strong>
                     {% blocktrans with nocc=household.num_of_occupants %}
                     (*) "Target consumption" is a value calculated by an average electricity
                     use of 5 kWh per person per day multiplied by the number
                     of inhabitants of your household ({{ nocc }}).
                     {% endblocktrans %} 
-                    </strong/></em>
+                    </strong>
                 </p>
             </div>
         {% endif %}

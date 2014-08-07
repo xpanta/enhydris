@@ -1,5 +1,5 @@
 # Create your views here.
-from django.http import HttpResponse
+from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -13,6 +13,10 @@ night_end = 6
 
 @login_required
 def compare(request, username):
+    # cache_key = 'uc0301__%d' % str(request.GET)
+    # cache_value = cache.get(cache_key)
+    # if cache_value is not None:
+    #     return cache_value
     months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
               "Sep", "Oct", "Nov", "Dec"]
     winter = [1, 2, 3, 4, 9, 10, 11, 12]
@@ -298,6 +302,7 @@ def compare(request, username):
         'summer_data': summer_data,
         'winter_data': winter_data,
     }
+    # cache.set(cache_key, result, 600)
     variables = RequestContext(request, data)
     return render_to_response("_charts_.html", variables)
 
