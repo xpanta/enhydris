@@ -155,3 +155,14 @@ class iutility():
         month = month % 12 + 1
         day   = min(curdate.day,calendar.monthrange(year,month)[1])
         return datetime.date(year,month,day)
+    
+    '''
+    This method search for string and remove special characters. It return only alphanumeric
+    #str: This is the string to remove special characters
+    return: A string consists of only alphanumeric
+        >>> iutility.getAlphanumeric("a.ha^h.&")
+        >>> ahah
+    '''
+    @staticmethod
+    def getAlphanumeric(str):
+        return ''.join(e for e in str if e.isalnum()) #this remove all special chacters, spaces etc.. from username par - only alphanumeric

@@ -53,6 +53,8 @@ urlpatterns = patterns('',
         name='c_uc32'),  # getcompare
     
     url(r'^ukcsregistration$', ukcsregistration.as_view(),name='ukcsregistration'), 
+    url(r'^ukcsregistrationsave$', ukcsregistrationsave.as_view(),name='ukcsregistrationsave'),
+    url(r'^ukcsregistrationconfirm$', ukcsregistrationconfirm.as_view(),name='ukcsregistrationconfirm'),
                        
     url(r'^admin/',include(admin.site.urls)),
     url(r'^i18n/', include('django.conf.urls.i18n')),

@@ -1,11 +1,16 @@
 //----------------------------------------iwidget global settings class --------------------------------------//
 function IwidgetUtil()
 {
+	// Error message codes - code number should match the one on the 
+    this.INACTIVE        = -1;
+    this.NOT_FOUND       = -2;
+    this.ALREADY_EXIST   = -3;
+    
 	//variables to hold important URL locations
-	this.baseURL   = 'http://localhost:8000/';
-	this.mediaURL  = this.baseURL+'media/';
-	this.staticURL = this.baseURL+'static/';
-	this.usericon  = this.staticURL+'images/usericon.png'; //icon to show user position on map
+	this.baseURL   	    = 'http://localhost:8000/';
+	this.mediaURL  		= this.baseURL+'media/';
+	this.staticURL 		= this.baseURL+'static/';
+	this.usericon  		= this.staticURL+'images/usericon.png'; //icon to show user position on map
 	
 	//variables of django URL string
 	this.index	   	   = "index";
@@ -15,6 +20,8 @@ function IwidgetUtil()
 	this.gethousehold  = "gethousehold";
 	this.getforecast   = "getforecast";
 	this.getcompare    = "getcompare";
+	this.ukcsconfirm   = "ukcsregistrationconfirm";
+	
 	//this.gethousehold  = "superuser";
 	//variables of form id (DOM)
 	this.loginform 	   = "#login-form";
@@ -27,6 +34,7 @@ function IwidgetUtil()
 	this.c_uc52form    = "#c_uc52-form";
 	this.c_uc53form    = "#c_uc53-form";
 	this.c_uc33form    = "#c_uc33-form";
+	this.ukcsregform   = "#ukcsreg-form";
 	this.mapcontainer  = "map"; //map container id (DOM) without # sign.
 	//variables to hold id (DOM) of forms alert box
 	this.loginmsg     = "#login-msg";
@@ -39,6 +47,7 @@ function IwidgetUtil()
 	this.c_uc53msg    = "#c_uc53-msg";
 	this.c_uc33msg    = "#c_uc33-msg";
 	this.c_uc32msg    = "#c_uc32-msg";
+	this.ukcsregmsg   = "#ukcsreg-msg"
 	//global unexpected error message
 	this.unexpectederror = "Unexpected error: Please try again later.";
 	this.currency     = "£"; //currency to be used to show cost
@@ -2130,6 +2139,31 @@ function AppUtil()
 				var dim = {"width":w,"height":450}; //width and height of chart container
 				chartutil.c_uc33comparechart("#c_uc33donutchart",dim,data["comparechart"]);				
 				//chartutil.c_uc52donutchart("#c_uc33donutchart",dim,data["donutchart"]);				
+				
+			}
+			else if(id==iwidgetutil.ukcsregform)
+			{
+				var dataObj = {};
+				dataObj.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+				dataObj.ukcsregfname 		= $("#ukcsregfname").val();
+				dataObj.ukcsreglname 		= $("#ukcsreglname").val();
+				dataObj.ukcsregemail 		= $("#ukcsregemail").val();
+				dataObj.ukcsregaddress		= $("#ukcsregaddress").val();
+				
+				var data = ajaxutil.postAjax(dataObj,formutil.getAction(id));
+				if(data==iwidgetutil.NOT_FOUND)
+				{
+					this.showmessage(iwidgetutil.ukcsregmsg,dangerclass,"Incorrect Address: Please provide the correct address.");
+					return;
+				}
+				if(data==iwidgetutil.ALREADY_EXIST)
+				{
+					this.showmessage(iwidgetutil.ukcsregmsg,dangerclass,"This address is already registered and activated.");
+					return;
+				}				
+				
+				if(data==true)
+					window.location.replace(iwidgetutil.ukcsconfirm);
 				
 			}
 			else{}

@@ -3,6 +3,7 @@ Created on 24 Feb 2014
 @author: adeel
 '''
 import datetime
+import time
 import pandas as pd
 import numpy as np
 import itertools as IT
@@ -27,6 +28,7 @@ from classes.Iforecast import iforecast
 from classes.Iseries import iseries
 from classes.Ifile import ifile
 from classes.Idma import idma
+from classes.Ierror import ierror
 from classes.Iusecase import iusecase
 
 from enhydris.hcore.views import (TimeseriesDetailView as TDV,
@@ -35,7 +37,7 @@ from enhydris.hcore.models import Timeseries, Gentity, Garea
 from enhydris.conf import settings
 from iwidget.models import (IWTimeseries, Household, DMA, PropertyType,
         TSTEP_FIFTEEN_MINUTES, TSTEP_DAILY, TSTEP_MONTHLY,
-        VAR_CUMULATIVE, VAR_PERIOD, VAR_COST, TSTEP_HOURLY)
+        VAR_CUMULATIVE, VAR_PERIOD, VAR_COST, TSTEP_HOURLY,UserProfile)
 from iwidget.utils import statistics_on_daily
 from pthelma.timeseries import Timeseries
 from enhydris.hcore.models import ReadTimeStep
@@ -45,6 +47,9 @@ from django.db.models import Avg,Max,Min,Count,Sum
 #        Garea, Instrument)
 # added some comments!
 
+'''
+This method return the webpage of UK Case study registration page
+'''
 class ukcsregistration(TemplateView):
     template_name = "casestudy/ukcsregistration.html"
 
@@ -52,6 +57,66 @@ class ukcsregistration(TemplateView):
         #if request.user.is_authenticated(): #if already authenticated
         #    return redirect(reverse('dashboard'))   #redirect to a dashboard
         return self.render_to_response({})
+
+class ukcsregistrationconfirm(TemplateView):
+    template_name = "casestudy/ukcsregistrationconfirm.html"
+
+    def get(self, request):
+        #if request.user.is_authenticated(): #if already authenticated
+        #    return redirect(reverse('dashboard'))   #redirect to a dashboard
+        return self.render_to_response({})
+'''
+This method captures the UK case study form page data, verify the details, 
+store the user details in DB and UPL web service and send confirmation email. 
+Following status message this method return
+Successfully register: True
+Already activate: -1
+Address not found: -2
+Unexpected Error: False - should be inside try block
+'''
+class ukcsregistrationsave(TemplateView):
+    template_name = "casestudy/ukcsregistration.html"
+
+    def post(self, request):
+        status   = False
+        fname    = iutility.getPostValue('ukcsregfname',request).strip()
+        lname    = iutility.getPostValue('ukcsreglname',request).strip()
+        email    = iutility.getPostValue('ukcsregemail',request).strip()
+        addr     = iutility.getPostValue('ukcsregaddress',request).strip()
+        profile  = None
+        
+        username = email.split('@')[0] #get username part from email address
+        username = iutility.getAlphanumeric(username)
+                
+        try:
+            profile = UserProfile.objects.get(address__iexact=addr)
+            if profile.user.is_active is False:
+                if not fname == "":
+                    profile.user.first_name = fname
+                if not lname == "":
+                    profile.user.last_name  = lname
+                
+                if len(username)>2:
+                    username = username[0:3]+str(int(time.time()))
+                else:
+                    username = username+str(int(time.time()))
+                
+                profile.user.username = username    
+                profile.user.email = email
+                
+                '''
+                code to send email
+                '''
+                
+                profile.user.is_active = True
+                profile.user.save()
+                status = True
+            else:
+                status = ierror.ALREADY_EXIST
+        except:
+            status  = ierror.NOT_FOUND
+               
+        return HttpResponse(json.dumps(status),content_type='application/javascript')
     
 class test(TemplateView):
     template_name = "index.html"

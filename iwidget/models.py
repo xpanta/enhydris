@@ -255,3 +255,19 @@ class ApplianceOperation(models.Model):
     end = models.DateField(blank=True, null=True)
     scheduled = models.BooleanField(default=False)
 
+'''
+'''
+class Country(models.Model):
+    name    = models.CharField(max_length=100)
+    point   = models.PointField(geography=True,blank=True,null=True)
+    polygon = models.MultiPolygonField(blank=True,null=True)
+    
+    objects = models.GeoManager()
+
+'''
+This is the user profile class. This class will store user profile details 
+'''
+class UserProfile(models.Model):
+    address  = models.TextField() 
+    user     = models.ForeignKey(User,unique=True)
+    country  = models.ForeignKey(Country,blank=True,null=True)
