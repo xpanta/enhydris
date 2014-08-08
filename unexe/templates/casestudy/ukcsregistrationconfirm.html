@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block pagetitle %}iWidget - UK Household Registration{% endblock %}
+{% block pagecontent %}
+<script type="text/javascript">
+</script>
+<!--<div class="row">-->
+	<div class="col-md-6 col-md-offset-3">
+    	<div class="panel panel-default">
+    	
+		<div class="panel-heading">
+		    <div class="panel-title">{% trans "iWIDGET Registration" %}</div>
+		 </div>
+		 <div class="panel-body">
+			<p>{% trans "Thank you for sending details. A confirmation email is sent with your username and password." %}</p>  
+			<p>{% trans "Please do not delete the confirmation email." %}</p>
+		</div>
+	</div>
+	</div>
+<!--</div>-->
+{% endblock %}
