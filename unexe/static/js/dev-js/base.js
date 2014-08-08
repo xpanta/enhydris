@@ -2153,12 +2153,12 @@ function AppUtil()
 				var data = ajaxutil.postAjax(dataObj,formutil.getAction(id));
 				if(data==iwidgetutil.NOT_FOUND)
 				{
-					this.showmessage(iwidgetutil.ukcsregmsg,dangerclass,"Incorrect Address: Please provide the correct address.");
+					alert("Incorrect Address: Please provide the correct address.");
 					return;
 				}
 				if(data==iwidgetutil.ALREADY_EXIST)
 				{
-					this.showmessage(iwidgetutil.ukcsregmsg,dangerclass,"This address is already registered and activated.");
+					alert("This address is already registered.");
 					return;
 				}				
 				
