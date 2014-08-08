@@ -1,0 +1,22 @@
+August 2014
+===========
+- Modified iwidget/utils.py for the dashboard to load consumption for yesterday, last week, last month. This happened in method: statistics_on_daily.
+    I also added a method (get_lpd_arr)
+    that returns a dummy array which length I use to display smiles.
+- Modified summary.html and changed the table with a new one displaying consumption of last week, month and yesterday. Added smilies if consumption is good (see above).
+    Minor changes to the same file.
+
+
+***
+- Modified base.html to work off-line. Adeel changed it back. But I might revert it in the future. base-cdn.html holds the old file.
+- Created App uc_03_1 to host use case's files
+- Added necessary methods to uc_03_1/views.py and uc_03_1/lib/common.py
+- Created necessary templates at uc_03_1.
+
+Note: In order for my templates to be consistent with current implementation I had to do these things:
+    (a) Modified unexe/templates/usecase/c_uc3.2.html. Added lines to load the yearlist to my drop down combo boxes, too. Lines 83-91.
+    (b) unexe/urls.py to load my urls.py, too.
+    (c) Added uc_03_1 to INSTALLED_APPS in enhydris/settings.py
+
+As I couldn't make Adeel's charts work with my data, I decided to work with jquery.flot instead.
+
