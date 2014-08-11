@@ -5,6 +5,8 @@ Created on 07 Mar 2014
 import datetime
 #from datetime import timedelta
 import calendar
+import string
+import random
 
 '''
 Utility class contains the general purpose methods that include from reading values from
@@ -166,3 +168,14 @@ class iutility():
     @staticmethod
     def getAlphanumeric(str):
         return ''.join(e for e in str if e.isalnum()) #this remove all special chacters, spaces etc.. from username par - only alphanumeric
+    
+    '''
+    This method generates a password using ascii upper case (Alphabets) and digits (0-9)
+    #size: this is the size of the password - default is 8 characters
+        >>> iutility.getPassword()
+        >>> G5G74W12    
+    '''
+    @staticmethod
+    def getPassword(size=8):
+        chars = string.ascii_uppercase + string.digits    
+        return ''.join(random.choice(chars) for _ in range(size))

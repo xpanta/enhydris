@@ -29,7 +29,9 @@ from classes.Iseries import iseries
 from classes.Ifile import ifile
 from classes.Idma import idma
 from classes.Ierror import ierror
+from classes.Iemail import iemail
 from classes.Iusecase import iusecase
+from classes.Iconfig import iconfig
 
 from enhydris.hcore.views import (TimeseriesDetailView as TDV,
         bufcount)
@@ -87,7 +89,8 @@ class ukcsregistrationsave(TemplateView):
         
         username = email.split('@')[0] #get username part from email address
         username = iutility.getAlphanumeric(username)
-                
+        password = iutility.getPassword()
+
         try:
             profile = UserProfile.objects.get(address__iexact=addr)
             if profile.user.is_active is False:
@@ -97,19 +100,24 @@ class ukcsregistrationsave(TemplateView):
                     profile.user.last_name  = lname
                 
                 if len(username)>2:
-                    username = username[0:3]+str(int(time.time()))
+                    username = username[0:3]+str(int(time.time())) #get first 3 charaters of email and add timestamp to create unique username
                 else:
                     username = username+str(int(time.time()))
                 
-                profile.user.username = username    
-                profile.user.email = email
+                profile.user.username = username    #set username
+                profile.user.email = email          #set email
+                profile.user.set_password(password) #set password                
+                profile.user.is_active = True       #set active user
                 
+                content = "Here is your account details:\nUsername: "+username+"\nPassword: "+password+"\n\niWIDGET Weblink: "+iconfig.iWIDGETURL
+                mail = iemail(email,"iWIDGET Account",content)
+                mail.sendEmail()
                 '''
                 code to send email
                 '''
-                
-                profile.user.is_active = True
+
                 profile.user.save()
+                
                 status = True
             else:
                 status = ierror.ALREADY_EXIST
