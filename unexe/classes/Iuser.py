@@ -92,3 +92,14 @@ class iuser():
             return True #user details save successfully
         except:
             return -1 #indcates other issues or errors, it needs to be redirected to universal error
+    
+    '''
+    This method is used to create username which is complaint with Django username field in user table
+        >>> Iuser.getUsername(ah1sd)
+        >>> ah1
+    def getUsername(self,str):
+        if len(str)>2:
+            return str[0:3]+str(int(time.time())) #get first 3 charaters of email and add timestamp to create unique username
+        else:
+            return str+str(int(time.time()))        
+    '''
