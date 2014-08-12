@@ -5,7 +5,8 @@ Created on 06 Mar 2014
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
 from Iserialize import iserialize
-
+from Iutility import iutility
+import time
 '''
 This is the user class and all functionality related to user are implemeted in this class.
 Some of these include login, logout etc
@@ -95,11 +96,22 @@ class iuser():
     
     '''
     This method is used to create username which is complaint with Django username field in user table
-        >>> Iuser.getUsername(ah1sd)
-        >>> ah1
-    def getUsername(self,str):
-        if len(str)>2:
-            return str[0:3]+str(int(time.time())) #get first 3 charaters of email and add timestamp to create unique username
-        else:
-            return str+str(int(time.time()))        
+    #str: This is any random string. First 3 characters are used for generating username (3 characters+timestamp)
+        >>> Iuser.getUsername(ahs1d)
+        >>> ahs2124654654
     '''
+    def getUsername(self,astring):
+        name = iutility.getAlphanumeric(astring)
+        if len(name)>2:
+            return name[0:3]+str(int(time.time())) #get first 3 charaters of email and add timestamp to create unique username
+        else:
+            return name+str(int(time.time()))
+
+    '''
+    This method is used to create password using asicii chacters and digits
+    #size: This is the size of the required password - default is 8 characters
+        >>> Iuser.getPassword(8)
+        >>> ABD2JX98
+    '''
+    def getPassword(self,size=8):
+        return iutility.getRandomstring(size)

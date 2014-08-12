@@ -80,50 +80,49 @@ class ukcsregistrationsave(TemplateView):
     template_name = "casestudy/ukcsregistration.html"
 
     def post(self, request):
-        status   = False
+        status   = 0
         fname    = iutility.getPostValue('ukcsregfname',request).strip()
         lname    = iutility.getPostValue('ukcsreglname',request).strip()
         email    = iutility.getPostValue('ukcsregemail',request).strip()
         addr     = iutility.getPostValue('ukcsregaddress',request).strip()
         profile  = None
         
-        username = email.split('@')[0] #get username part from email address
-        username = iutility.getAlphanumeric(username)
-        password = iutility.getPassword()
-
+        #user class
+        wuser = iuser()
+        
         try:
             profile = UserProfile.objects.get(address__iexact=addr)
+        except:
+            status  = ierror.NOT_FOUND
+        
+        if profile:            
             if profile.user.is_active is False:
                 if not fname == "":
                     profile.user.first_name = fname
                 if not lname == "":
                     profile.user.last_name  = lname
                 
-                if len(username)>2:
-                    username = username[0:3]+str(int(time.time())) #get first 3 charaters of email and add timestamp to create unique username
-                else:
-                    username = username+str(int(time.time()))
+                username = wuser.getUsername(email.split('@')[0])
+                password = wuser.getPassword()    
                 
-                profile.user.username = username    #set username
+                profile.user.username = username #set username
                 profile.user.email = email          #set email
                 profile.user.set_password(password) #set password                
                 profile.user.is_active = True       #set active user
+                profile.user.is_staff = False
                 
+                #send email
                 content = "Here is your account details:\nUsername: "+username+"\nPassword: "+password+"\n\niWIDGET Weblink: "+iconfig.iWIDGETURL
                 mail = iemail(email,"iWIDGET Account",content)
                 mail.sendEmail()
-                '''
-                code to send email
-                '''
 
+                #finally save profile
                 profile.user.save()
                 
                 status = True
             else:
                 status = ierror.ALREADY_EXIST
-        except:
-            status  = ierror.NOT_FOUND
-               
+
         return HttpResponse(json.dumps(status),content_type='application/javascript')
     
 class test(TemplateView):

@@ -170,12 +170,12 @@ class iutility():
         return ''.join(e for e in str if e.isalnum()) #this remove all special chacters, spaces etc.. from username par - only alphanumeric
     
     '''
-    This method generates a password using ascii upper case (Alphabets) and digits (0-9)
+    This method generates a random string using ascii upper case (Alphabets) and digits (0-9)
     #size: this is the size of the password - default is 8 characters
         >>> iutility.getPassword()
         >>> G5G74W12    
     '''
     @staticmethod
-    def getPassword(size=8):
+    def getRandomstring(size=8):
         chars = string.ascii_uppercase + string.digits    
         return ''.join(random.choice(chars) for _ in range(size))
