@@ -113,8 +113,9 @@ function c_uc32toggle()
 	}
 	else if(radioval=="days")
 	{
+		
 		domutil.setCssclass('#c_uc32_season','hide');
-		domutil.removeCssclass('#c_uc32_daterange','hide');		
+		domutil.removeCssclass("#c_uc32_daterange",'hide');		
 	}
 	else
 	{
@@ -192,7 +193,7 @@ function c_uc32disabled()
 		</div>
 	 </div>
 	 <br/>
-	 <div class="row" id="_uc32_daterange">
+	 <div class="row">
 	 	<div class="form-inline col-md-6 hide" id="c_uc32_season">
 			<select id="c_uc32_seasons" class="form-control" required="true">
 			<option value="summer">Summer</option>

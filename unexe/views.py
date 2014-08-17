@@ -575,8 +575,10 @@ class c_uc33(TemplateView):
         
         user = request.user #get authenticated user
         household = user.households.all()[0] #get user household id
+
         #dma that will use for comparison
-        dma = DMA.objects.get(pk=11) #chosing other DMA for comparison, we will change this when we will get the different demographic database         
+        dma = DMA.objects.get(pk=2) #chosing other DMA for comparison, we will change this when we will get the different demographic database
+                 
         #dma  = household.dma  #get dma of the user
         household_dma = dma.households.all()
         
