@@ -1,0 +1,174 @@
+{% load sekizai_tags %}
+{% load i18n %}
+{% block c_uc3.4 %}
+
+{% if c_uc34data|escapejs == "null" %}
+<div class="jumbotron">
+  <h2>{% trans "Welcome to iWIDGET" %}!</h2>
+  <p>{% trans "Not enough data is available for analysis (Consumer use case C_UC3.4)" %}</p>
+</div>
+{% else %} 
+<div class="panel panel-default">
+	<!-- chart menu/toolbar -->
+	<div class="panel-heading clearfix">
+	 <div class="row">
+    	<div class="pull-right col-md-1">
+    		<img src="{{STATIC_URL}}/images/pdf.png"  alt="Export to PDF" title="Export to PDF" />
+            <img src="{{STATIC_URL}}/images/save.png" alt="Save Raw Data" title="Save Raw Data" />
+        </div>
+		<div class="col-md-10">
+		<div id="c_uc34-msg"></div>
+		<form class="form-inline" id="c_uc34-form" role="form" method="POST" action="{% url 'c_uc34' %}">
+			{% csrf_token %}  
+		<!-- 
+		<select id="c_uc34select" class="form-control" required="true" onchange="c_uc34disabled();">		
+		<option value="summer">{% trans "Summer" %}</option>
+		<option value="winter">{% trans "Winter" %}</option>
+		<option value="autumn">{% trans "Autumn" %}</option>
+		<option value="spring">{% trans "Spring" %}</option>		
+		<option value="night">{% trans "Night Usage" %}</option>
+		<option value="day">{% trans "Day usage" %}</option>
+		</select>
+		<select id="c_uc34year" class="form-control" required="true"></select>
+		-->
+		<label class="radio inline c_uc34period">
+			<input type="radio" name="c_uc34_per" id="c_uc34_per" value="season" onchange="c_uc34toggle();" /> Select Season
+		</label>		
+		<label class="radio inline c_uc34period">
+			<input type="radio" name="c_uc34_per" id="c_uc34_per" value="days"  onchange="c_uc34toggle();" /> Specify Period
+		</label>
+		<label class="radio inline c_uc34period">
+			<input type="radio" name="c_uc34_per" id="c_uc34_per" value="3" onclick="c_uc34toggle();"/> Last 3 Months
+		</label>
+		<label class="radio inline c_uc34period">
+			<input type="radio" name="c_uc34_per" id="c_uc34_per" value="6" onclick="c_uc34toggle();"/> Last 6 Months
+		</label>		
+		<label class="radio inline c_uc34period">
+			<input type="radio" name="c_uc34_per" id="c_uc34_per" value="12" onclick="c_uc34toggle();"/> Last 12 Months
+		</label>	
+		<button type="button" class="btn btn-primary" onClick="apputil.sendToserver('#c_uc34-form');">{% trans "Compare" %}</button>
+		</form>     
+		</div>
+	 </div>
+	 <br/>
+	 <div class="row" id="_uc34_daterange">
+	 	<div class="form-inline col-md-6 hide" id="c_uc34_season">
+			<select id="c_uc34_seasons" class="form-control" required="true">
+			<option value="summer">Summer</option>
+			<option value="winter">Winter</option>
+			<option value="autumn">Autumn</option>
+			<option value="spring">Spring</option>			
+			</select>
+			<select id="c_uc34_seasonyear" class="form-control" required="true"></select>	 				 	
+	 	</div>	 
+		<div class="form-inline col-md-6 hide" id="c_uc34_daterange">
+		 	<div class="form-group">
+			<select id="c_uc34stmonth" class="form-control" required="true">
+			<option value="1">January</option>
+			<option value="2">February</option>
+			<option value="3">March</option>
+			<option value="4">April</option>
+			<option value="5">May</option>
+			<option value="6">June</option>
+			<option value="7">July</option>
+			<option value="8">August</option>
+			<option value="9">September</option>
+			<option value="10">October</option>
+			<option value="11">November</option>
+			<option value="12">December</option>
+			</select>
+			</div>
+			<div class="form-group">
+			<select id="c_uc34styear" class="form-control" required="true">
+
+			</select>			
+			</div>
+			TO
+		 	<div class="form-group">
+			<select id="c_uc34endmonth" class="form-control" required="true">
+			<option value="1">January</option>
+			<option value="2">February</option>
+			<option value="3">March</option>
+			<option value="4">April</option>
+			<option value="5">May</option>
+			<option value="6">June</option>
+			<option value="7">July</option>
+			<option value="8">August</option>
+			<option value="9">September</option>
+			<option value="10">October</option>
+			<option value="11">November</option>
+			<option value="12">December</option>
+			</select>
+			</div>		
+		 	<div class="form-group">
+			<select id="c_uc34endyear" class="form-control" required="true"></select>
+			</div>					
+		 <!-- 
+			 <div class="form-group col-md-3">
+			 <div class="bfh-datepicker" data-min="{{stdate}}" data-max="{{endate}}" data-date="{{stdate}}" data-name="stdate" id="stdate" data-format="d-m-y"></div>
+			 </div>
+			 <div class="form-group col-md-3">
+			 	<div class="bfh-datepicker" data-min="{{stdate}}" data-max="{{endate}}" data-date="{{endate}}" data-name="endate" id="endate" data-format="d-m-y"></div>
+			 </div>
+		-->
+		</div>	 	
+	 </div>
+    </div>    
+	<!-- End chart menu/toolbar -->
+
+	<!--  charts and table -->
+	<div class="panel-body" id="panel">
+		<div id="c_uc34cont" class="row hide">
+		<div id="c_uc34title"><p class="bg-primary text-center"><strong></strong></p></div>
+		<div class="col-md-5" id="c_uc34chartcont"></div>
+		<div class="col-md-4" id="c_uc34donutchart"></div>
+		<div class="col-md-3">
+		    <div class="panel panel-primary">
+		        <div class="panel-heading">{% trans "AREA SUMMARY" %}</div>
+		        <ul class="list-group list-group-flush text-center">
+		            <li id="c_uc34household" class="list-group-item"></li>
+		            <li id="c_uc34occupant" class="list-group-item"></li>
+		        </ul>
+		    </div>
+		    <div class="panel panel-primary">
+		        <div class="panel-heading">{% trans "YOUR SUMMARY" %}</div>
+		        <ul class="list-group list-group-flush text-center">
+		            <li id="c_uc34hhold" class="list-group-item"></li>
+		            <li id="c_uc34occup"  class="list-group-item"></li>
+		            <li class="list-group-item"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>
+		        </ul>
+		    </div>		    
+		</div>		
+		</div>
+			
+		<div class="row hide" id="c_uc34container">
+			<div id="c_uc34title"><p class="bg-primary text-center"><strong>Your last 12 Months bill comparison vs other consumers</strong></p></div>	
+			<div class="col-md-7" id="c_uc34chart"></div>
+			<div class="col-md-5" id="c_uc34summary">
+			    <div class="panel panel-primary">
+			        <div class="panel-heading">{% trans "AREA SUMMARY" %}</div>
+			        <ul class="list-group list-group-flush">
+				        <li class="list-group-item" id="c_uc34Yearly"></li>
+				        <li class="list-group-item" id="c_uc34Half"></li>
+				        <li class="list-group-item" id="c_uc34Quarter"></li>
+				        <li class="list-group-item" id="c_uc34Month"></li>
+			        </ul>
+			    </div>
+			    <div class="panel panel-primary">
+			        <div class="panel-heading">{% trans "YOUR SUMMARY" %}</div>
+			        <ul class="list-group list-group-flush">
+				        <li class="list-group-item" id="c_uc34yearly"></li>
+				        <li class="list-group-item" id="c_uc34half"></li>
+				        <li class="list-group-item" id="c_uc34quarter"></li>
+				        <li class="list-group-item" id="c_uc34month"></li>
+			            <li class="list-group-item text-center"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>
+			        </ul>
+			    </div>				    				
+			</div>		
+		</div>							
+	</div>
+	<!--  End charts and table -->	        
+</div>
+{% endif %}
+<!-- End use case 3.4 -->
+{% endblock %}
