@@ -20,9 +20,11 @@ $(window).load(function() {
 	    var id = $(e.target).attr("href").substr(1);
 	    window.location.hash = id;
 	    
+
 	    var data = null;
 	    if(domutil.hasCssclass("#c_uc53container","hide") && id=="cuc53") //tab id value, need to make global to make effectively and avoid error
 	    {
+	    		
 	    	data = jQuery.parseJSON("{{c_uc53data|escapejs}}");
 	    	if(data==null)
 	    		return;	    	
@@ -58,6 +60,16 @@ $(window).load(function() {
 	    	uc52Chart(data);
 	    }//--end if	
 	    
+	    if(domutil.hasCssclass("#c_uc34container","hide") && id=="cuc34") //tab id value, need to make global to make effective and avoid error
+	    {
+	    	data = jQuery.parseJSON("{{c_uc34data|escapejs}}");
+	    	if(data==null)
+	    		return;
+	    	
+	    	domutil.removeCssclass("#c_uc34container","hide");
+	    	uc52Chart(data);
+	    }//--end if		    
+	    
 	});	
 });
 </script>
@@ -74,13 +86,16 @@ $(window).load(function() {
                     <li><a href="#cuc31" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.1 (Compare Current and Historical Water Consumption)" %}</a></li>
 					<li><a href="#cuc32" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.2 (Compare Water Consumption with other Consumers)" %}</a></li>
 					<li><a href="#cuc33" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.3 (Compare water consumption with standard profiles)" %}</a></li>
+					<li><a href="#cuc34" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.4 (Compare household water consumption with most efficient users)" %}</a></li>					
 					<li><a href="#cuc52" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.2 (Receive information on specific and alternatives pricing schemes)" %}</a></li>										
 				{% endif %}
 			</ul>
 		</li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Energy Analysis (Use cases)" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="energyusecase"> 		
-				<li><a href="#energy" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case No.---" %}</a></li>				
+				<li><a href="#energy" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case No.---" %}</a></li>
+				<li><a href="#cuc41" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC4.1 (Compare energy pattern associated with water use in the same household)" %}</a></li>
+				<li><a href="#cuc54" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.4 (Forecast the component of next energy bill associated with water consumption)" %}</a></li>												
 			</ul>
 		</li>		
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> {% trans "Settings" %} <span class="caret"></span></a>
@@ -129,12 +144,27 @@ $(window).load(function() {
 			<!--use case3.3-->
 			<div class="tab-pane tabcontent" id="cuc33">
 	            	 {% include "usecase/c_uc3.3.html" %} 
-			</div>			
+			</div>
+
+			<!--use case3.3-->
+			<div class="tab-pane tabcontent" id="cuc34">
+	            	 {% include "usecase/c_uc3.4.html" %} 
+			</div>						
 		{% endif %}
 		
 		<div class="tab-pane tabcontent" id="energy">
 				 {% include "energyanalysis.html" %}
 		</div><!--energy-->
+		
+		<!--use case4.1-->
+		<div class="tab-pane tabcontent" id="cuc41">
+            	 {% include "usecase/c_uc4.1.html" %} 
+		</div>
+
+		<!--use case5.4-->
+		<div class="tab-pane tabcontent" id="cuc54">
+            	 {% include "usecase/c_uc5.4.html" %} 
+		</div>	
 		
 		<div class="tab-pane tabcontent" id="Wsettings">Water Settings</div>
 		<div class="tab-pane tabcontent" id="Esettings">Energy Settings</div>

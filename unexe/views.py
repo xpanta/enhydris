@@ -32,6 +32,7 @@ from classes.Ierror import ierror
 from classes.Iemail import iemail
 from classes.Iusecase import iusecase
 from classes.Iconfig import iconfig
+from classes.Irest import irest
 
 from enhydris.hcore.views import (TimeseriesDetailView as TDV,
         bufcount)
@@ -89,6 +90,8 @@ class ukcsregistrationsave(TemplateView):
         
         #user class
         wuser = iuser()
+        #rest class
+        #rest  = irest(iconfig.UPLWSServer,iconfig.UPLWSUsername,iconfig.UPLWSPassword)
         
         try:
             profile = UserProfile.objects.get(address__iexact=addr)
@@ -105,10 +108,13 @@ class ukcsregistrationsave(TemplateView):
                 username = wuser.getUsername(email.split('@')[0])
                 password = wuser.getPassword()    
                 
+                #print username
+                #rest.addUser(username,password)
+                #print rest.getUser(username)
                 profile.user.username = username #set username
                 profile.user.email = email          #set email
                 profile.user.set_password(password) #set password                
-                profile.user.is_active = True       #set active user
+                #profile.user.is_active = True       #set active user
                 profile.user.is_staff = False
                 
                 #send email
@@ -363,6 +369,30 @@ class consumer(TemplateView):
             '''
             #"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,
             
+            '''
+            code for use case 3.4
+            ''' 
+            c_uc34data = None
+            '''            
+            End of use case 3.4
+            '''
+            
+            '''
+            code for use case 4.1
+            ''' 
+            c_uc41data = None
+            '''            
+            End of use case 4.1
+            '''
+            
+            '''
+            code for use case 5.4
+            ''' 
+            c_uc54data = None
+            '''            
+            End of use case 5.4
+            '''
+                                    
             #data = {"household":household,"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,"tsid":ts_monthly.id,"dmastats":dmasummary,"uc32chart1":json.dumps(list1),"dmastats":dmastats,}    
             data = {
                 "household": household,
@@ -376,12 +406,44 @@ class consumer(TemplateView):
                 "endate": endate,
                 "c_uc32data": json.dumps(c_uc32data),
                 "c_uc33data": json.dumps(c_uc33data),
+                "c_uc34data": json.dumps(c_uc34data),                
+                "c_uc41data": json.dumps(c_uc41data),
                 "c_uc52data": json.dumps(c_uc52data),
-                "c_uc53data": json.dumps(c_uc53data)}
+                "c_uc53data": json.dumps(c_uc53data),
+                "c_uc54data": json.dumps(c_uc54data)}
  
         return self.render_to_response(data)            
 
+'''
+TemplateView class for consumer use case 3.4
+'''                                                                  
+class c_uc34(TemplateView):
+    template_name = "dashboard.html"  
 
+    def post(self, request, *args, **kwargs):    
+        data = None            
+        return HttpResponse(json.dumps(data),content_type='application/javascript')
+
+'''
+TemplateView class for consumer use case 4.1
+'''                                                                  
+class c_uc41(TemplateView):
+    template_name = "dashboard.html"  
+
+    def post(self, request, *args, **kwargs):    
+        data = None            
+        return HttpResponse(json.dumps(data),content_type='application/javascript')
+
+'''
+TemplateView class for consumer use case 5.4
+'''                                                                  
+class c_uc54(TemplateView):
+    template_name = "dashboard.html"  
+
+    def post(self, request, *args, **kwargs):    
+        data = None            
+        return HttpResponse(json.dumps(data),content_type='application/javascript')
+    
 '''
 TemplateView class for consumer use case 3.2
 '''                                                                  

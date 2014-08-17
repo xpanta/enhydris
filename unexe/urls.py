@@ -52,6 +52,10 @@ urlpatterns = patterns('',
     url(r'^c_uc32$', login_required(c_uc32.as_view()),
         name='c_uc32'),  # getcompare
     
+    url(r'^c_uc34$', login_required(c_uc34.as_view()),name='c_uc34'),
+    url(r'^c_uc41$', login_required(c_uc41.as_view()),name='c_uc41'),
+    url(r'^c_uc54$', login_required(c_uc54.as_view()),name='c_uc54'),        
+                           
     url(r'^ukcsregistration$', ukcsregistration.as_view(),name='ukcsregistration'), 
     url(r'^ukcsregistrationsave$', ukcsregistrationsave.as_view(),name='ukcsregistrationsave'),
     url(r'^ukcsregistrationconfirm$', ukcsregistrationconfirm.as_view(),name='ukcsregistrationconfirm'),
