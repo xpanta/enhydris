@@ -372,7 +372,7 @@ class consumer(TemplateView):
             '''
             code for use case 3.4
             ''' 
-            c_uc34data = None
+            c_uc34data = usecase.usecase3_4()
             '''            
             End of use case 3.4
             '''

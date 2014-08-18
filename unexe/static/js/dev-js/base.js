@@ -1254,6 +1254,7 @@ function ChartUtil()
 		chart.assignColor("DMA", "#C0C0C0");
 		chart.assignColor("Area", "#C0C0C0")
 		chart.assignColor("Consumer", "#C0C0C0");
+		chart.assignColor("Most Efficient", "#C0C0C0");
 		/*s.addEventHandler("click", function (e) { 
 		    d3.select("#infoLabel").text("In " + e.seriesValue[1] + " we sold " + e.seriesValue[0] + " " + e.xValue + "s!");
 		});*/

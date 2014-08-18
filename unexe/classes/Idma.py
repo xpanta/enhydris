@@ -5,6 +5,7 @@ Created on 17 Apr 2014
 '''
 from Iseries import iseries
 from Iutility import iutility
+import Ihousehold
 import datetime
 import pandas as pd
 import numpy as np
@@ -703,4 +704,80 @@ class idma():
             dict["avg_units"] = sum_units/sum_households #average units consumed by household in DMA
         dict["min_units"]     = min_units        
         
-        return dict    
+        return dict   
+    
+    '''
+    This method returns the most efficient user of the DMA
+    dma: DMA model object
+    month: Number of months of timeseries to analysis for DMA, this make sure that comparison only made for equal number of months    
+    '''
+    def getMostefficient(self,dma,months=12):
+        months     = {}
+        curmonths  = 0.0
+        series     = iseries()
+        hhold      = Ihousehold.ihousehold()
+        curunits   = {}
+        zero       = True
+        list1 = []
+        data = {}
+        packdata = {}
+        monthunits = {}
+        #dic12 = {"period":"","sum_units":"","avg_units":"","unit_person":""}
+        dic12 = {}
+        effdata = {}#"12 Month":"","6 Month":"","3 Month":"","1 Month":""}
+        occupants = 0
+        for household in dma: #get every household
+            ts_monthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
+            length = len(ts_monthly) #check timeseries months
+            idx    = 1
+            if length>=12:
+                for x in range(0, 4):
+                    months[str(idx)] = ts_monthly[length-idx:]
+                    dates, units     = IT.izip(*months[str(idx)]) #much better for longer data, returning tuples
+                    if zero:
+                        monthunits[str(idx)] = sum(units)
+                    else:
+                        curmonths    = sum(units)
+                        if curmonths < monthunits[str(idx)]: # if current user months usage is less than update
+                            monthunits[str(idx)] = curmonths
+                    #make sure to set zero at the end of first user
+                    if idx==12:
+                        if zero:
+                            occupants = household.num_of_occupants
+                            zero = False
+                            
+                    if idx==1:
+                        idx = idx + 2
+                    else:
+                        idx = idx + idx
+        
+        if len(monthunits) > 0:
+            idx = 1
+            for x in range(0, 4):
+                data["Units"] = round(monthunits[str(idx)],2)
+                data["Cost"]  = round(hhold.tariff1(monthunits[str(idx)]),2)
+                data["Period"]= str(idx)+" Month"
+                data["Data"]  = "Most Efficient"
+                
+                list1.append(data)
+                
+                dic12["sum_units"]   = data["Units"] 
+                dic12["period"]      = data["Period"]
+                dic12["unit_person"] = round(dic12["sum_units"]/occupants,2)
+                effdata[str(idx)+" Month"] = dic12
+                
+                dic12= {}
+                data = {}
+                
+                if idx==1:
+                    idx = idx + 2
+                else:
+                    idx = idx + idx
+             
+        
+        packdata["chartdata"] = list1
+        packdata["stats"]     = effdata
+        
+        #print packdata
+        
+        return packdata

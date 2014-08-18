@@ -23,6 +23,66 @@ class iusecase():
     '''
     Use case 3.3 method to perform initial computation that will show appear as default chart
     '''
+    def usecase3_4(self):
+        '''
+        Calculating household monthly cost and other statistics
+        '''
+        hhold      = ihousehold()
+        hholdstats = hhold.getUsage(self.User)
+        household  = self.User.households.all()[0]
+        dma        = household.dma # dma to calculate user with highest cost
+        household_dma = dma.households.filter(num_of_occupants=household.num_of_occupants,property_type=household.property_type)
+        d = idma()
+        series = iseries()
+        obj   = {}
+        list1 = []
+        data  = {}
+        effuser = None
+        #effdata = {"year":"","half":"","quarter":"","month":""}
+        yourdata = {"year":"","half":"","quarter":"","month":""}
+        effuser = d.getMostefficient(household_dma,12)
+        effdata = effuser["stats"]
+        for x in range (0,len(effuser["chartdata"])):
+            list1.append(effuser["chartdata"][x])
+            
+        for x in range(0, 4):
+            if x==0:
+                period = 12
+                cal    = "year"
+            elif x==1:
+                period = 6
+                cal    = "half"
+            elif x==2:
+                period = 3
+                cal    = "quarter"                            
+            elif x==3:
+                period = 1
+                cal    = "month"
+        
+            obj = {}
+            dic = {}
+            dic = hholdstats[cal]
+            yourdata[cal] = dic
+            #print dic
+            obj["Units"] = str(dic["sum_units"])
+            obj["Cost"]  = round(hhold.tariff1(dic["sum_units"]),2)
+            #obj["Cost"]  = str(series.getCost(dic["sum_units"]))
+            obj["Period"]= str(period)+" Month"
+            obj["Data"]  = "You"
+            dic = {}
+            list1.append(obj)          
+            obj = {}
+
+
+        data = {}
+        data["chart"]    = list1
+        data["effdata"]  = effdata
+        data["yourdata"] = yourdata
+        return data
+
+    '''
+    Use case 3.3 method to perform initial computation that will show appear as default chart
+    '''
     def usecase3_3(self):
         '''
         Calculating household monthly cost and other statistics
@@ -80,7 +140,7 @@ class iusecase():
         data["chart"]    = list1
         data["areadata"] = areadata
         data["yourdata"] = yourdata
-
+        
         return data
     
     '''
