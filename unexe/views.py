@@ -452,7 +452,7 @@ class c_uc34(TemplateView):
         '''
         #get dates and values in a separate list
         dates, units = IT.izip(*ts_monthly) #much better for longer data, returning tuples
-         #create pandas Series (time series using two different list for timeseries data analysis
+        #create pandas Series (time series using two different list for timeseries data analysis
         pdf = pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
         pdf.index.name = "dates"
         data = {}
@@ -463,7 +463,13 @@ class c_uc34(TemplateView):
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
                 comparechart[0]["Units"] = data["area"]["areadata"]["household"]  
-        
+        else:
+            data["you"]  = hhold.getmonthlyusage(user,int(period))
+            data["area"] = d.getmonthlyusagefficient(household_dma,int(period))
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]
+                        
         if not data["you"] or not data["area"]:
             data = None
         else:

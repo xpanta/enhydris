@@ -27,6 +27,82 @@ class idma():
         >>> d = idma()
         >>> dma = DMA.objects.get(pk=10) 
         >>> household_dma = dma.households.all()        
+        >>> d.getmonthlyusagefficient(household_dma,6)    
+    '''
+    def getmonthlyusagefficient(self,dma,months):
+        start = ""
+        mid   = ""
+        end   = ""
+        area  = {}
+        areadata = {"sum":"","household":"","occupant":""}
+        sumonth  = {}
+        series = iseries()
+        sumhhold = 0
+        sumoccup = 0
+        unitsoccup = 0.0
+        unitshhold = 0.0
+        sumunitshhold = 0.0
+        occupants = 0
+        list1  = []
+        dtlist = []
+        first  = True
+        
+        #process every household
+        for household in dma:
+            ts_monthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
+            length     = len(ts_monthly)
+            if not length>=months:  #Total three months in the winter
+                continue
+
+            ts_monthly = ts_monthly[length-months:] #get the latest last 3 months
+            #get dates and values in a separate list
+            dates, mylist = IT.izip(*ts_monthly) #much better for longer
+            units  = [float(round(n, 2)) for n in mylist] 
+            if not dtlist:
+                for x in range(0,months): 
+                    dtlist.append(str(dates[x].date()))
+                    list1.append(0.0)
+
+            #sumhhold = sumhhold + 1 #number of household
+            #sumoccup = sumoccup + household.num_of_occupants #number of occupants
+            for x in range(0,months):
+                if math.isnan(units[x]):
+                    continue
+                if first:
+                    occupants = household.num_of_occupants
+                    list1[x]  = units[x]
+                    first     = False
+                else:
+                    if list1[x] == 0.0:
+                        list1[x] = units[x]
+                    else:
+                        if units[x] < list1[x]:
+                            list1[x] = units[x]                        
+     
+        
+        '''
+        If exists households
+        '''
+        if first==False:                                             
+            areadata["sum"]       = sum(list1,2)
+            areadata["household"] = round(areadata["sum"],2) #each month represents 1 household and in every season there are months in total
+            areadata["occupant"]  = round(areadata["household"]/occupants,2) #units consume per household / (sumoccup/sumhhold : average occupants per household = average units consume per occupants
+            area["areadata"]      = areadata
+            area["data"]          = series.getlistTojson(dtlist,list1,"Date","Cost")
+        else:
+            area                  = None
+        
+        
+        return area
+        
+    '''
+    analyse the household's summer data for the given dma and year
+    dma:  Household in this DMA will be analyse to generate statistics
+    year: This is the year to analyse the data
+    return: If no data exists for the specified period or dates then return None other return statistics
+        >>> d = idma()
+        >>> dma = DMA.objects.get(pk=10) 
+        >>> household_dma = dma.households.all()        
         >>> getseasonusageefficient(household_dma,"2010","autumn")    
     '''
     def getseasonusagefficient(self,dma,year,season):
@@ -206,7 +282,6 @@ class idma():
             area                  = None
         
         return area
-
    
     '''
     analyse the household's summer data for the given dma and year
