@@ -41,43 +41,45 @@ class iusecase():
         #effdata = {"year":"","half":"","quarter":"","month":""}
         yourdata = {"year":"","half":"","quarter":"","month":""}
         effuser = d.getMostefficient(household_dma,12)
-        effdata = effuser["stats"]
-        for x in range (0,len(effuser["chartdata"])):
-            list1.append(effuser["chartdata"][x])
+        if effuser:
+            effdata = effuser["stats"]
+            for x in range (0,len(effuser["chartdata"])):
+                list1.append(effuser["chartdata"][x])
+                
+            for x in range(0, 4):
+                if x==0:
+                    period = 12
+                    cal    = "year"
+                elif x==1:
+                    period = 6
+                    cal    = "half"
+                elif x==2:
+                    period = 3
+                    cal    = "quarter"                            
+                elif x==3:
+                    period = 1
+                    cal    = "month"
             
-        for x in range(0, 4):
-            if x==0:
-                period = 12
-                cal    = "year"
-            elif x==1:
-                period = 6
-                cal    = "half"
-            elif x==2:
-                period = 3
-                cal    = "quarter"                            
-            elif x==3:
-                period = 1
-                cal    = "month"
-        
-            obj = {}
-            dic = {}
-            dic = hholdstats[cal]
-            yourdata[cal] = dic
-            #print dic
-            obj["Units"] = str(dic["sum_units"])
-            obj["Cost"]  = round(hhold.tariff1(dic["sum_units"]),2)
-            #obj["Cost"]  = str(series.getCost(dic["sum_units"]))
-            obj["Period"]= str(period)+" Month"
-            obj["Data"]  = "You"
-            dic = {}
-            list1.append(obj)          
-            obj = {}
-
-
-        data = {}
-        data["chart"]    = list1
-        data["effdata"]  = effdata
-        data["yourdata"] = yourdata
+                obj = {}
+                dic = {}
+                dic = hholdstats[cal]
+                yourdata[cal] = dic
+                #print dic
+                obj["Units"] = str(dic["sum_units"])
+                obj["Cost"]  = round(hhold.tariff1(dic["sum_units"]),2)
+                #obj["Cost"]  = str(series.getCost(dic["sum_units"]))
+                obj["Period"]= str(period)+" Month"
+                obj["Data"]  = "You"
+                dic = {}
+                list1.append(obj)          
+                obj = {}
+     
+            data["chart"]    = list1
+            data["effdata"]  = effdata
+            data["yourdata"] = yourdata
+        else:
+            data = None
+            
         return data
 
     '''

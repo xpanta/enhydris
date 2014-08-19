@@ -420,8 +420,56 @@ TemplateView class for consumer use case 3.4
 class c_uc34(TemplateView):
     template_name = "dashboard.html"  
 
-    def post(self, request, *args, **kwargs):    
-        data = None            
+    def post(self, request, *args, **kwargs):
+        comparechart=[{"Units":"","Data":"Efficient User"},{"Units":"","Data":"You"}]
+        compare = iutility.getPostValue("compare",request)
+        year    = iutility.getPostValue("year",request)
+        period  = iutility.getPostValue("period",request)        
+        #season  = iutility.getPostValue("season",request) 
+        #season  = iutility.getPostValue("season",request)
+        
+        user = request.user #get authenticated user
+        household = user.households.all()[0] #get user household id        
+
+        d = idma() #class with dma related calcualtion
+        
+        #dma that will use for comparison
+        dma  = household.dma  #get dma of the user
+        #dma = DMA.objects.get(pk=11) #chosing other DMA for comparison, we will change this when we will get the different demographic database
+        household_dma = dma.households.filter(num_of_occupants=household.num_of_occupants,property_type=household.property_type)        
+        
+        #hourly series
+        series     = iseries()
+        ts_monthly = series.readseries(series.getmonthlyseries(household))
+        #timeseries_monthly = series.readseries(ts_monthly)
+        
+        hhold = ihousehold()
+        #print hhold.getseasonusage(user,year,compare)    
+        '''
+        We will only perform the following operation if the timeseries_hourly has sufficient data for analysis.
+        If there is not sufficient data then simply return nothing and deal with client side. At the moment there
+        is no check in the development environment as we know there are plenty of data for analysis
+        '''
+        #get dates and values in a separate list
+        dates, units = IT.izip(*ts_monthly) #much better for longer data, returning tuples
+         #create pandas Series (time series using two different list for timeseries data analysis
+        pdf = pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
+        pdf.index.name = "dates"
+        data = {}
+
+        if period=="season":
+            data["you"]  = hhold.getseasonusage(user,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
+            data["area"] = d.getseasonusagefficient(household_dma,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]  
+        
+        if not data["you"] or not data["area"]:
+            data = None
+        else:
+            #data["donutchart"] = donutchart
+            data["comparechart"] = comparechart
+        
         return HttpResponse(json.dumps(data),content_type='application/javascript')
 
 '''

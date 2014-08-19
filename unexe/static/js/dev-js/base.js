@@ -34,6 +34,7 @@ function IwidgetUtil()
 	this.c_uc52form    = "#c_uc52-form";
 	this.c_uc53form    = "#c_uc53-form";
 	this.c_uc33form    = "#c_uc33-form";
+	this.c_uc34form    = "#c_uc34-form";	
 	this.ukcsregform   = "#ukcsreg-form";
 	this.mapcontainer  = "map"; //map container id (DOM) without # sign.
 	//variables to hold id (DOM) of forms alert box
@@ -46,6 +47,7 @@ function IwidgetUtil()
 	this.c_uc52msg    = "#c_uc52-msg";
 	this.c_uc53msg    = "#c_uc53-msg";
 	this.c_uc33msg    = "#c_uc33-msg";
+	this.c_uc34msg    = "#c_uc34-msg"	
 	this.c_uc32msg    = "#c_uc32-msg";
 	this.ukcsregmsg   = "#ukcsreg-msg"
 	//global unexpected error message
@@ -951,7 +953,6 @@ function ChartUtil()
         });	 		
 	}
 	
-	
 	this.c_uc33comparechart = function(id,dim,data)
 	{
 	    
@@ -1028,7 +1029,82 @@ function ChartUtil()
 	        .text(d3.format(",.2f")(d.yValue)+ " m3");
         });	 		
 	}
+
+	this.c_uc34comparechart = function(id,dim,data)
+	{
+		var start = 0;
+		var end   = 10;
+		var h 	  = data[0]["Units"];
+	    var price_break = [      
+			               { "Price Break" : "Highest", "units" :30 , "start" : start }, 
+			               { "Price Break" : "Highest", "units" :30, "start" : end },
+			           ];
+		
+		var margin = {top: 30, right: 80, bottom: 110, left: 60};
+		var svg    = dimple.newSvg(id, dim.width, dim.height);
+		// Draw a standard chart using the aggregated data
+		var chart = new dimple.chart(svg, data);
+		//chart.setBounds(70, 30, 505, 305);  
+		chart.setBounds(margin.left,margin.top,dim.width-margin.right,dim.height-margin.bottom);
+		var x = chart.addCategoryAxis("x", ["Data"]);
+		x.showGridlines = true;
+		x.addOrderRule(["Efficient User","You"]);
+		var y = chart.addMeasureAxis("y", "Units");
+		y.showGridlines = true;
+	    y.tickFormat = ',.2f';  
+	    y.title = "Units (m3)";
+		
+		//x.overrideMin = 0;
+		//x.overrideMax = 5;
+		//y.tickFormat = '%';
+		//y.overrideMin = 0;
+		//y.overrideMax = 1.0;
+		//y.showPercent = true
+		chart.addLegend(65, 10, dim.width-margin.right, 20, "right");
+		
+		var s1  = chart.addSeries(["Units", "Data"], dimple.plot.bar);
+		//var s2 = chart.addSeries("Price Break", dimple.plot.line);
+		//s2.data = price_break;
+		chart.assignColor("Efficient User", "#C0C0C0")
+		chart.draw(1500);
+		
+	    /*Change tooltip data*/
+	    s1.getTooltipText = function (e) {
+	    	var parser   = d3.time.format("%b-%Y");
+            return [
+                "Units: " + e.y +" m3",
+                "Data: "+ e.x
+            ];
+        };
+        
+		 // After drawing we can access the shapes and their associated data
+	    s1.shapes.each(function(d) {
+
+	        // Get the shape as a d3 selection
+	        var shape = d3.select(this);
+	        
+	        //alert(d.width);
+	        // Add a text label for the value
+	        svg.append("text")
 	
+	        // Position in the centre of the shape (vertical position is
+	        // manually set due to cross-browser problems with baseline)
+	        .attr("x", parseFloat(shape.attr("x")) + parseFloat(shape.attr("width"))/2)
+	        .attr("y", y._scale(d.height))
+	        .attr("dy", "-1em")
+	
+	        // Centre align
+	        .style("text-anchor", "middle")
+	        .style("font-size", "10px")
+	        .style("font-family", "sans-serif")
+	
+	        // Make it a little transparent to tone down the black
+	        .style("opacity", 0.7)
+	
+	        // Format the number
+	        .text(d3.format(",.2f")(d.yValue)+ " m3");
+        });	 		
+	}	
 	
 	this.c_uc52donutchart = function(id,dim,data)
 	{
@@ -1156,7 +1232,86 @@ function ChartUtil()
 	    	var parser   = d3.time.format("%b-%Y");
             return [
                 "Date: "+ parser(new Date(e.x)),
-                "Units: £" + e.y+ " m3",
+                "Units: " + e.y+ " m3",
+                "Data: "+ e.aggField[0]                
+            ];
+        };		    
+	}
+	
+	/* This method create line chart for the consumer use case 3.4
+	 * id: DOM id to add chart to. e.g: #id
+	 * dim: Chart dimenions object. e.g: var dim = {width: 30, height: 80} 
+	 * data1: This is the first line series data. e.g: 
+	 * data2: This is the first line series data. e.g:
+	 * 
+	 */
+
+	this.c_uc34linechart = function(id,dim,data1,data2)
+	{
+		var margin = {top: 30, right: 80, bottom: 110, left: 60};
+	    var keys = Object.keys(data1[0]);
+	    var xcord = keys[0];
+	    var ycord = keys[1];
+	    var svg = dimple.newSvg(id, dim.width, dim.height);
+	    var parser = d3.time.format("%Y-%m-%d")
+	    
+	    var dateReader = function (d) { return parser.parse(d[xcord]); }
+	    var start = d3.time.day.offset(d3.min(data1, dateReader), -5);
+	    var end = d3.time.day.offset(d3.max(data1, dateReader), 15);
+
+	    var myChart = new dimple.chart(svg,data1);
+	    myChart.setBounds(margin.left,margin.top,dim.width-margin.right,dim.height-margin.bottom);     	
+	    
+    	var x = myChart.addTimeAxis("x", xcord, "%Y-%m-%d","%b %Y");
+	    
+	    x.overrideMin = start;
+	    x.overrideMax = end;
+	    x.addOrderRule(xcord);
+	    x.showGridlines = true;
+	    x.timePeriod = d3.time.months;
+	    x.floatingBarWidth = dim.width/data1.length/2;
+	    x.title = "Date";
+	    
+	    var y = myChart.addMeasureAxis("y", ycord);
+	    y.showGridlines = true;
+	    y.tickFormat = ',.2f';  
+	    y.title = "Units (m3)";
+	    
+	    var s1 = myChart.addSeries("You", dimple.plot.line);
+	    var s2 = myChart.addSeries("Efficient User", dimple.plot.line);
+	    
+	    s1.lineMarkers = true;
+	    s1.lineWeight = 3;
+	    s1.lineMarkers = true;
+
+	    s2.data = data2;
+
+	    s2.lineMarkers = true;
+	    s2.lineWeight = 3;
+	    s2.lineMarkers = true;	    
+	    
+		myChart.addLegend(65,10,dim.width-margin.right,20,"right");
+		
+	    myChart.assignColor("Efficient User", "#C0C0C0");
+	    //myChart.assignColor("Area", "#8E35EF");
+	    
+	    myChart.draw(1500);    
+	    
+	    /*Change tooltip data*/
+	    s1.getTooltipText = function (e) {
+	    	var parser   = d3.time.format("%b-%Y");
+            return [
+                "Date: "+ parser(new Date(e.x)),
+                "Units: " + e.y+ " m3",
+                "Data: "+ e.aggField[0]
+            ];
+        };
+
+	    s2.getTooltipText = function (e) {
+	    	var parser   = d3.time.format("%b-%Y");
+            return [
+                "Date: "+ parser(new Date(e.x)),
+                "Units: " + e.y+ " m3",
                 "Data: "+ e.aggField[0]                
             ];
         };		    
@@ -2141,6 +2296,99 @@ function AppUtil()
 				chartutil.c_uc33comparechart("#c_uc33donutchart",dim,data["comparechart"]);				
 				//chartutil.c_uc52donutchart("#c_uc33donutchart",dim,data["donutchart"]);				
 				
+			}
+			else if(id==iwidgetutil.c_uc34form)
+			{
+				var dataObj = {};
+				var title   = "";
+				dataObj.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+				//dataObj.analysis = $("#c_uc52_analysis").val(); //get analysis type
+				dataObj.compare = $('#c_uc34select').val(); //get period
+				dataObj.year    = $('#c_uc34year').val();   //get year
+				
+				dataObj.period  = $('input[name=c_uc34_per]:checked').val(); //get period
+				if(dataObj.period=="days") //if period selected
+				{
+					
+					dataObj.stdate = $("#c_uc34styear").val()+"-"+$("#c_uc34stmonth").val()+"-01";
+					dataObj.endate = $("#c_uc34endyear").val()+"-"+$("#c_uc34endmonth").val()+"-01"; //at the server side get the last day of the month (Python)
+					var s = dateutil.strtodate(dataObj.stdate)
+					var e = dateutil.strtodate(dataObj.endate)
+					if(s > e)
+					{
+						//this.showmessage(iwidgetutil.c_uc33msg,dangerclass,"Date One should not be greater than Date Two");
+						alert("Date One should not be greater than Date Two");
+						return;
+					}
+					else if(dateutil.isequal(s,e))
+					{
+						this.showmessage(iwidgetutil.c_uc34msg,dangerclass,"Dates should not be equal");
+						return;
+					}
+					else
+						""
+						
+				}//--end if
+				else if(dataObj.period=="season")
+				{
+					dataObj.season 	   = $("#c_uc34_seasons").val();
+					dataObj.seasonyear = $("#c_uc34_seasonyear").val();
+				}//--end if
+				
+				if (dataObj.compare=="summer")
+					title = "Summer ("+dataObj.year+") consumption comparison"; 
+				else if (dataObj.compare=="winter")
+					title = "Winter ("+dataObj.year+") consumption comparison";				
+				else if (dataObj.compare=="night")
+				{
+					dataObj.period   = $('input[name=c_uc34_per]:checked').val(); //get period
+					title = "Last "+dataObj.period+" months night units comparison";
+					
+				}
+				else if (dataObj.compare=="day")
+				{
+					dataObj.period   = $('input[name=c_uc34_per]:checked').val(); //get period
+					title = "Last "+dataObj.period+" months day units comparison";
+					
+				}
+				
+				var data 	  = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
+				if(data==null)
+				{
+					alert("No data is available for analysis");
+					return;
+				}
+
+				domutil.removeCssclass("#c_uc34cont","hide"); //make chart container visible 
+				$("#c_uc34chartcont").empty(); //clear previous chart
+				$("#c_uc34donutchart").empty(); //clear previous chart
+				$("#c_uc34title").empty();
+				$("#c_uc34title").html('<p class="bg-primary text-center"><strong>'+title+'</strong></p>');
+				
+				var w 		  = domutil.getdivwidth("c_uc34chartcont"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
+				var dim 	  = {"width":w,"height":450}; //width and height of chart container
+				
+				var household = data["area"]["areadata"]["household"];
+				$("#c_uc34household").html("<div class='text-muted'>Total Units Consumed for household: "+household+" m<sup>3</sup></div>");
+				
+				var occupant = data["area"]["areadata"]["occupant"];
+				$("#c_uc34occupant").html("<div class='text-muted'>Units consumed per occupant: "+occupant+" m<sup>3</sup></div>");				
+				
+				//household
+				household = data["you"]["yourdata"]["household"];
+				$("#c_uc34hhold").html("<div class='text-primary'>Total Units Consumed for household: "+household+" m<sup>3</sup></div>");
+
+				occupant = data["you"]["yourdata"]["occupant"];
+				$("#c_uc34occup").html("<div class='text-primary'>Units consumed per occupant: "+occupant+" m<sup>3</sup></div>");				
+				
+				//draw line chart
+				chartutil.c_uc34linechart("#c_uc34chartcont",dim,data["you"]["data"],data["area"]["data"]);
+				//chartutil.c_uc33linechart("#c_uc33chartcont",dim,youchart,areachart);
+				//draw donut chart
+				var w = domutil.getdivwidth("c_uc34donutchart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
+				var dim = {"width":w,"height":450}; //width and height of chart container
+				chartutil.c_uc34comparechart("#c_uc34donutchart",dim,data["comparechart"]);				
+				//chartutil.c_uc52donutchart("#c_uc33donutchart",dim,data["donutchart"]);				
 			}
 			else if(id==iwidgetutil.ukcsregform)
 			{

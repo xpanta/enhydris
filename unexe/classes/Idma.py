@@ -27,6 +27,106 @@ class idma():
         >>> d = idma()
         >>> dma = DMA.objects.get(pk=10) 
         >>> household_dma = dma.households.all()        
+        >>> getseasonusageefficient(household_dma,"2010","autumn")    
+    '''
+    def getseasonusagefficient(self,dma,year,season):
+        start = ""
+        mid   = ""
+        end   = ""
+        area  = {}
+        areadata = {"sum":"","household":"","occupant":""}
+        sumonth  = {}
+        series = iseries()
+        sumhhold = 0
+        sumoccup = 0
+        unitsoccup = 0.0
+        unitshhold = 0.0
+        sumunitshhold = 0.0
+        occupants     = 0
+        first         = True
+        
+        if season=="winter":
+            start = year+"-12-01"
+            year  = str(int(year)+1)
+            mid   = year+"-01-01"
+            end   = year+"-02-01"
+            sumonth = {start:0.0,mid:0.0,end:0.0}
+        elif season=="summer":
+            start = year+"-06-01"
+            mid   = year+"-07-01"
+            end   = year+"-08-01"                
+            sumonth = {start:0.0,mid:0.0,end:0.0}
+        elif season=="autumn":
+            start = year+"-09-01"
+            mid   = year+"-10-01"
+            end   = year+"-11-01"                
+            sumonth = {start:0.0,mid:0.0,end:0.0}
+        elif season=="spring":
+            start = year+"-03-01"
+            mid   = year+"-04-01"
+            end   = year+"-05-01"                
+            sumonth = {start:0.0,mid:0.0,end:0.0} 
+
+        #process every household
+        for household in dma:
+            ts_monthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
+            if not len(ts_monthly)>=3:  #Total three months in the winter
+                continue
+
+            #get dates and values in a separate list
+            dates, units = IT.izip(*ts_monthly) #much better for longer data, returning tuples
+            #create pandas Series (time series using two different list for timeseries data analysis
+            pdf =  pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
+            pdf.index.name = "dates"
+
+            pdfsummer = pdf[start:end]            
+            months    = pdfsummer.count()
+            if months["units"]==3: #if there are three winter months
+                mylist = pdfsummer.values
+                list1  = [float(round(n, 2)) for n in mylist]            
+                if first:
+                    occupants = household.num_of_occupants
+                    if list1[0]>0.0:
+                        sumonth[start] = list1[0]
+                    if list1[1]>0.0:                        
+                        sumonth[mid]   = list1[1]
+                    if list1[2]>0.0:                        
+                        sumonth[end]   = list1[2]
+                    first              = False
+                else:
+                    if list1[0]>0.0 and sumonth[start]>0.0:
+                        if list1[0] < sumonth[start]:
+                            sumonth[start] = list1[0]
+                    if list1[1]>0.0 and sumonth[mid]>0.0:                            
+                        if list1[1] < sumonth[mid]:
+                            sumonth[mid]   = list1[1]
+                    if list1[2]>0.0 and sumonth[end]>0.0:                            
+                        if list1[2] < sumonth[end]:
+                            sumonth[end]   = list1[2]
+                            
+        if first==False: #household are processed 
+            list1[0] = sumonth[start]
+            list1[1] = sumonth[mid]
+            list1[2] = sumonth[end]
+            
+            areadata["sum"]       = sum(list1)
+            areadata["household"] = round(areadata["sum"],2) #each month represents 1 household and in every season there are months in total 
+            areadata["occupant"]  = round(areadata["household"]/occupants,2) # this is the time
+            
+            area["areadata"]      = areadata
+            dtlist                = [start,mid,end]
+            area["data"]          = series.getlistTojson(dtlist,list1,"date","units")  
+
+        return area
+        
+    '''
+    analyse the household's summer data for the given dma and year
+    dma:  Household in this DMA will be analyse to generate statistics
+    year: This is the year to analyse the data
+    return: If no data exists for the specified period or dates then return None other return statistics
+        >>> d = idma()
+        >>> dma = DMA.objects.get(pk=10) 
+        >>> household_dma = dma.households.all()        
         >>> getseasonusage(household_dma,"2010","autumn")    
     '''
     def getseasonusage(self,dma,year,season):
@@ -144,6 +244,7 @@ class idma():
             ts_monthly = ts_monthly[length-months:] #get the latest last 3 months
             #get dates and values in a separate list
             dates, units = IT.izip(*ts_monthly) #much better for longer
+            
             if not dtlist:
                 for x in range(0,months): 
                     dtlist.append(str(dates[x].date()))
@@ -774,10 +875,9 @@ class idma():
                 else:
                     idx = idx + idx
              
-        
-        packdata["chartdata"] = list1
-        packdata["stats"]     = effdata
-        
-        #print packdata
+            packdata["chartdata"] = list1
+            packdata["stats"]     = effdata
+        else:
+            packdata = None
         
         return packdata
