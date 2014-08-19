@@ -451,7 +451,7 @@ class ihousehold():
         ts_monthly = None #for timeseries
         pdf        = None # for panda dataframe
         period = ""
-        dtlist = [] #for holding list of dates from panda dataframe
+        #dtlist = [] #for holding list of dates from panda dataframe
         list1  = [] #for holding list of data values from panda dataframe (tariff1)
         seasondata = {"household":0.0,"occupant":0.0} 
         series = iseries()
@@ -459,16 +459,24 @@ class ihousehold():
         #season period
         if season=="summer":
             stdate = year+"-06-01"
-            endate = year+"-08-01"        
+            midate = year+"-07-01"
+            endate = year+"-08-01"   
+            dtlist = [stdate,midate,endate]      
         elif season=="spring":
             stdate = year+"-03-01"
-            endate = year+"-05-01"  
+            midate = year+"-04-01"
+            endate = year+"-05-01"
+            dtlist = [stdate,midate,endate]
         elif season=="winter":
             stdate = year+"-12-01"
-            endate = str(int(year)+1)+"-02-01"  
+            midate = str(int(year)+1)+"-01-01"
+            endate = str(int(year)+1)+"-02-01"
+            dtlist = [stdate,midate,endate]  
         elif season=="autumn":
             stdate = year+"-09-01"
+            midate = year+"-10-01"
             endate = year+"-11-01"  
+            dtlist = [stdate,midate,endate]
         else:
             return None
                    
@@ -504,7 +512,7 @@ class ihousehold():
                 units  = pdf.values
                 
                 for x in range(0, period):
-                    dtlist.append(str(dates[x].strftime('%Y-%m-%d')))         
+                    #dtlist.append(str(dates[x].strftime('%Y-%m-%d')))         
                     unit = float(units[x])
                     seasondata["household"] = seasondata["household"] + unit
                     list1.append(round(unit,2))
