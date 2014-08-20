@@ -120,6 +120,7 @@ class idma():
         sumunitshhold = 0.0
         occupants     = 0
         first         = True
+        mylist        = [0.0,0.0,0.0]
         
         if season=="winter":
             start = year+"-12-01"
@@ -154,44 +155,51 @@ class idma():
             #create pandas Series (time series using two different list for timeseries data analysis
             pdf =  pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
             pdf.index.name = "dates"
-
             pdfsummer = pdf[start:end]            
             months    = pdfsummer.count()
             if months["units"]==3: #if there are three winter months
-                mylist = pdfsummer.values
-                list1  = [float(round(n, 2)) for n in mylist]            
+                list1 = pdfsummer.values            
                 if first:
                     occupants = household.num_of_occupants
-                    if list1[0]>0.0:
-                        sumonth[start] = list1[0]
-                    if list1[1]>0.0:                        
-                        sumonth[mid]   = list1[1]
-                    if list1[2]>0.0:                        
-                        sumonth[end]   = list1[2]
+                    sumonth[start] = list1[0]                        
+                    sumonth[mid]   = list1[1]                        
+                    sumonth[end]   = list1[2]
                     first              = False
                 else:
-                    if list1[0]>0.0 and sumonth[start]>0.0:
+                    if sumonth[start]==0.0:
+                        sumonth[start] = list1[0]
+                    else:
                         if list1[0] < sumonth[start]:
                             sumonth[start] = list1[0]
-                    if list1[1]>0.0 and sumonth[mid]>0.0:                            
-                        if list1[1] < sumonth[mid]:
-                            sumonth[mid]   = list1[1]
-                    if list1[2]>0.0 and sumonth[end]>0.0:                            
-                        if list1[2] < sumonth[end]:
-                            sumonth[end]   = list1[2]
                             
+                    if sumonth[mid]==0.0:
+                        sumonth[mid] = list1[1]
+                    else:
+                        if list1[1] < sumonth[mid]:
+                            sumonth[mid] = list1[1]
+
+                    if sumonth[end]==0.0:
+                        sumonth[end] = list1[2]
+                    else:
+                        if list1[2] < sumonth[end]:
+                            sumonth[end] = list1[2]
+                                                                                    
+                           
         if first==False: #household are processed 
             list1[0] = sumonth[start]
             list1[1] = sumonth[mid]
             list1[2] = sumonth[end]
             
-            areadata["sum"]       = sum(list1)
+            mylist                = [float(round(n, 2)) for n in list1]
+            areadata["sum"]       = sum(mylist)
             areadata["household"] = round(areadata["sum"],2) #each month represents 1 household and in every season there are months in total 
             areadata["occupant"]  = round(areadata["household"]/occupants,2) # this is the time
             
             area["areadata"]      = areadata
             dtlist                = [start,mid,end]
-            area["data"]          = series.getlistTojson(dtlist,list1,"date","units")  
+            area["data"]          = series.getlistTojson(dtlist,mylist,"date","units")
+        else:
+            area = None
 
         return area
         
@@ -470,6 +478,114 @@ class idma():
    
         return area
     
+    '''
+    Analyse the day data of the household in the given dma
+    dma:    Household in this DMA will be analyse to generate statistics
+    period: periods in terms of number of months
+    stdate: The start date of period to analyse if period is specified in range
+    endate: The end date of period to analyse if period is specified in range
+    return: If no data exists for the specified period or dates then return None other return statistics
+        >>> d = idma()
+        >>> dma = DMA.objects.get(pk=10) 
+        >>> household_dma = dma.households.all()           
+        >>> d.getperiodstatsefficient(household_dma,"10-02-2008","10-05-2008") #dma with household and period is 12 months
+    '''
+    def getperiodstatsefficient(self,dma,stdate,endate):
+        #print period
+        first = True
+        area = {}
+        areadata = {"sum":"","household":"","occupant":""}        
+        dtlist = []
+        list1 = []        
+        day   = ""
+        night = ""
+        nightdata = {"max":"","min":"","sum":"","avg":""}
+        #day,night = None, None
+        count = 0
+        sumnight = 0.0
+        series   = iseries()
+        sumhhold = 0
+        sumoccup = 0
+        unitsoccup = 0.0
+        unitshhold = 0.0
+        sumunitshhold = 0.0   
+        idx = 0
+        value = 0.0
+        occupants = 0
+        today     = iutility.getstrTodate(endate,"%Y-%m-%d") 
+        numdays   = iutility.diffdays(iutility.getstrTodate(endate,"%Y-%m-%d"),iutility.getstrTodate(stdate,"%Y-%m-%d"))  #number of days
+        period    = iutility.diffmonth(iutility.getstrTodate(endate,"%Y-%m-%d"),iutility.getstrTodate(stdate,"%Y-%m-%d")) + 1 #number of months
+        start     = iutility.subtract_year_month(today,month=period-1) #graph start date
+        end       = today
+        
+        sumonth = {}
+        temp = start
+        for x in range(0,period):
+            sumonth[str(temp)] = 0.0
+            temp = iutility.addMonths(temp,1)
+            list1.append(0.0)
+            
+        temp = start
+        for household in dma:
+            ts_monthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
+            if len(ts_monthly)<period:
+                continue
+            #get dates and values in a separate list
+            dates, units = IT.izip(*ts_monthly) #much better for longer data, returning tuples
+            #create pandas Series (time series using two different list for timeseries data analysis
+            pdf = pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
+            pdf.index.name = "dates"
+
+            firstday = iutility.subtract_year_month(today,month=period-1)
+            lastday  = iutility.last_day_month(today)
+            pdfmonth = pdf[firstday:lastday]       
+            months   = pdfmonth.count()
+            #print months
+            if months["units"]!=period: # data is less than required period so dont calculate value for this household    
+                continue
+
+            #sumhhold = sumhhold + 1 #number of household
+            #sumoccup = sumoccup + household.num_of_occupants #number of occupants
+             
+            idx = 0
+            for x in range(int(period),0,-1): #decrement the loop so chart display starts from previous years
+                firstday = iutility.subtract_year_month(today,month=(x-1))
+                lastday  = iutility.last_day_month(firstday)
+                if math.isnan(pdfmonth["units"][idx]):
+                    continue
+                if first:
+                    occupants  = household.num_of_occupants
+                    list1[idx] = pdfmonth["units"][idx]
+                    first      = False
+                else:
+                    if list1[idx] == 0.0:
+                        list1[idx] = pdfmonth["units"][idx]
+                    else:
+                        if pdfmonth["units"][idx] < list1[idx]:
+                            list1[idx] = pdfmonth["units"][idx]
+                        
+                idx        = idx + 1
+
+        
+        #units  = [float(round(n, 2)) for n in mylist]
+        if first==False:
+            temp = start
+            for x in range(0,period): 
+                dtlist.append(str(temp)) 
+                temp = iutility.addMonths(temp,1)
+        
+            mylist  = [float(round(n, 2)) for n in list1]
+    
+            areadata["sum"]       = sum(mylist)
+            areadata["household"] = round(areadata["sum"],2) #each month represents 1 household and in every season there are months in total 
+            areadata["occupant"]  = round(areadata["household"]/occupants,2) # this is the time
+            area["data"]          = series.getlistTojson(dtlist,mylist,"date","units")
+            area["areadata"]      = areadata
+        else:
+            area = None                
+        
+        return area
+        
     '''
     Analyse the day data of the household in the given dma
     dma:    Household in this DMA will be analyse to generate statistics
