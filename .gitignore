@@ -4,5 +4,6 @@
 *.pyo
 .idea/*
 iwidget.log
+ierror.log
 enhydris/settings.py
 
