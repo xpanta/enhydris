@@ -43,9 +43,9 @@ $(window).load(function() {
 	
 	//load the function when DOM is ready
 	var id = window.location.hash;
-    if(domutil.hasCssclass("#c_uc53conatiner","hide") && id=="#cuc53") //tab id value, need to make global to make effective and avoid error
+    if(domutil.hasCssclass("#c_uc53container","hide") && id=="#cuc53") //tab id value, need to make global to make effective and avoid error
     {	  	
-    	domutil.removeCssclass("#c_uc53conatiner","hide");
+    	domutil.removeCssclass("#c_uc53container","hide");
     	uc53Chart(data);
     }//--end if	  	
 });      

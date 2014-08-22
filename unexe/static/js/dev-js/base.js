@@ -7,7 +7,7 @@ function IwidgetUtil()
     this.ALREADY_EXIST   = -3;
     
 	//variables to hold important URL locations
-	this.baseURL   	    = 'http://127.0.0.1:8005/';
+	this.baseURL   	    = 'http://iwidget.up-ltd.co.uk/';
 	this.mediaURL  		= this.baseURL+'media/';
 	this.staticURL 		= this.baseURL+'static/';
 	this.usericon  		= this.staticURL+'images/usericon.png'; //icon to show user position on map
@@ -680,7 +680,8 @@ function LeafletUtil()
 	   var attribution = '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
 
            basemap = L.tileLayer(
-              'http://{s}.tile.cloudmade.com/d2d204fa6e094ad09838d20c4c021aee/997/256/{z}/{x}/{y}.png'
+              //'http://{s}.tile.cloudmade.com/d2d204fa6e094ad09838d20c4c021aee/997/256/{z}/{x}/{y}.png'
+        	  'http://{s}.tile.osm.org/{z}/{x}/{y}.png'
               , {attribution: attribution}
            )
 
