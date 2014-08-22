@@ -7,7 +7,7 @@ function IwidgetUtil()
     this.ALREADY_EXIST   = -3;
     
 	//variables to hold important URL locations
-	this.baseURL   	    = 'http://localhost:8000/';
+	this.baseURL   	    = 'http://127.0.0.1:8005/';
 	this.mediaURL  		= this.baseURL+'media/';
 	this.staticURL 		= this.baseURL+'static/';
 	this.usericon  		= this.staticURL+'images/usericon.png'; //icon to show user position on map
@@ -47,7 +47,7 @@ function IwidgetUtil()
 	this.c_uc52msg    = "#c_uc52-msg";
 	this.c_uc53msg    = "#c_uc53-msg";
 	this.c_uc33msg    = "#c_uc33-msg";
-	this.c_uc34msg    = "#c_uc34-msg"	
+	this.c_uc34msg    = "#c_uc34-msg";	
 	this.c_uc32msg    = "#c_uc32-msg";
 	this.ukcsregmsg   = "#ukcsreg-msg"
 	//global unexpected error message
