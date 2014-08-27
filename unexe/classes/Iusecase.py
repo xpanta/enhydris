@@ -21,6 +21,65 @@ class iusecase():
         self.User = User
 
     '''
+    Use case 4.1 method to perform initial computation that will show appear as default chart
+    '''
+    def usecase4_1(self):
+        '''
+        Calculating household monthly cost and other statistics
+        '''
+        hhold  = ihousehold()
+        hholdstats = hhold.getWaterstats(self.User)
+        hholdelect = hhold.getElectricstats(self.User)
+        obj   = {}
+        list1 = []
+        electdata = {"year":"","half":"","quarter":"","month":""}
+        waterdata = {"year":"","half":"","quarter":"","month":""}
+        
+        for x in range(0, 4):
+            if x==0:
+                period = 12
+                cal    = "year"
+            elif x==1:
+                period = 6
+                cal    = "half"
+            elif x==2:
+                period = 3
+                cal    = "quarter"                            
+            elif x==3:
+                period = 1
+                cal    = "month"
+                                
+            #dic = d.getStats(household_dma,period)
+            dic = hholdelect[cal]
+            electdata[cal] = dic            
+            obj["Units"] = str(dic["sum_units"])
+            obj["Cost"]  = round(hhold.tariff1(dic["sum_units"]),2)
+            #obj["Cost"]  = str(series.getCost(dic["sum_units"]))
+            obj["Period"]= str(period)+" Month"
+            obj["Data"]  = "Electricity"
+            list1.append(obj)
+            obj = {}
+            dic = {}
+            dic = hholdstats[cal]
+            waterdata[cal] = dic
+            #print dic
+            obj["Units"] = str(dic["sum_units"])
+            obj["Cost"]  = round(hhold.tariff1(dic["sum_units"]),2)
+            #obj["Cost"]  = str(series.getCost(dic["sum_units"]))
+            obj["Period"]= str(period)+" Month"
+            obj["Data"]  = "Water"
+            dic = {}
+            list1.append(obj)          
+            obj = {}
+
+        data = {}
+        data["chart"]    = list1
+        data["electdata"] = electdata
+        data["waterdata"] = waterdata
+        
+        return data
+    
+    '''
     Use case 3.3 method to perform initial computation that will show appear as default chart
     '''
     def usecase3_4(self):

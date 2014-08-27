@@ -19,6 +19,7 @@ This is household class where methods related to gather household statistics is 
 class ihousehold():
     
     def __init__(self):
+        self.electric = 18 #percentage of electricity usage from water - according to research/white paper or other resources  - see D222 documentation
         #column of the household class as defined in table
         self.col = ['num_of_occupants','property_type','contruction_period']
 
@@ -99,6 +100,96 @@ class ihousehold():
             
         return data    
     
+    def getWaterstats(self,loggeduser):
+        '''
+        Calculating household monthly cost and other statistics
+        '''
+        dic12 = {"period":"","sum_units":"","avg_units":"","unit_person":""}
+        household  = loggeduser.households.all()[0]
+        series     = iseries()
+        ts_monthly = series.getmonthlyseries(household) 
+        timeseries_monthly = series.readseries(ts_monthly)
+        #get dates and values in a separate list
+        dates, units = IT.izip(*timeseries_monthly) #much better for longer data, returning tuples
+        pdf   =  pd.DataFrame(list(units),index=list(dates),columns=["units"]) #create pandas Series (time series using two different list for timeseries data analysis
+        #last 12 months
+        pdf12 = pdf.ix[-12:] #get last 12 months
+        dic12["period"] = "12 Months"
+        dic12["sum_units"] = round(np.sum(pdf12.values)-iutility.percentage(np.sum(pdf12.values),self.electric),2)
+        dic12["avg_units"] = round(dic12["sum_units"]/12,2)
+        dic12["unit_person"]= round(dic12["sum_units"]/household.num_of_occupants,2)
+        #last 6 months
+        dic6  = dic12.copy()
+        pdf6  = pdf.ix[-6:] #get last 6 months
+        dic6["period"] = "6 Months"
+        dic6["sum_units"] = round(np.sum(pdf6.values)-iutility.percentage(np.sum(pdf6.values),self.electric),2)
+        dic6["avg_units"] = round(dic6["sum_units"]/6,2)
+        dic6["unit_person"] = round(dic6["sum_units"]/household.num_of_occupants,2)
+        #last 4 months
+        dic4  = dic12.copy()
+        pdf4  = pdf.ix[-3:] #get last 6 months
+        dic4["period"] = "3 Months"
+        dic4["sum_units"] = round(np.sum(pdf4.values)-iutility.percentage(np.sum(pdf4.values),self.electric),2)
+        dic4["avg_units"] = round(dic4["sum_units"]/3,2)
+        dic4["unit_person"] = round(dic4["sum_units"]/household.num_of_occupants,2)
+        #last 1 month
+        pdf1  = pdf.ix[-1:] #get last 1 month
+        dic1  = dic12.copy()
+        dic1["period"]    = "1 Month"
+        dic1["sum_units"] = round(np.sum(pdf1.values)-iutility.percentage(np.sum(pdf1.values),self.electric),2)
+        dic1["avg_units"] = round(dic1["sum_units"],2)
+        dic1["unit_person"] = round(dic1["sum_units"]/household.num_of_occupants,2)
+        #combine all data
+        data = {"year":dic12,"half":dic6,"quarter":dic4,"month":dic1}
+        return data
+        
+    '''
+    This method returns the last 12 months' electricity units and cost of the household. Data is return in a format supported to render chart in a client side (Chart)
+    '''
+    def getElectricstats(self,loggeduser):
+        #iutility.percentage(100,self.electric)
+        '''
+        Calculating household monthly cost and other statistics
+        '''
+        dic12 = {"period":"","sum_units":"","avg_units":"","unit_person":""}
+        household  = loggeduser.households.all()[0]
+        series     = iseries()
+        ts_monthly = series.getmonthlyseries(household) 
+        timeseries_monthly = series.readseries(ts_monthly)
+        #get dates and values in a separate list
+        dates, units = IT.izip(*timeseries_monthly) #much better for longer data, returning tuples
+        pdf   =  pd.DataFrame(list(units),index=list(dates),columns=["units"]) #create pandas Series (time series using two different list for timeseries data analysis
+        #last 12 months
+        pdf12 = pdf.ix[-12:] #get last 12 months
+        dic12["period"] = "12 Months"
+        dic12["sum_units"] = round(iutility.percentage(np.sum(pdf12.values),self.electric),2)
+        dic12["avg_units"] = round(dic12["sum_units"]/12,2)
+        dic12["unit_person"]= round(dic12["sum_units"]/household.num_of_occupants,2)
+        #last 6 months
+        dic6  = dic12.copy()
+        pdf6  = pdf.ix[-6:] #get last 6 months
+        dic6["period"] = "6 Months"
+        dic6["sum_units"] = round(iutility.percentage(np.sum(pdf6.values),self.electric),2)
+        dic6["avg_units"] = round(dic6["sum_units"]/6,2)
+        dic6["unit_person"] = round(dic6["sum_units"]/household.num_of_occupants,2)
+        #last 4 months
+        dic4  = dic12.copy()
+        pdf4  = pdf.ix[-3:] #get last 3 months
+        dic4["period"] = "3 Months"
+        dic4["sum_units"] = round(iutility.percentage(np.sum(pdf4.values),self.electric),2)
+        dic4["avg_units"] = round(dic4["sum_units"]/3,2)
+        dic4["unit_person"] = round(dic4["sum_units"]/household.num_of_occupants,2)
+        #last 1 month
+        pdf1  = pdf.ix[-1:] #get last 1 month
+        dic1  = dic12.copy()
+        dic1["period"]    = "1 Month"
+        dic1["sum_units"] = round(iutility.percentage(np.sum(pdf1.values),self.electric),2)
+        dic1["avg_units"] = round(dic1["sum_units"],2)
+        dic1["unit_person"] = round(dic1["sum_units"]/household.num_of_occupants,2)
+        #combine all data
+        data = {"year":dic12,"half":dic6,"quarter":dic4,"month":dic1}
+        return data        
+
     '''
     Analyse the night data (smart water meter data - timeseries) of the logged user (household)
     user:   logged user (See User object for details) - from this user a household can be obtained
@@ -844,6 +935,7 @@ class ihousehold():
         #combine all data
         data = {"year":dic12,"half":dic6,"quarter":dic4,"month":dic1}
         return data
+
         
     #logged user: It is the currently logged user
     def gethousehold(self,loggeduser,id=None):
