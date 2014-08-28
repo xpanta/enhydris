@@ -150,7 +150,7 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     result['target_year'] = daily_consumption * ((today - 
             today.replace(month=1, day=1)).days + 1)
     """
-        CODE ADDED BY CHRIS PANTAZIS at 07/08/2014
+        CODE ADDED BY Chris Pantazis at 07/08/2014
         NEXT FRAGMENT ADDS DICTIONARY ENTRIES FOR TARGET
         CONSUMPTION (Lit/Person/Day) AND DECIDES HOW GOOD IT WAS
         FOR EXAMPLE IF CONSUMPTION IS LESS THAN 80 lt/p/d THEN NO OF SMILES
