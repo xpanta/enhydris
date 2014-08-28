@@ -179,3 +179,14 @@ class iutility():
     def getRandomstring(size=8):
         chars = string.ascii_uppercase + string.digits    
         return ''.join(random.choice(chars) for _ in range(size))
+
+    '''
+    This method calculates the percent of the whole value
+    #percent: This is the percentage
+    #whole:  This is the whole value to obtain the percent value
+        >>> iutility.percentage(100,50)
+        >>> 50
+    '''
+    @staticmethod
+    def percentage(whole, percent):
+      return (whole * percent) / 100.0    

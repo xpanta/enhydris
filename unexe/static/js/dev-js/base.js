@@ -7,7 +7,7 @@ function IwidgetUtil()
     this.ALREADY_EXIST   = -3;
     
 	//variables to hold important URL locations
-	this.baseURL   	    = 'http://localhost:8000/';
+	this.baseURL   	    = 'http://iwidget.up-ltd.co.uk/';
 	this.mediaURL  		= this.baseURL+'media/';
 	this.staticURL 		= this.baseURL+'static/';
 	this.usericon  		= this.staticURL+'images/usericon.png'; //icon to show user position on map
@@ -47,7 +47,7 @@ function IwidgetUtil()
 	this.c_uc52msg    = "#c_uc52-msg";
 	this.c_uc53msg    = "#c_uc53-msg";
 	this.c_uc33msg    = "#c_uc33-msg";
-	this.c_uc34msg    = "#c_uc34-msg"	
+	this.c_uc34msg    = "#c_uc34-msg";	
 	this.c_uc32msg    = "#c_uc32-msg";
 	this.ukcsregmsg   = "#ukcsreg-msg"
 	//global unexpected error message
@@ -680,7 +680,8 @@ function LeafletUtil()
 	   var attribution = '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
 
            basemap = L.tileLayer(
-              'http://{s}.tile.cloudmade.com/d2d204fa6e094ad09838d20c4c021aee/997/256/{z}/{x}/{y}.png'
+              //'http://{s}.tile.cloudmade.com/d2d204fa6e094ad09838d20c4c021aee/997/256/{z}/{x}/{y}.png'
+        	  'http://{s}.tile.osm.org/{z}/{x}/{y}.png'
               , {attribution: attribution}
            )
 
@@ -1410,6 +1411,7 @@ function ChartUtil()
 		chart.assignColor("Area", "#C0C0C0")
 		chart.assignColor("Consumer", "#C0C0C0");
 		chart.assignColor("Most Efficient", "#C0C0C0");
+		chart.assignColor("Electricity", "#800080");
 		/*s.addEventHandler("click", function (e) { 
 		    d3.select("#infoLabel").text("In " + e.seriesValue[1] + " we sold " + e.seriesValue[0] + " " + e.xValue + "s!");
 		});*/

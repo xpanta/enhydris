@@ -380,7 +380,7 @@ class consumer(TemplateView):
             '''
             code for use case 4.1
             ''' 
-            c_uc41data = None
+            c_uc41data = usecase.usecase4_1()
             '''            
             End of use case 4.1
             '''
@@ -462,7 +462,15 @@ class c_uc34(TemplateView):
             data["area"] = d.getseasonusagefficient(household_dma,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
-                comparechart[0]["Units"] = data["area"]["areadata"]["household"]  
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]
+        elif period=="days": #if period is defined in range
+            stdate       = iutility.getPostValue("stdate",request)
+            endate       = iutility.getPostValue("endate",request)
+            data["you"]  = hhold.getperiodstats(user,stdate,endate)
+            data["area"] = d.getperiodstatsefficient(household_dma,stdate,endate)
+            if data["you"] and data["area"]:                        
+                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]                     
         else:
             data["you"]  = hhold.getmonthlyusage(user,int(period))
             data["area"] = d.getmonthlyusagefficient(household_dma,int(period))
