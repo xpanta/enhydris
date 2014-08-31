@@ -1,7 +1,7 @@
 {% load i18n %}
 <div id="c_uc31cont" class="row">
     <div id="c_uc31title"><p class="bg-primary text-center"><strong>{{ title }}</strong></p></div>
-    <div class="col-md-12" id="placeholder" style="width: 100%; height: 450px;">
+    <div class="col-md-12" id="placeholder" style="width: 100%; height: 450px; margin-bottom: 80px">
 
     </div>
 </div>
@@ -30,14 +30,14 @@
                         {{ d.0 }}
                     </td>
                     <td>
-                        {{ d.1|floatformat:3 }} m&#179;
+                        {{ d.1|floatformat:3 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
                     </td>
                     {% if view == "day_night"  %}
                         <td>
-                            {{ d.2|floatformat:2 }} m&#179;
+                            {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
                         </td>
                         <td>
-                            {{ d.3|floatformat:2 }} m&#179;
+                            {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
                         </td>
                     {% endif %}
                 </tr>
@@ -131,11 +131,21 @@
                 }
             });
     {% else %}
+        total_label = " - Total Consumption in m&#179;";
+        night_label = " - Night Consumption in m&#179;";
+        day_label = " - Day Consumption in m&#179;";
+
+        {% if "cost" in step %}
+            total_label = " - Total Consumption in &euro;";
+            night_label = " - Night Consumption in &euro;";
+            day_label = " - Day Consumption in &euro;";
+        {% endif %}
+
         $.plot("#placeholder", [
-             { label: " - Total Consumption in m&#179;", data: {{ total_data }} },
+             { label: total_label, data: {{ total_data }} },
             {% if view == 'day_night' %}
-                { label: " - Night Consumption in m&#179;", data: {{ night_data }} },
-                { label: " - Day Consumption in m&#179;", data: {{ day_data }} }
+                { label: night_label, data: {{ night_data }} },
+                { label: day_label, data: {{ day_data }} }
             {% endif %}
         ],
         {
@@ -194,5 +204,8 @@
         });
     {% endif %}
 
+    {% if step == "15min" %}
+        $(".flot-x-axis .flot-tick-label").addClass("x-axis-rotate");
+    {% endif %}
 </script>
 

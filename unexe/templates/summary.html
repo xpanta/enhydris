@@ -26,7 +26,7 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <p class="text-center bg-primary"><strong>{% trans "WATER CONSUMPTION" %}</strong></p>
+                    <p class="text-center bg-primary"><strong>{% trans "WATER CONSUMPTION" %} as of {{ overview.weekday }} {{ overview.today_timestamp|date:"j/m/o" }}</strong></p>
                     <div class="table-responsive">
                         <table class="table table-condensed table-striped table-hover">
                             <thead class="bg-primary">
@@ -40,9 +40,12 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style="font-weight: bold">{% trans "Current Day" %} <br/> ({{overview.today_timestamp|date:"j/m/o"}})</td>
+                                    <td style="font-weight: bold">{% trans "Current Day" %}</td>
                                     <td>{{ overview.today|floatformat:2 }} lit</td>
                                     <td>{{ overview.yesterday|floatformat:2 }} lit</td>
+                                    <td>
+                                        {{ overview.current_target_daily }} lit
+                                    </td>
                                     <td>
                                         {% for v in overview.today_lpd %}
                                             <img src="{{ STATIC_URL }}icon/smile.png" />
@@ -50,12 +53,14 @@
                                             <img src="{{ STATIC_URL }}icon/sad.png" />
                                         {% endfor %}
                                     </td>
-                                    <td>--</td>
                                 </tr>
                                 <tr>
                                     <td style="font-weight: bold">{% trans "Current Week" %}</td>
                                     <td>{{ overview.current_week|floatformat:2 }} lit</td>
                                     <td>{{ overview.last_week|floatformat:2 }} lit</td>
+                                    <td>
+                                        {{ overview.current_target_weekly }} lit
+                                    </td>
                                     <td>
                                         {% for v in overview.current_week_lpd %}
                                             <img src="{{ STATIC_URL }}icon/smile.png" />
@@ -63,12 +68,14 @@
                                             <img src="{{ STATIC_URL }}icon/sad.png" />
                                         {% endfor %}
                                     </td>
-                                    <td>--</td>
                                 </tr>
                                 <tr>
                                     <td style="font-weight: bold">{% trans "Current Month" %} (*)</td>
-                                    <td>{{ overview.current_month|floatformat:2 }} m&#179;</td>
-                                    <td>{{ overview.last_month|floatformat:2 }} m&#179;</td>
+                                    <td>{{ overview.current_month|floatformat:2 }} lit</td>
+                                    <td>{{ overview.last_month|floatformat:2 }} lit</td>
+                                    <td>
+                                        {{ overview.current_target_monthly }} lit
+                                    </td>
                                     <td>
                                         {% for v in overview.current_month_lpd %}
                                             <img src="{{ STATIC_URL }}icon/smile.png" />
@@ -76,12 +83,14 @@
                                             <img src="{{ STATIC_URL }}icon/sad.png" />
                                         {% endfor %}
                                     </td>
-                                    <td>--</td>
                                 </tr>
                                 <tr>
                                     <td style="font-weight: bold">{% trans "Current Year" %} (*)</td>
                                     <td>{{ overview.current_year|floatformat:2 }} m&#179;</td>
                                     <td>{{ overview.last_year|floatformat:2 }} m&#179;</td>
+                                    <td>
+                                        {{ overview.current_target_yearly }} m&#179;
+                                    </td>
                                     <td>
                                         {% for v in overview.current_year_lpd %}
                                             <img src="{{ STATIC_URL }}icon/smile.png" />
@@ -89,7 +98,6 @@
                                             <img src="{{ STATIC_URL }}icon/sad.png" />
                                         {% endfor %}
                                     </td>
-                                    <td>--</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -130,7 +138,7 @@
                             <td><img src="{{ STATIC_URL }}icon/smile.png" /></td>
                         </tr>
                         <tr>
-                            <td>&le; 150 l/p/d</td>
+                            <td>&gt; 120 l/p/d</td>
                             <td><img src="{{ STATIC_URL }}icon/sad.png" /></td>
                         </tr>
                     </table>

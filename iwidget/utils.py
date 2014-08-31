@@ -51,6 +51,13 @@ def _dec_year(timestamp):
     return timestamp.replace(year=timestamp.year-1)
 
 def statistics_on_daily(ts_daily, occupancy = 1):
+    """
+    Note: multiplying timeseries by 1000.0 becomes litres. Otherwise it is
+    cubic metres
+    :param ts_daily:
+    :param occupancy:
+    :return:
+    """
     cache_key = 'daily_statistics__%d'%(ts_daily.id,)
     cache_value = cache.get(cache_key)
     if cache_value is not None:
@@ -118,7 +125,7 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     result['current_month'] = aggregate_period(
         timeseries,
         today.replace(day=1),
-        today)
+        today) * 1000.0
     result['current_month_last_year'] = aggregate_period(
         timeseries,
         _dec_year(today.replace(day=1)),
@@ -161,11 +168,17 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     """
     result['today_lpd'] = get_lpd_arr(result['today'], occupancy, 'day', today)
     result['current_week_lpd'] = get_lpd_arr(result['current_week'],
-                                             occupancy, 'day', today)
+                                             occupancy, 'week', today)
     result['current_month_lpd'] = get_lpd_arr(result['current_month'],
-                                              occupancy, 'day', today)
+                                              occupancy, 'month', today)
     result['current_year_lpd'] = get_lpd_arr(result['current_year'],
-                                             occupancy, 'day', today)
+                                             occupancy, 'year', today)
+    result['current_target_daily'] = 80 * occupancy
+    result['current_target_weekly'] = (today.weekday() + 1) * 80 * occupancy
+    result['current_target_monthly'] = today.day * 80 * occupancy
+    result['current_target_yearly'] = today.timetuple().tm_yday * 80 * occupancy / 1000
+    days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fir', 'Sat', 'Sun']
+    result['weekday'] = days[today.weekday()]
     """
         CHRIS PANTAZIS CODE ENDS HERE
     """
@@ -196,7 +209,7 @@ def get_lpd_arr(val, occupants, period, today):
     elif period == 'month':
         lpd = val / today.day / occupants
     elif period == 'year':
-        lpd = val / today.timetuple().tmyday / occupants
+        lpd = val / today.timetuple().tm_yday / occupants
 
     if lpd <= 80:
         return [1, 2, 3, 4, 5]
