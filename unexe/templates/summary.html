@@ -44,7 +44,7 @@
                                     <td>{{ overview.today|floatformat:2 }} lit</td>
                                     <td>{{ overview.yesterday|floatformat:2 }} lit</td>
                                     <td>
-                                        {{ overview.current_target_daily }} lit
+                                        {{ overview.current_target_day }} lit
                                     </td>
                                     <td>
                                         {% for v in overview.today_lpd %}
@@ -59,7 +59,7 @@
                                     <td>{{ overview.current_week|floatformat:2 }} lit</td>
                                     <td>{{ overview.last_week|floatformat:2 }} lit</td>
                                     <td>
-                                        {{ overview.current_target_weekly }} lit
+                                        {{ overview.current_target_week }} lit
                                     </td>
                                     <td>
                                         {% for v in overview.current_week_lpd %}
@@ -74,7 +74,7 @@
                                     <td>{{ overview.current_month|floatformat:2 }} lit</td>
                                     <td>{{ overview.last_month|floatformat:2 }} lit</td>
                                     <td>
-                                        {{ overview.current_target_monthly }} lit
+                                        {{ overview.current_target_month }} lit
                                     </td>
                                     <td>
                                         {% for v in overview.current_month_lpd %}
@@ -89,7 +89,7 @@
                                     <td>{{ overview.current_year|floatformat:2 }} m&#179;</td>
                                     <td>{{ overview.last_year|floatformat:2 }} m&#179;</td>
                                     <td>
-                                        {{ overview.current_target_yearly }} m&#179;
+                                        {{ overview.current_target_year }} m&#179;
                                     </td>
                                     <td>
                                         {% for v in overview.current_year_lpd %}

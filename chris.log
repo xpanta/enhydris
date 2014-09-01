@@ -1,5 +1,10 @@
+September 2014
+===========
+
+
 August 2014
 ===========
+- Added the ability for the user to view hourly and 15 min charts filtered by day.
 - Modified iwidget/utils.py for the dashboard to load consumption for yesterday, last week, last month. This happened in method: statistics_on_daily.
     I also added a method (get_lpd_arr)
     that returns a dummy array which length I use to display smiles.

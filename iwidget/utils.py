@@ -6,7 +6,9 @@
 
 from datetime import datetime, timedelta
 import math
-
+# ADDED By Chris Pantazis to find month's maximum target value
+from calendar import monthrange
+#
 from django.core.cache import cache
 from django.db import connection
 
@@ -166,17 +168,35 @@ def statistics_on_daily(ts_daily, occupancy = 1):
         SO WE CAN DO A FOR-LOOP IN THE TEMPLATE TO SHOW len() SMILES
         (IF array is empty then show sad face, instead!)
     """
-    result['today_lpd'] = get_lpd_arr(result['today'], occupancy, 'day', today)
-    result['current_week_lpd'] = get_lpd_arr(result['current_week'],
-                                             occupancy, 'week', today)
-    result['current_month_lpd'] = get_lpd_arr(result['current_month'],
-                                              occupancy, 'month', today)
-    result['current_year_lpd'] = get_lpd_arr(result['current_year'],
-                                             occupancy, 'year', today)
-    result['current_target_daily'] = 80 * occupancy
-    result['current_target_weekly'] = (today.weekday() + 1) * 80 * occupancy
-    result['current_target_monthly'] = today.day * 80 * occupancy
-    result['current_target_yearly'] = today.timetuple().tm_yday * 80 * occupancy / 1000
+    targets = [80, 90, 105, 110, 120]
+    daily_max = []
+    weekly_max = []
+    monthly_max = []
+    yearly_max = []
+    cc = monthrange(today.year, today.month)
+    for t in targets:
+        daily_max.append(t * occupancy)
+        weekly_max.append(t * 7 * occupancy)
+        monthly_max.append(t * int(cc[1]) * 80 * occupancy)
+        yearly_max.append(t * 365 * occupancy)
+
+    cdc = result["today"]
+    cwc = result["current_week"]
+    cmc = result["current_month"]
+    cyc = result["current_year"]
+
+    ctd = result['current_target_day'] = get_next_target(cdc, daily_max)
+    ctw = result['current_target_week'] = get_next_target(cwc, weekly_max)
+    ctm = result['current_target_month'] = get_next_target(cmc, monthly_max)
+    cty = result['current_target_year'] = get_next_target(cyc, yearly_max)
+
+    result['today_lpd'] = get_lpd_arr(ctd, daily_max)
+    result['current_week_lpd'] = get_lpd_arr(ctw, weekly_max)
+    result['current_month_lpd'] = get_lpd_arr(ctm, monthly_max)
+    result['current_year_lpd'] = get_lpd_arr(cty, yearly_max)
+
+
+    # for display purpose only. Show current day
     days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fir', 'Sat', 'Sun']
     result['weekday'] = days[today.weekday()]
     """
@@ -186,7 +206,17 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     return result
 
 
-def get_lpd_arr(val, occupants, period, today):
+def get_next_target(curr_val, maximums):
+    i = m = 0
+    for m in maximums:
+        if m < curr_val:
+            i += 1
+        else:
+            break
+    return m
+
+
+def get_lpd_arr(val, arr):
     """
     Author: Chris Pantazis (07/08/2014)
     This function returns an array of literals depending on
@@ -195,36 +225,16 @@ def get_lpd_arr(val, occupants, period, today):
     Needed in <<summary.html>> template file to print correct number of smilies
 
     :param val: Total consumption for period (float)
-    :param occupants: Number of occupants (int)
-    :param period: day, week, month, year (string)
-    :param today: today's date. (Divide by weekday instead of 7 for example)
+    :param arr: array with maximum targets for given period
     :return: array that has a len of 5,4,3,2,1 or 0 for number of smilies
     """
-    lpd = 0
-    #first find current period
-    if period == 'day':
-        lpd = val / occupants
-    elif period == 'week':
-        lpd = val / (today.weekday() + 1) / occupants
-    elif period == 'month':
-        lpd = val / today.day / occupants
-    elif period == 'year':
-        lpd = val / today.timetuple().tm_yday / occupants
-
-    if lpd <= 80:
-        return [1, 2, 3, 4, 5]
-    elif lpd <= 90:
-        return [1, 2, 3, 4]
-    elif lpd <= 105:
-        return [1, 2, 3]
-    elif lpd <= 110:
-        return [1, 2]
-    elif lpd <= 120:
-        return [1]
-    elif lpd <= 150:
-        return []
-
-
+    lpd = []
+    # how many smilies user loses? 1 for every maximum lost
+    x = arr.index(int(val))
+    y = len(arr)
+    for a in range(y - x):
+        lpd.append(a)
+    return lpd
 
 # Target consumption in kWh per capita per day
 TARGET_ENERGY_CONSUMPTION = 5.0

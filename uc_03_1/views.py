@@ -167,7 +167,7 @@ def compare(request, username):
                 month = int(dates[x].date().month)
                 if step in ['hourly', '15min']:
                     ti = dates[x].time()
-                    key = "%02d:%02d" % (ti.hour, ti.minute)  # 2 digits any1?
+                    key = "%02d:%02d" % (ti.hour, ti.minute)  # 02d: Two Digits
                 if 'monthly' in step:
                     mo = str(dates[x].date().month)
                     yr = str(dates[x].date().year)
@@ -286,7 +286,7 @@ def compare(request, username):
                 arr = [txt, val]
                 cons_table_data.append(arr)
             if "monthly" in step:
-                d_time = datetime.strptime(dt, "%m:%d")
+                d_time = datetime.strptime(dt, "%Y/%m")
                 txt = "%s of %s" % (months[d_time.month-1],
                                     str(d_time.year))
                 arr = [txt, val]
