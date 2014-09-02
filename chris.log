@@ -1,6 +1,7 @@
 September 2014
 ===========
-
+Modified utils.py and summary.html to show the correct next target value according to current consumption rate for period. I added get_next_target() in utils.py that calculates
+the correct next target. Also I modified get_lpd_arr() for that reason.
 
 August 2014
 ===========
