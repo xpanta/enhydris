@@ -20,12 +20,12 @@ import weka.classifiers.timeseries.WekaForecaster;
 * @version 1.0
 * @since   2014-03-31
 */
-public class timeSeries {
+public class TimeSeries {
 
 	private Thread t1,t2,t3;
 	private Arff arffyear,arffday,arffelec;
 	
-	public timeSeries()
+	public TimeSeries()
 	{
 		arffyear = new Arff();
 		arffday  = new Arff();
