@@ -230,15 +230,15 @@ LOGGING = {
         'django': {
             'handlers':['file'],
             'propagate': True,
-            'level':'DEBUG',
+            'level':'ERROR',
         },
         'iwidget': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': 'ERROR',
         },
         'enhydris': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': 'ERROR',
         },
     }
 }

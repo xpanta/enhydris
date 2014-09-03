@@ -1,9 +1,10 @@
 {% load i18n %}
 <div id="c_uc31cont" class="row">
     <div id="c_uc31title"><p class="bg-primary text-center"><strong>{{ title }}</strong></p></div>
-    <div class="col-md-12" id="placeholder" style="width: 100%; height: 300px; margin-bottom: 80px">
-
-    </div>
+    <div class="col-md-12" id="placeholder" style="width: 100%; height: 300px; margin-bottom: 80px"> </div>
+    {% if total_data2 %}
+        <div class="col-md-12" id="placeholder2" style="width: 100%; height: 300px; margin-bottom: 80px"> </div>
+    {% endif %}
 </div>
 <div class="row">
     <div class="{% if view != "day_night" %}col-md-12{% else %}col-md-6{% endif %}">
@@ -89,6 +90,7 @@
         }).appendTo("body").fadeIn(200);
     }
     $("#placeholder").UseTooltip();
+    $("#placeholder2").UseTooltip();
 
     {% if view == 'summer_winter' %}
         $.plot("#placeholder", [
@@ -141,14 +143,58 @@
             day_label = " - Day Consumption in &euro;";
         {% endif %}
 
+        {% if total_data2 %}
+            $.plot("#placeholder2", [
+                { label: total_label, data: {{ total_data2 }} },
+                {% if view == 'day_night' %}
+                    { label: night_label, data: {{ night_data2 }} },
+                    { label: day_label, data: {{ day_data2 }} }
+                {% endif %}
+                ],
+                {
+                    series: {
+                        lines: { show: true },
+                        points: { show: true }
+                    },
+                    xaxis: {
+                        /*            ticks: [
+                         [1, "Jan" ], [ 2, "Feb" ],
+                         ],*/
+                        ticks: [
+                            {% for tick in ticks2 %}
+                                [{{ tick.0 }}, "{{ tick.1 }}"],
+                            {% endfor %}
+                        ],
+                        tickDecimals: 0
+                    },
+                    yaxis: {
+                        ticks: 10,
+                        min: 0,
+                        max: {{ max_val2 }},
+                        tickDecimals: 5
+                    },
+                    grid: {
+                        hoverable: true,
+                        clickable: false,
+                        backgroundColor: { colors: [ "#fff", "#eee" ] },
+                        borderWidth: {
+                            top: 1,
+                            right: 1,
+                            bottom: 2,
+                            left: 2
+                        }
+                    }
+                });
+            {% endif %}
+
         $.plot("#placeholder", [
-             { label: total_label, data: {{ total_data }} },
+            { label: total_label, data: {{ total_data }} },
             {% if view == 'day_night' %}
                 { label: night_label, data: {{ night_data }} },
                 { label: day_label, data: {{ day_data }} }
             {% endif %}
-        ],
-        {
+            ],
+            {
             series: {
                 lines: { show: true },
                 points: { show: true }

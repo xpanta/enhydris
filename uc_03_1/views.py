@@ -26,16 +26,33 @@ def compare(request, username):
     night_data = []
     summer_data = []
     winter_data = []
+    total_data2 = []
+    day_data2 = []
+    night_data2 = []
+    summer_data2 = []
+    winter_data2 = []
+    key_dates = []
+    key_dates2 = []
     summer_dict = {}
     winter_dict = {}
+    total_dict2 = {}
+    comparison = False  # if two charts are needed
     ticks = []  # x-axis labels
+    ticks2 = []  # x-axis labels
     title = ""
     view = ""
+    winter_total2 = 0
+    summer_total2 = 0
     winter_total = 0
     summer_total = 0
     day_total = 0
     night_total = 0
-    max_val = 0  # maximum consumption (for charts)
+    day_total2 = 0
+    night_total2 = 0
+    start2 = end2 = None
+    tdk2 = []
+    max_val = 0  # maximum consumption (for chart1)
+    max_val2 = 0  # maximum consumption (for chart2)
     cons_table_data = []  # data prepared for the consumption tables
     if user.username == username:
         step = request.GET.get('step', None)
@@ -66,6 +83,7 @@ def compare(request, username):
                             variable__id=VAR_PERIOD)[0]
             elif step == 'hourly':
                 title = "Hourly Data Resolution for {x}"
+                title2 = "Hourly Data Resolution Comparison For {x} and {y}"
                 from iwidget.models import TSTEP_HOURLY, VAR_PERIOD
                 ts_m = household.timeseries \
                     .filter(time_step__id=TSTEP_HOURLY,
@@ -85,14 +103,19 @@ def compare(request, username):
                 start = yesterday
                 end = yesterday
                 title = title.format(x='Yesterday')
-            elif prd_h == 'custom1':
+            elif prd_h == 'custom1' or prd_h == 'custom2':
                 dval = request.GET.get('day1')
                 day1 = datetime.strptime(dval, "%Y-%m-%d")
                 start = day1.date()
                 end = day1.date()
                 title = title.format(x=dval)
-            elif prd_h == 'custom2':
-                pass
+                if prd_h == 'custom2':
+                    dval2 = request.GET.get('day2')
+                    day2 = datetime.strptime(dval2, "%Y-%m-%d")
+                    start2 = day2.date()
+                    end2 = day2.date()
+                    title2 = title.format(x=dval, y=dval2)
+                    comparison = True
         elif 'monthly' in step or 'daily' in step:
             from iwidget.models import TSTEP_HOURLY, VAR_PERIOD
             from itertools import izip
@@ -126,41 +149,69 @@ def compare(request, username):
                     from lib.common import get_start_date
                     start = get_start_date(end, step, period)
                 else:
-                    if 'monthly' in step and period == 'custom1':
+                    if 'monthly' in step and \
+                            (period in ['custom1', 'custom2']):
                         from lib.common import get_custom_start_end_dates
                         x1 = request.GET.get("stm1")
                         x2 = request.GET.get("sty1")
                         y1 = request.GET.get("endm1")
                         y2 = request.GET.get("endy1")
                         start, end = get_custom_start_end_dates(x1, x2, y1, y2)
-                    elif 'monthly' in step and period == 'custom2':
-                        pass
-                    elif 'daily' in step and period == 'custom1':
+                        if period == 'custom2':
+                            x1 = request.GET.get("stm2")
+                            x2 = request.GET.get("sty2")
+                            y1 = request.GET.get("endm2")
+                            y2 = request.GET.get("endy2")
+                            start2, end2 = get_custom_start_end_dates(x1, x2,
+                                                                      y1, y2)
+                    elif 'daily' in step and period in ['custom1', 'custom2']:
                         st_date1 = request.GET.get('from1')
                         end_date1 = request.GET.get('to1')
                         start = datetime.strptime(st_date1, "%Y-%m-%d").date()
                         end = datetime.strptime(end_date1, "%Y-%m-%d").date()
-                    elif 'daily' in step and period == 'custom2':
-                        pass
+                        if period == 'custom2':
+                            st_date2 = request.GET.get('from2')
+                            end_date2 = request.GET.get('to2')
+                            start2 = datetime.strptime(st_date2,
+                                                       "%Y-%m-%d").date()
+                            end2 = datetime.strptime(end_date2,
+                                                     "%Y-%m-%d").date()
         total_dict, night_dict, day_dict, summer_dict, \
             winter_dict = get_chart_data(household, dates, units, step,
                                          view, start, end)
+        if start2 and end2:
+            total_dict2, night_dict2, day_dict2, summer_dict2, \
+                winter_dict2 = get_chart_data(household, dates, units, step,
+                                              view, start2, end2)
         tdk = total_dict.keys()
-        key_dates = []
+        if total_dict2:
+            tdk2 = total_dict2.keys()
         if 'monthly' in step:
             key_dates = sorted(tdk,
                                key=lambda a: datetime.strptime(a, "%Y/%m"))
+            if tdk2:
+                key_dates2 = sorted(tdk2,
+                                    key=lambda a: datetime.strptime(a, "%Y/%m"))
         elif 'daily' in step:
             key_dates = sorted(tdk,
                                key=lambda a:
                                datetime.strptime(a, "%Y/%m/%d"))
+            if tdk2:
+                key_dates2 = sorted(tdk2,
+                                    key=lambda a:
+                                    datetime.strptime(a, "%Y/%m/%d"))
         elif step in ['hourly', '15min']:
             key_dates = sorted(tdk,
                                key=lambda a: datetime.strptime(a, "%H:%M"))
+            if tdk2:
+                key_dates2 = sorted(tdk2,
+                                    key=lambda a: datetime.strptime(a, "%H:%M"))
         x = 0
         # Prepare chart data to be displayed and the x-axis labels
         if step == "15min":
             key_dates = key_dates[-80:]
+            if key_dates2:
+                key_dates2 = key_dates2[-80:]
         for dt in key_dates:
             val = float(total_dict[dt])
             total_data.append([x, val])
@@ -176,7 +227,6 @@ def compare(request, username):
                 winter_data.append([x, winter_dict[dt]])
                 summer_total += summer_dict[dt]
                 winter_total += winter_dict[dt]
-
             ticks.append([x, dt])
             x += 1
             # Prepare nicely data for the consumptions tables
@@ -204,21 +254,47 @@ def compare(request, username):
                     arr.append(night_dict[dt])
                     arr.append(day_dict[dt])
                 cons_table_data.append(arr)
-        # if view is for summer / winter then max_val should be
-        # something else.
-        if view == 'summer_winter':
-            max_val = max(summer_total, winter_total)
+        x = 0
+        if key_dates2:
+            for dt in key_dates2:
+                val = float(total_dict2[dt])
+                total_data2.append([x, val])
+                if val > max_val2:
+                    max_val2 = val
+                if view == 'day_night':
+                    night_data2.append([x, night_dict2[dt]])
+                    day_data2.append([x, day_dict2[dt]])
+                    night_total2 += night_dict2[dt]
+                    day_total2 += day_dict2[dt]
+                elif view == 'summer_winter':
+                    summer_data2.append([x, summer_dict2[dt]])
+                    winter_data2.append([x, winter_dict2[dt]])
+                    summer_total2 += summer_dict2[dt]
+                    winter_total2 += winter_dict2[dt]
+                ticks2.append([x, dt])
+                x += 1
+    # if view is for summer / winter then max_val should be
+    # something else.
+    if view == 'summer_winter':
+        max_val = max(summer_total, winter_total)
+        if summer_total2 and winter_total2:
+            max_val2 = max(summer_total2, winter_total2)
     data = {
         'username': username,
-        'timeseries1': timeseries1,
+        # 'timeseries1': timeseries1,
         'timeseries2': timeseries2,
         'total_data': total_data,
         'day_data': day_data,
         'night_data': night_data,
+        'total_data2': total_data2,
+        'day_data2': day_data2,
+        'night_data2': night_data2,
         'ticks': ticks,
+        'ticks2': ticks2,
         'title': title,
         'view': view,
         'max_val': max_val + max_val * 0.2,  # give some space above
+        'max_val2': max_val2 + max_val2 * 0.2,  # give some space above
         'cons_table_data': cons_table_data,
         'night_total': night_total,
         'day_total': day_total,

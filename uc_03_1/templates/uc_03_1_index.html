@@ -274,6 +274,7 @@
         $(".date_year").hide();
         $(".calendar").hide();
         $(".sw_year").hide();
+        $('.select_day').hide()
         toggleDeserialization(); // update in case of refresh!
 
         function fetchCharts(username){
@@ -300,12 +301,14 @@
             var day2 = $("#day2").val();
             var from1 = $("#from1").val(); //daily from (date value)
             var to1 = $("#to1").val(); //daily to (date value)
+            var from2 = $("#from2").val(); //daily from (date value)
+            var to2 = $("#to2").val(); //daily to (date value)
             $("#chart_panel").empty().load("/uc_03_1/compare/" + username + "/?ajax=&step=" + step + "&view=" + view + "&period_m="
                     + period_m + "&stm1=" + stmonth1 + "&sty1=" + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1+ "&stm1="
                     + stmonth1 + "&sty1=" + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1 + "&sty1="
-                    + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1+ "&stm2=" + stmonth2 + "&sty2=" + "&period_sw=" + period_sw
+                    + styear1 + "&endm1=" + endmonth1 + "&endy1=" + endyear1+ "&stm2=" + stmonth2 + "&sty2=" + styear2 + "&period_sw=" + period_sw
                     + "&sw_styr1=" + sw_styear1 + "&sw_endyr1=" + sw_endyear1+ "&sw_styr2=" + sw_styear2 + "&sw_endyr2=" + sw_endyear2 + "&day1=" + day1 +"&day2=" + day2
-                    + styear2 + "&endm2=" + endmonth2 + "&endy2=" + endyear2 + "&period_d=" + period_d + "&from1=" + from1 +"&to1=" + to1 + "&period_h=" + period_h);
+                    + "&endm2=" + endmonth2 + "&endy2=" + endyear2 + "&period_d=" + period_d + "&from1=" + from1 + "&to1=" + to1 + "&period_h=" + period_h + "&from2=" + from2 + "&to2=" + to2);
         }
 
         function toggleDeserialization(){
@@ -313,9 +316,9 @@
             var val = $('#resolution1').val();
             if (val == 'hourly' || val == '15min'){
                 $("#prd_hrly").show();
-                hideSelectDay();
             }else{
                 $("#prd_hrly").hide();
+                hideSelectDay();
             }
             if (val == 'daily' || val == 'daily_capita' || val == 'monthly' || val == 'monthly_capita' || val == 'monthly_cost'){
                 $("#res37").show();
