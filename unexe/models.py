@@ -13,6 +13,14 @@ class Forecast(models.Model):
     dailydate = models.DateField(blank=True,null=True)
     user      = models.ForeignKey(User,unique=True)
 
+
+class ElectricForecast(models.Model):
+    yearfile  = models.CharField(max_length=100,blank=True)
+    dailyfile = models.CharField(max_length=100,blank=True)
+    yeardate  = models.DateField(blank=True,null=True)
+    dailydate = models.DateField(blank=True,null=True)
+    user      = models.ForeignKey(User,unique=True)
+        
 class BaseDMAstats(models.Model):
     statsdate     = models.DateField(auto_now=True)
     statsperiod   = models.PositiveSmallIntegerField()

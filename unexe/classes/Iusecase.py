@@ -4,13 +4,13 @@ Created on 01 Apr 2014
 @author: adeel
 '''
 from iwidget.models import *
-from unexe.models import userDMAstats, Forecast, DMAstats
+from unexe.models import userDMAstats, Forecast, DMAstats, ElectricForecast
 from Idma import idma
 from Iseries import iseries
 from Iutility import iutility
 from Ihousehold import ihousehold
 from py4j.java_gateway import JavaGateway, GatewayClient
-import json, datetime
+import json, datetime, math
 import pandas as pd
 import itertools as IT
 import numpy as np
@@ -273,7 +273,7 @@ class iusecase():
             data["title"]   = "TARIFF COMPARISON FROM "+stdate+" TO "+endate
         else:
             data = None
-        
+
         #print data
         return data
         '''
@@ -518,12 +518,13 @@ class iusecase():
         data["yourdata"] = yourdata
 
         return data
-    
+
+
     def usecase5_3(self,User,tsmonthly,tsdaily):
         series = iseries()
         hhold  = ihousehold()   
         data   = hhold.getmonthlybill(self.User,3) 
-
+        num    = 0.0
         try:
             forecast = Forecast.objects.get(user=User) #get the current user forecast model object
             if not forecast.dailyfile:
@@ -554,7 +555,10 @@ class iusecase():
                     list = tsdaily[len(tsdaily)-diff:]
                     line = ""
                     for i in list:
-                        line = line + str(i[0].date())+","+str(i[1])+"\n"
+                        num = float(i[1])
+                        if math.isnan(num):
+                            num = 0.0
+                        line = line + str(i[0].date())+","+str(num)+"\n"
                      
                     f = ifile(forecast.dailyfile,"a")
                     f.write(line)
@@ -589,8 +593,11 @@ class iusecase():
                     list = tsmonthly[len(tsmonthly)-diff:]
                     line = ""
                     for i in list:
+                        num = float(i[1])
+                        if math.isnan(num):
+                            num = 0.0
                         #print (tseries[len(tseries)-1:][0][0]).date()
-                        line = line + str(i[0].date())+","+str(i[1])+"\n"
+                        line = line + str(i[0].date())+","+str(num)+"\n"
                      
                     f = ifile(forecast.yearfile,"a")
                     f.write(line)
@@ -635,3 +642,79 @@ class iusecase():
                 forecast.dailydate = series.getfinaldate(tsdaily)
                 forecast.save()        
         return data
+        
+    def usecase5_4(self):
+        series = iseries()
+        hhold  = ihousehold()   
+        household = self.User.households.all()[0]
+        tsmonthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
+        quota     = 18
+        num       = 0.0
+        try:
+            forecast = ElectricForecast.objects.get(user=self.User) #get the current user forecast model object                    
+            if not forecast.yearfile:
+                if len(tsmonthly)>0:
+                    gateway = JavaGateway() #connect to JVM
+                    entry = gateway.entry_point
+                    ts = entry.getTimeSeries(str(self.User.id)) #get JAVA timeseries Object for this user
+                    path = ts.getelectricArff()
+                    '''
+                    The method runs in a separate JAVA thread so it will not block the application, however if the thread runs for very long time  
+                    for file writing and Iforecast class request the forecasting athen code needs to be block until the thread completes writing the file. 
+                    '''                                
+                    ts.writelectricArff(json.dumps(series.getseriesToelectricjson(tsmonthly,quota,"cost")),path)
+                    '''
+                    End of thread
+                    '''                                
+                    #write path to db
+                    forecast.yearfile = path
+                    forecast.yeardate = series.getfinaldate(tsmonthly)
+                    forecast.save()
+            else:
+                #if newer data then append that month to file
+                seriesdate = series.getfinaldate(tsmonthly)
+                dbdate     = forecast.yeardate 
+                if seriesdate > dbdate:
+                    diff = iutility.diffmonth(seriesdate,dbdate) #get the mumber of months to append series to file
+                    list = tsmonthly[len(tsmonthly)-diff:]
+                    line = ""
+                    for i in list:
+                        num = float(i[1])
+                        if math.isnan(num):
+                            num = 0.0
+                        
+                        if num>0.0:
+                            num = iutility.percentage(num,quota)
+                                
+                        #print (tseries[len(tseries)-1:][0][0]).date()
+                        line = line + str(i[0].date())+","+str(num)+"\n"
+                     
+                    f = ifile(forecast.yearfile,"a")
+                    f.write(line)
+                    f.close()
+                    forecast.yeardate = seriesdate
+                    forecast.save()
+                    
+        except: #exception result if no record exists
+            gateway = JavaGateway() #connect to JVM
+            entry = gateway.entry_point            
+            ts = entry.getTimeSeries(str(self.User.id)) #get JAVA timeseries Object for this user
+            forecast = ElectricForecast.objects.create(user=self.User)
+            #ts.safeThread();
+            #entry.shutGateway()
+            if len(tsmonthly)>0:
+                path = ts.getelectricArff()
+                '''
+                The method runs in a separate JAVA thread so it will not block the application, however if the thread runs for very long time  
+                for file writing and Iforecast class request the forecasting athen code needs to be block until the thread completes writing the file. 
+                '''              
+                ts.writelectricArff(json.dumps(series.getseriesToelectricjson(tsmonthly,quota,"cost")),path)
+                '''
+                End of thread
+                '''                
+                #write path to db
+                forecast.yearfile = path
+                forecast.yeardate = series.getfinaldate(tsmonthly)
+                forecast.save()                
+                        
+        return

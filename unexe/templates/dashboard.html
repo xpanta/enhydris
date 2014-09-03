@@ -68,7 +68,17 @@ $(window).load(function() {
 	    	
 	    	domutil.removeCssclass("#c_uc34container","hide");
 	    	uc34Chart(data);
-	    }//--end if		    
+	    }//--end if
+	    
+	    if(domutil.hasCssclass("#c_uc41container","hide") && id=="cuc41") //tab id value, need to make global to make effective and avoid error
+	    {
+	    	data = jQuery.parseJSON("{{c_uc41data|escapejs}}");
+	    	if(data==null)
+	    		return;
+	    	
+	    	domutil.removeCssclass("#c_uc41container","hide");
+	    	uc41Chart(data);
+	    }//--end if		 	    
 	    
 	});	
 });

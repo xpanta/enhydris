@@ -387,6 +387,14 @@ class consumer(TemplateView):
             
             '''
             code for use case 5.4
+            '''
+            usecase.usecase5_4()
+            '''
+            End of use case 5.4
+            '''
+            
+            '''
+            code for use case 5.4
             ''' 
             c_uc54data = None
             '''            
@@ -1192,3 +1200,49 @@ class c_uc53(TemplateView):
             data.append({"title":"Next 30 days forecast"});
             '''
         return HttpResponse(json.dumps(data),content_type='application/javascript')                          
+
+'''
+This class deals with the consumer use case 5.4 which forecast the energyu bill associated with water consumption.
+It is dependent on the Forecast model and Iforecast class and JAVA based Weka machine learning and data mining libray
+The bridge between JAVA and python is made using py4j which connect python through to Java by connect through JVM port
+'''
+class c_uc54(TemplateView):
+    template_name = "index.html"
+    
+    def post(self,request):
+        user = request.user #get authenticated user
+        household = user.households.all()[0] #get user household id
+        data = ""        
+        yearfile = ""
+        type   = request.POST.get("algo")
+        period = request.POST.get("period")
+        series = iseries()
+        gateway = JavaGateway() 
+        entry = gateway.entry_point #connect to JVM
+        javats = entry.getTimeSeries(str(user.id)) #get this user javatimeseries object
+
+        #javats.safeThread();
+        #entry.shutGateway()        
+        ifcast = iforecast(javats)        
+        
+        forecast = ElectricForecast.objects.get(user__pk=user.pk)
+        ts_monthly = series.getmonthlyseries(household)
+        timeseries_month = series.readseries(ts_monthly)
+        
+        if forecast.yearfile and len(timeseries_month)>12: #forecast only when data has 12 months of historical cost or usage. later can be fixed for other intervals
+            yearfile = forecast.yearfile
+        else:
+            return HttpResponse(json.dumps(False),content_type='application/javascript')                                                  
+  
+        data = ifcast.getForecast(timeseries_month,int(period),type,yearfile)
+        
+        '''
+        if period=="quarter":    
+            data = ifcast.getForecast(timeseries_month,3,type,yearfile)
+        elif period=="half":
+            data = ifcast.getForecast(timeseries_month,6,type,yearfile)
+        elif period=="year":
+            data = ifcast.getForecast(timeseries_month,12,type,yearfile)
+        '''
+            
+        return HttpResponse(json.dumps(data),content_type='application/javascript')

@@ -189,4 +189,4 @@ class iutility():
     '''
     @staticmethod
     def percentage(whole, percent):
-      return (whole * percent) / 100.0    
+      return round((whole * percent) / 100.0,3)    
