@@ -33,6 +33,8 @@ def compare(request, username):
     winter_data2 = []
     key_dates = []
     key_dates2 = []
+    title = ""
+    title2 = ""
     summer_dict = {}
     winter_dict = {}
     total_dict2 = {}
@@ -54,6 +56,7 @@ def compare(request, username):
     max_val = 0  # maximum consumption (for chart1)
     max_val2 = 0  # maximum consumption (for chart2)
     cons_table_data = []  # data prepared for the consumption tables
+    cons_table_data2 = []  # data prepared for the consumption tables
     if user.username == username:
         step = request.GET.get('step', None)
         view = request.GET.get('view', None)
@@ -75,15 +78,11 @@ def compare(request, username):
             from itertools import izip
             ts_m = None
             if step == '15min':
-                title = "15-Minute Data Resolution for {x} " \
-                        "(showing only last 80 values)"
                 from iwidget.models import TSTEP_FIFTEEN_MINUTES, VAR_PERIOD
                 ts_m = household.timeseries\
                     .filter(time_step__id=TSTEP_FIFTEEN_MINUTES,
                             variable__id=VAR_PERIOD)[0]
             elif step == 'hourly':
-                title = "Hourly Data Resolution for {x}"
-                title2 = "Hourly Data Resolution Comparison For {x} and {y}"
                 from iwidget.models import TSTEP_HOURLY, VAR_PERIOD
                 ts_m = household.timeseries \
                     .filter(time_step__id=TSTEP_HOURLY,
@@ -96,25 +95,21 @@ def compare(request, username):
             if prd_h == 'today':
                 end = dates[-1].date()  # last day
                 start = end
-                title = title.format(x='Today')
             elif prd_h == 'yesterday':
                 end = dates[-1].date()  # last day
                 yesterday = end - timedelta(days=1)
                 start = yesterday
                 end = yesterday
-                title = title.format(x='Yesterday')
             elif prd_h == 'custom1' or prd_h == 'custom2':
                 dval = request.GET.get('day1')
                 day1 = datetime.strptime(dval, "%Y-%m-%d")
                 start = day1.date()
                 end = day1.date()
-                title = title.format(x=dval)
                 if prd_h == 'custom2':
                     dval2 = request.GET.get('day2')
                     day2 = datetime.strptime(dval2, "%Y-%m-%d")
                     start2 = day2.date()
                     end2 = day2.date()
-                    title2 = title.format(x=dval, y=dval2)
                     comparison = True
         elif 'monthly' in step or 'daily' in step:
             from iwidget.models import TSTEP_HOURLY, VAR_PERIOD
@@ -135,15 +130,20 @@ def compare(request, username):
                     param = request.GET.get('period_sw', 0)
                     val = int(param)
                     start, end = get_year_start_end(val, end)
-                elif prd_sw == 'custom1':
+                elif prd_sw in ['custom1', 'custom2']:
                     from_yr = request.GET.get('sw_styr1', end.year)
                     to_yr = request.GET.get('sw_endyr1', end.year)
                     start = datetime.today()\
                         .replace(day=1, month=1, year=int(from_yr)).date()
                     end = datetime.today()\
                         .replace(day=31, month=12, year=int(to_yr)).date()
-                elif prd_sw == 'custom2':
-                    pass
+                    if prd_sw == 'custom2':
+                        from_yr = request.GET.get('sw_styr2', end.year)
+                        to_yr = request.GET.get('sw_endyr2', end.year)
+                        start2 = datetime.today() \
+                            .replace(day=1, month=1, year=int(from_yr)).date()
+                        end2 = datetime.today() \
+                            .replace(day=31, month=12, year=int(to_yr)).date()
             else:
                 if 'custom' not in period:
                     from lib.common import get_start_date
@@ -179,10 +179,22 @@ def compare(request, username):
         total_dict, night_dict, day_dict, summer_dict, \
             winter_dict = get_chart_data(household, dates, units, step,
                                          view, start, end)
+        if start == end:
+            title = "{x} Resolution Chart For {y}"\
+                .format(x=step.title(), y=start)
+        else:
+            title = "{x} Resolution Chart From {z} To {y}"\
+                .format(x=step.title(), z=start, y=end)
         if start2 and end2:
             total_dict2, night_dict2, day_dict2, summer_dict2, \
                 winter_dict2 = get_chart_data(household, dates, units, step,
                                               view, start2, end2)
+            if start2 == end2:
+                title2 = "{x} Resolution Chart For {y}" \
+                    .format(x=step.title(), y=start2)
+            else:
+                title2 = "{x} Resolution Chart From {z} To {y}" \
+                    .format(x=step.title(), z=start2, y=end2)
         tdk = total_dict.keys()
         if total_dict2:
             tdk2 = total_dict2.keys()
@@ -255,6 +267,7 @@ def compare(request, username):
                     arr.append(day_dict[dt])
                 cons_table_data.append(arr)
         x = 0
+        # Only if the user needs to combine two charts
         if key_dates2:
             for dt in key_dates2:
                 val = float(total_dict2[dt])
@@ -273,6 +286,31 @@ def compare(request, username):
                     winter_total2 += winter_dict2[dt]
                 ticks2.append([x, dt])
                 x += 1
+                # Prepare nicely data for the consumptions tables
+                # remember that dt gives also date information
+                if step in ["hourly", "15min"]:
+                    txt = dt
+                    arr = [txt, val]
+                    cons_table_data2.append(arr)
+                if "monthly" in step:
+                    d_time = datetime.strptime(dt, "%Y/%m")
+                    txt = "%s of %s" % (months[d_time.month-1],
+                                        str(d_time.year))
+                    arr = [txt, val]
+                    if view == "day_night":
+                        arr.append(night_dict2[dt])
+                        arr.append(day_dict2[dt])
+                    cons_table_data2.append(arr)
+                if "daily" in step:
+                    d_time = datetime.strptime(dt, "%Y/%m/%d")
+                    txt = "%s %s, %s" % (str(d_time.day),
+                                         months[d_time.month-1],
+                                         str(d_time.year))
+                    arr = [txt, val]
+                    if view == 'day_night':
+                        arr.append(night_dict2[dt])
+                        arr.append(day_dict2[dt])
+                    cons_table_data2.append(arr)
     # if view is for summer / winter then max_val should be
     # something else.
     if view == 'summer_winter':
@@ -292,16 +330,22 @@ def compare(request, username):
         'ticks': ticks,
         'ticks2': ticks2,
         'title': title,
+        'title2': title2,
         'view': view,
         'max_val': max_val + max_val * 0.2,  # give some space above
         'max_val2': max_val2 + max_val2 * 0.2,  # give some space above
         'cons_table_data': cons_table_data,
+        'cons_table_data2': cons_table_data2,
         'night_total': night_total,
         'day_total': day_total,
         'summer_total': summer_total,
         'winter_total': winter_total,
         'summer_data': summer_data,
         'winter_data': winter_data,
+        'summer_total2': summer_total2,
+        'winter_total2': winter_total2,
+        'summer_data2': summer_data2,
+        'winter_data2': winter_data2,
         'step': step,
     }
     # cache.set(cache_key, result, 600)

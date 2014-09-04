@@ -80,7 +80,7 @@ $(window).load(function() {
  		<li class="active"><a href="#summary" data-toggle="tab"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Water Analysis (Use cases)" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="waterusecase"> 		
-				<li><a href="#water" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case No.---" %}</a></li>
+				<li><a href="#water" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1 %}</a></li>
 				{% if not user.is_staff and not user.is_superuser %}
 					<li><a href="#cuc53" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.3 (Forecast Water Bill)" %}</a></li>
                     <li><a href="#cuc31" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.1 (Compare Current and Historical Water Consumption)" %}</a></li>
@@ -93,7 +93,7 @@ $(window).load(function() {
 		</li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Energy Analysis (Use cases)" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="energyusecase"> 		
-				<li><a href="#energy" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case No.---" %}</a></li>
+				<li><a href="#energy" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1" %}</a></li>
 				<li><a href="#cuc41" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC4.1 (Compare energy pattern associated with water use in the same household)" %}</a></li>
 				<li><a href="#cuc54" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.4 (Forecast the component of next energy bill associated with water consumption)" %}</a></li>												
 			</ul>
