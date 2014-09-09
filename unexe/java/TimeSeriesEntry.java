@@ -38,6 +38,7 @@ public class TimeSeriesEntry {
     	else
     	{
     		ts = new TimeSeries();
+    		ht.put(userid,ts);
     	}
     	return ts;
     }
@@ -66,7 +67,7 @@ public class TimeSeriesEntry {
     	try{
     		gatewayServer = new GatewayServer(new TimeSeriesEntry()); //instantiates the gatewayserver for communicating with python on default port
     		gatewayServer.start();	//start the server
-    		System.out.println("Gateway Server Started");
+    		System.out.println("Gateway Server Started...");
     	}catch(Exception exp){System.out.println("Gateway Server not Started, please make sure default port (25333) is free");}
     }	
 }//--end class

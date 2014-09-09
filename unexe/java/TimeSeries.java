@@ -22,18 +22,31 @@ import weka.classifiers.timeseries.WekaForecaster;
 */
 public class TimeSeries {
 
-	private Thread t1,t2;
-	private Arff arffyear,arffday;
+	private Thread t1,t2,t3;
+	private Arff arffyear,arffday,arffelec;
 	
-	TimeSeries()
+	public TimeSeries()
 	{
 		arffyear = new Arff();
 		arffday  = new Arff();
+		arffelec = new Arff();
 		t1 	     = new Thread(arffyear);
 		t2 	     = new Thread(arffday);
-		t1.start();				
+		t3 	     = new Thread(arffelec);
+		t1.start();
 		t2.start();
+		t3.start();
 	}
+	
+	public boolean getArffelectricstatus()
+	{
+		return arffelec.getArffstatus();
+	}
+	
+	public String getelectricArff()
+	{
+		return arffelec.getArff();
+	}	
 	
 	public boolean getArffyearstatus()
 	{
@@ -65,7 +78,13 @@ public class TimeSeries {
 		if(arffday!=null)
 		{
 			arffday.terminate();
-		}		
+		}
+		
+		if(arffelec!=null)
+		{
+			arffelec.terminate();
+		}
+		//System.out.println("All threads terminated..");
 	}//--end function
 		
 	public void writeyearlyArff(String data,String floc)
@@ -76,6 +95,11 @@ public class TimeSeries {
 	public void writedayArff(String data,String floc)
 	{
 		arffday.threadEntry(data,floc);
+	}
+
+	public void writelectricArff(String data,String floc)
+	{
+		arffelec.threadEntry(data,floc);
 	}
 	
     /**

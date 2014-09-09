@@ -3,7 +3,7 @@ Created on 5 Apr 2014
 
 @author: adeel
 '''
-import datetime, json
+import datetime, json, math
 from py4j.java_gateway import JavaGateway, GatewayClient
 from Iseries import iseries
 from Iutility import iutility
@@ -35,12 +35,19 @@ class iforecast():
         highest  = 0.0
         lowest   = 0.0
         billdata = {"sum":0.0,"avg":0.0,"high":"","low":""}
+        monthdata= {"sum":0.0,"avg":0.0,"high":"","low":""}
         dtlist = []
         list2  = []
         list1  = []
-        data = {}       
+        list3 = []
+        num = 0.0
+        dtlist2 = []        
+        data = {}
+        tserieslength = 0       
+        tseriesend = None
         hhold    = ihousehold()
         series   = iseries()
+        quota = 18
         
         enddate  = series.getfinaldate(tseries) #end date of the time series
         #file = self.ts.getyearlyArff()
@@ -95,7 +102,34 @@ class iforecast():
                        { "Price Break" : "Lowest", "Cost"  : lowest, "Date"  : start }, 
                        { "Price Break" : "Lowest", "Cost"  : lowest, "Date"  : end }
                    ];  
-                           
+        
+        
+        '''
+        This is the data for the last "units" months to display with forecasting summary in use case 5.4
+        '''
+        tserieslength = len(tseries)
+        if tserieslength>=units:  
+            tseriesend = tseries[tserieslength-units:]
+        
+        for d in tseriesend:
+            dtlist2.append(str(d[0].date()))
+            num         = float(d[1])
+            if math.isnan(num):
+                num = 0.0
+            
+            num = iutility.percentage(num,quota)
+            cost = round(hhold.tariff1(num),2)
+            list3.append(cost)
+            monthdata["sum"] = monthdata["sum"] + cost       
+        
+        highest = max(list3)
+        lowest  = min(list3)    
+        monthdata["sum"]  = round(monthdata["sum"],2)
+        monthdata["avg"]  = round(monthdata["sum"]/units,2)
+        monthdata["high"] = {"date":iutility.convertdate(dtlist2[list3.index(highest)],'%Y-%m-%d','%B-%Y'),"max":highest} #max per nonth
+        monthdata["low"]  = {"date":iutility.convertdate(dtlist2[list3.index(lowest)],'%Y-%m-%d','%B-%Y'),"min":lowest} #min per nonth
+                
+        data["monthdata"] = monthdata
         try:
             ""#entry.shutGateway()
         except:

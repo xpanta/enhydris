@@ -91,11 +91,11 @@ $(window).load(function() {
         </div>
 		<div class="col-md-10">
 		<div id="c_uc41-msg"></div>
-		<form class="form-inline" id="c_uc41-form" role="form" method="POST" action="{% url 'c_uc41' %}">
+		<form class="form-inline" id="c_uc41-form" role="form" method="POST" action="{% url 'c_uc54' %}">
 			{% csrf_token %}  
 
 		<label class="radio inline c_uc41period">
-			<input type="radio" name="c_uc41_per" id="c_uc41_per" value="3" /> Next 3 Months
+			<input type="radio" name="c_uc41_per" id="c_uc41_per" value="3"  checked="checked" /> Next 3 Months
 		</label>
 		<label class="radio inline c_uc41period">
 			<input type="radio" name="c_uc41_per" id="c_uc41_per" value="6" /> Next 6 Months
@@ -114,25 +114,28 @@ $(window).load(function() {
 	<!--  charts and table -->
 	<div class="panel-body" id="panel">
 		<div id="c_uc41cont" class="row hide">
-		<div id="c_uc41title"><p class="bg-primary text-center"><strong></strong></p></div>
-		<div class="col-md-5" id="c_uc41chartcont"></div>
-		<div class="col-md-4" id="c_uc41donutchart"></div>
-		<div class="col-md-3">
+		<div id="c_uc41ftitle"><p class="bg-primary text-center"><strong></strong></p></div>
+		<div class="col-md-8" id="c_uc41chartcont"></div>
+		<div class="col-md-4">
 		    <div class="panel panel-primary">
-		        <div class="panel-heading">{% trans "WATER USAGE SUMMARY" %}</div>
+		        <div class="panel-heading">{% trans "FORECAST SUMMARY" %}</div>
 		        <ul class="list-group list-group-flush text-center">
-		            <li id="c_uc41household" class="list-group-item"></li>
-		            <li id="c_uc41occupant" class="list-group-item"></li>
-					<li class="list-group-item"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>		            
+		            <li class="list-group-item" id="c_uc41fsum"></li>
+		            <li class="list-group-item" id="c_uc41favg"></li>
+		            <li class="list-group-item" id="c_uc41fhigh"></li>
+		            <li class="list-group-item" id="c_uc41flow"></li>		            
 		        </ul>
 		    </div>
-		    <div class="panel panel-primary">
-		        <div class="panel-heading">{% trans "ELECTRICITY USAGE SUMMARY" %}</div>
-		        <ul class="list-group list-group-flush text-center">
-		            <li id="c_uc41hhold" class="list-group-item"></li>
-		            <li id="c_uc41occup"  class="list-group-item"></li>
-		        </ul>
-		    </div>		    
+			    <div class="panel panel-primary">
+			        <div class="panel-heading">{% trans "ELECTRICITY USAGE SUMMARY" %}</div>
+			        <ul class="list-group list-group-flush text-center">
+		            <li class="list-group-item" id="c_uc41sum"></li>
+		            <li class="list-group-item" id="c_uc41avg"></li>
+		            <li class="list-group-item" id="c_uc41high"></li>
+		            <li class="list-group-item" id="c_uc41low"></li>
+				    <li class="list-group-item"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>
+			        </ul>
+			    </div>			    
 		</div>		
 		</div>
 			

@@ -248,19 +248,45 @@ class iseries():
     return json formatted
     '''
     def getseriesTojson(self,tseries,col="unit"):
-        obj = {};
-        list = []
+        obj = {}
+        list1 = []
+        num = 0.0
         for d in tseries:
-            #dt = str(d[0].date())
-            #dt = iutility.convertdate(dt,'%Y-%m-%d','%d-%m-%Y')
-            #reading = d[1] 
             obj["date"] = str(d[0].date())
-            obj[col] = d[1]
-            list.append(obj)
+            num         = float(d[1])
+            if math.isnan(num): # i have to do this so forecasting can take place - with NaN weka forecasting plugin throw exception
+                num = 0.0
+            obj[col] = num
+            list1.append(obj)
             obj = {};
             
-        return list        
+        return list1        
 
+    '''    
+    this methods convert timeseries obtained from data to json
+    tseries: timeseries object
+    col: default value of json column that will be used for calculation and/or showing results. this is usually a unit
+    return json formatted
+    '''
+    def getseriesToelectricjson(self,tseries,quota,col="unit"):
+        obj = {}
+        list1 = []
+        num = 0.0
+        for d in tseries:
+            obj["date"] = str(d[0].date())
+            num         = float(d[1])
+            if math.isnan(num): # i have to do this so forecasting can take place - with NaN weka forecasting plugin throw exception
+                num = 0.0
+            
+            if num>0.0:
+                num = iutility.percentage(num,quota)
+            
+            obj[col] = num
+            list1.append(obj)
+            obj = {};
+            
+        return list1 
+    
     '''    
     this methods convert timeseries obtained from data to json
     tseries: timeseries object
