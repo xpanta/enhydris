@@ -239,7 +239,13 @@ def compare(request, username):
                 winter_data.append([x, winter_dict[dt]])
                 summer_total += summer_dict[dt]
                 winter_total += winter_dict[dt]
-            ticks.append([x, dt])
+            if step == '15min':
+                if ":00" not in dt:
+                    ticks.append([x, ""])
+                else:
+                    ticks.append([x, dt])
+            else:
+                ticks.append([x, dt])
             x += 1
             # Prepare nicely data for the consumptions tables
             # remember that dt gives also date information
@@ -284,7 +290,13 @@ def compare(request, username):
                     winter_data2.append([x, winter_dict2[dt]])
                     summer_total2 += summer_dict2[dt]
                     winter_total2 += winter_dict2[dt]
-                ticks2.append([x, dt])
+                if step == '15min':
+                    if ":00" not in dt:
+                        ticks2.append([x, ""])
+                    else:
+                        ticks2.append([x, dt])
+                else:
+                    ticks2.append([x, dt])
                 x += 1
                 # Prepare nicely data for the consumptions tables
                 # remember that dt gives also date information
