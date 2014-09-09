@@ -80,7 +80,7 @@ $(window).load(function() {
  		<li class="active"><a href="#summary" data-toggle="tab"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Water Analysis (Use cases)" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="waterusecase"> 		
-				<li><a href="#water" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1 %}</a></li>
+				<li><a href="#water" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1" %}</a></li>
 				{% if not user.is_staff and not user.is_superuser %}
 					<li><a href="#cuc53" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.3 (Forecast Water Bill)" %}</a></li>
                     <li><a href="#cuc31" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.1 (Compare Current and Historical Water Consumption)" %}</a></li>

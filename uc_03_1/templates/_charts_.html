@@ -184,7 +184,7 @@
                     }
                 }
             });
-        {% if summer_total and winter_total %}
+        {% if summer_total2 and winter_total2 %}
             $.plot("#placeholder2", [
                         { label: " - Summer Consumption in m&#179;", data: [ [1, {{ summer_total2|floatformat:2 }}] ] },
                         { label: " - Winter Consumption in m&#179;", data: [ [2, {{ winter_total2|floatformat:2 }}] ] }

@@ -97,7 +97,7 @@ $(window).load(function() {
 	<hr/>
 	<div class="row">
 		 <div class="col-md-12">
-		 <strong>{% trans "Select Date and Time" %}</strong>
+		 <strong>{% trans "Select Date and Time:" %}</strong>
 		 <form class="form-inline" action="" method="GET">
 			 <div class="form-group col-md-3">
 			 <div class="bfh-datepicker" data-time="now" data-name="date" id="date" data-format="y-m-d"></div>
@@ -121,8 +121,8 @@ $(window).load(function() {
 	<div class="row chartdiv{{chart.id}} {% if not chart.initial_display %}hide{% endif %}" tabindex="{{forloop.counter0}}">
 	     <div class="chartdiv chartdiv{{chart.id}} col-md-6 {% if not chart.initial_display %}hide{% endif %}" id="chartdiv">
 	          
-	         <div id="data_holder{{chart.id}}" class="data_holder">  
-	             <div id="chartarea{{chart.id}}" class="chartarea" style="margin-bottom:30px;width:500px;height:210px"> </div>     
+	         <div id="data_holder{{chart.id}}" class="data_holder" style="width: 530px;">
+	             <div id="chartarea{{chart.id}}" class="chartarea" style="margin-bottom:30px;width:500px;height:210px"> </div>
 	             {% if chart.has_pie %}
 	             	<div id="piediv{{chart.has_pie}}" class="piearea" style="margin-bottom:30px;width:500px;height:210px"> </div>
 	             {% endif %}

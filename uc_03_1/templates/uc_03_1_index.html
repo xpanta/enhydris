@@ -113,17 +113,19 @@
         <div class="row">
             <div class="col-md-3 select_day" id="select_day1">
                 <div class="form-group">
-                    <p>{% trans "Select Day" %}: <input type="text" id="day1" class="datepicker"></p>
+                    {% trans "Select Day" %}:
+                    <div class="bfh-datepicker" data-time="now" data-name="date" id="day1" data-format="y-m-d"></div>
                 </div>
             </div>
-            <div class="col-md-6 select_day" id="select_day2">
+            <div class="col-md-3 select_day" id="select_day2">
                 <div class="form-group">
-                    <p>{% trans "Select 2nd Day" %}: <input type="text" id="day2" class="datepicker"></p>
+                    {% trans "Select Day" %}:
+                    <div class="bfh-datepicker" data-time="now" data-name="date" id="day2" data-format="y-m-d"></div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12 date_year" id="date_year1">
+            <div class="col-md-12 date_yr" id="date_year1">
                 <div class="form-inline col-md-6" id="c_uc31_daterange">
                     FROM
                     <div class="form-group">
@@ -169,22 +171,26 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12 calendar" id="calendar1">
-                <div class="form-group col-md-3">
-                    <p>From: <input type="text" id="from1" class="datepicker"></p>
+            <div class="col-md-12 my_cal" id="calendar1">
+                <div class="form-group">
+                    {% trans "Select Day" %}:
+                    <div class="bfh-datepicker" data-time="now" data-name="date" id="from1" data-format="y-m-d"></div>
                 </div>
-                <div class="form-group col-md-3">
-                    <p>To: <input type="text" id="to1" class="datepicker"></p>
+                <div class="form-group">
+                    {% trans "Select 2nd Day" %}:
+                    <div class="bfh-datepicker" data-time="now" data-name="date" id="to1" data-format="y-m-d"></div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12 calendar" id="calendar2">
-                <div class="form-group col-md-3">
-                    <p>From: <input type="text" id="from2" class="datepicker"></p>
+            <div class="col-md-12 my_cal" id="calendar2">
+                <div class="form-group">
+                    {% trans "Select Day" %}:
+                    <div class="bfh-datepicker" data-time="now" data-name="date" id="from2" data-format="y-m-d"></div>
                 </div>
-                <div class="form-group col-md-3">
-                    <p>To: <input type="text" id="to2" class="datepicker"></p>
+                <div class="form-group">
+                    {% trans "Select 2nd Day" %}:
+                    <div class="bfh-datepicker" data-time="now" data-name="date" id="to2" data-format="y-m-d"></div>
                 </div>
             </div>
         </div>
@@ -213,7 +219,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12 date_year" id="date_year2">
+            <div class="col-md-12 date_yr" id="date_year2">
                 <div class="form-inline col-md-6" id="c_uc31_daterange">
                     FROM
                     <div class="form-group">
@@ -265,16 +271,15 @@
 </div>
     <script>
 
-        $(".datepicker").datepicker({dateFormat: "yy-mm-dd"});
         $(".des2").hide();
         $("#prd_mon").hide();
         $("#prd_hrly").hide();
         $("#prd_day").hide();
         $("#prd_sw").hide();
-        $(".date_year").hide();
-        $(".calendar").hide();
+        $(".date_yr").hide();
+        $(".my_cal").hide();
         $(".sw_year").hide();
-        $('.select_day').hide()
+        $('.select_day').hide();
         toggleDeserialization(); // update in case of refresh!
 
         function fetchCharts(username){
@@ -333,13 +338,14 @@
             //show period if applicable, too
             togglePeriod();
         }
+
+
         function togglePeriod(){
             $("#prd_mon").hide();
             $("#prd_day").hide();
             $("#prd_sw").hide();
-            $(".date_year").hide();
-            $(".calendar").hide();
-
+            $(".date_yr").hide();
+            $(".my_cal").hide();
             $('.sw_year').hide();
             var val1 = $('#resolution1').val();
             var val2 = $('#resolution2').val();
@@ -356,7 +362,7 @@
         }
 
         function hideDateYear(){
-            $(".date_year").hide();
+            $(".date_yr").hide();
         }
 
         function hideYearSW(){
@@ -374,27 +380,27 @@
         }
 
         function showDateYear1(){
-            $(".date_year").hide();
+            $(".date_yr").hide();
             $("#date_year1").show();
         }
 
         function showDateYear2(){
-            $(".date_year").hide();
+            $(".date_yr").hide();
             $("#date_year1").show();
             $("#date_year2").show();
         }
 
         function hideCalendars(){
-            $(".calendar").hide();
+            $(".my_cal").hide();
         }
 
         function showCalendar1(){
-            $(".calendar").hide();
+            $(".my_cal").hide();
             $("#calendar1").show();
         }
 
         function showCalendar2(){
-            $(".calendar").hide();
+            $(".my_cal").hide();
             $("#calendar1").show();
             $("#calendar2").show();
         }
