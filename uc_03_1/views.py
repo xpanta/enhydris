@@ -338,6 +338,8 @@ def compare(request, username):
         'cons_table_data2': cons_table_data2,
         'night_total': night_total,
         'day_total': day_total,
+        'night_total2': night_total2,
+        'day_total2': day_total2,
         'summer_total': summer_total,
         'winter_total': winter_total,
         'summer_data': summer_data,
