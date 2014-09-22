@@ -12,15 +12,35 @@ from iwidget.models import (DMA, Household, IWTimeseries, CUBIC_METERS,
                             TSTEP_HOURLY, VAR_COST, UNIT_EURO,
                             VAR_ENERGY_PERIOD, VAR_ENERGY_COST,
                             GENTITYALTCODETYPE, UserValidationKey)
+from iwidget.cost_calculation \
+    import (calculate_cost_timeseries as calculate_cost,
+            CUBIC_METER_FLAT_RATE, KWH_FLAT_RATE)
 from pthelma.timeseries import Timeseries as TSeries
 from pthelma.timeseries import timeseries_bounding_dates_from_db
 from pthelma.timeseries import IntervalType
+from pthelma.timeseries import read_timeseries_tail_from_db
 from math import isnan
 from random import randint
+from datetime import datetime
 
 AVERAGE_UNIT_WATER_CONSUMPTION = 100.000
-
 log = logging.getLogger(__name__)
+
+MAX_DATE = datetime(2100, 1, 1, 0, 0, 0)
+MIN_DATE = datetime(1900, 1, 1, 0, 0, 0)
+
+bounds = {
+    VAR_PERIOD: {
+        'fifteen_start': MAX_DATE, 'fifteen_end': MIN_DATE,
+        'hourly_start': MAX_DATE, 'hourly_end': MIN_DATE,
+        'daily_start': MAX_DATE, 'daily_end': MIN_DATE,
+        'monthly_start': MAX_DATE, 'monthly_end': MIN_DATE},
+    VAR_ENERGY_PERIOD: {
+        'fifteen_start': MAX_DATE, 'fifteen_end': MIN_DATE,
+        'hourly_start': MAX_DATE, 'hourly_end': MIN_DATE,
+        'daily_start': MAX_DATE, 'daily_end': MIN_DATE,
+        'monthly_start': MAX_DATE, 'monthly_end': MIN_DATE}
+}
 
 
 def create_zone(name):
@@ -153,7 +173,9 @@ def create_raw_timeseries(household):
             pass
         var = Variable.objects.get(pk=variable)
         name = var.descr
-        series, created = IWTimeseries.objects.create(
+        # used to be "create" but I changed it to get_or_create
+        # so as not to create duplicate items.
+        series, created = IWTimeseries.objects.get_or_create(
             gentity=household,
             variable_id=variable,
             time_zone_id=TZONE_UTC,
@@ -200,7 +222,7 @@ def create_processed_timeseries(household):
                                        time_step__id=time_step_id,
                                        variable__id=variable_id).exists():
             continue
-        ts_object = IWTimeseries.objects.create(
+        ts_object, created = IWTimeseries.objects.get_or_create(
             time_step_id=time_step_id,
             gentity=household,
             variable_id=variable_id,
@@ -224,6 +246,7 @@ def create_objects(data, usernames, force, zone):
     :param force: True to overwritte
     :return: True for success
     """
+    households = []
     log.debug("processing household data now...")
     # Create user (household owner), household, database series placeholders
     hh_ids = data.keys()
@@ -249,8 +272,19 @@ def create_objects(data, usernames, force, zone):
                 log.debug('Raw timeseries id=%s has data, '
                           'skipping.' % db_series[variable].id)
                 continue
-            timeseries = TSeries()
-            timeseries.id = db_series[variable].id
+            ts_id = db_series[variable].id
+            # checking to see if timeseries records already exist in order
+            # to append
+            d = read_timeseries_tail_from_db(db.connection, ts_id)
+            exists = False
+            if not d:
+                timeseries = TSeries()
+            else:
+                timeseries = TSeries(ts_id)
+                exists = True
+
+            timeseries.id = ts_id
+            households.append(household)
             total = 0.0
             _dict = data[hh_id]
             arr = _dict[variable]
@@ -263,12 +297,17 @@ def create_objects(data, usernames, force, zone):
                     timeseries[timestamp] = float('NaN')
             timeseries_data[variable] = timeseries
             log.info("*** writing timeseries data to db")
-            timeseries.write_to_db(db=db.connection,
-                                   transaction=transaction,
-                                   commit=False)
+            if not exists:
+                timeseries.write_to_db(db=db.connection,
+                                       transaction=transaction,
+                                       commit=False)
+            else:
+                timeseries.append_to_db(db=db.connection,
+                                        transaction=transaction,
+                                        commit=False)
         if 'WaterCold' in timeseries_data:
             calc_occupancy(timeseries_data['WaterCold'], household)
-
+    return households
 
 def calc_occupancy(timeseries, household):
     """
@@ -307,6 +346,76 @@ def calc_occupancy(timeseries, household):
         household.save()
 
 
+def regularize():
+    pass
+
+
+def aggregate():
+    pass
+
+
+def process_household(household):
+    print "Processing household: %s" % (household.alt_codes.all()[0],)
+    for variable in (VAR_PERIOD, VAR_ENERGY_PERIOD):
+        raw_series_db = household \
+            .timeseries \
+            .filter(time_step__isnull=True,
+                    variable__id={
+                        VAR_PERIOD: VAR_CUMULATIVE,
+                        VAR_ENERGY_PERIOD: VAR_ENERGY_CUMULATIVE
+                    }[variable])[:1]
+        if not raw_series_db:
+            continue
+        raw_series_db = raw_series_db[0]
+        fifteen_min_series_db = household \
+            .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                            variable__id=variable)
+        s1, e1 = timeseries_bounding_dates_from_db(db.connection,
+                                                   raw_series_db.id)
+        s2, e2 = timeseries_bounding_dates_from_db(db.connection,
+                                                   fifteen_min_series_db.id)
+        #    if e2 and (e1-e2).seconds<15*60:
+        #        return
+        fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db, s1,e1,s2,e2)
+        if fifteen_min_series.bounding_dates():
+            bounds[variable]['fifteen_start'] = min(
+                bounds[variable]['fifteen_start'],
+                fifteen_min_series.bounding_dates()[0])
+            bounds[variable]['fifteen_end'] = max(
+                bounds[variable]['fifteen_end'],
+                fifteen_min_series.bounding_dates()[1])
+        result = fifteen_min_series
+        monthly_series = None
+        for time_step_id in (TSTEP_HOURLY, TSTEP_DAILY, TSTEP_MONTHLY):
+            if not result:
+                break
+            result = aggregate(bounds, household, result, time_step_id, variable)
+            if time_step_id == TSTEP_MONTHLY:
+                monthly_series = result
+        if not monthly_series:
+            return
+        # Cost calculation only if monthly_series present
+        try:
+            cost_timeseries_db = household \
+                .timeseries.get(time_step__id=TSTEP_MONTHLY,
+                                variable__id={
+                                    VAR_PERIOD: VAR_COST,
+                                    VAR_ENERGY_PERIOD: VAR_ENERGY_COST
+                                }[variable])
+            cost_timeseries = calculate_cost(monthly_series,
+                                             rate={
+                                                 VAR_PERIOD: CUBIC_METER_FLAT_RATE,
+                                                 VAR_ENERGY_PERIOD: KWH_FLAT_RATE
+                                             }[variable])
+            cost_timeseries.id = cost_timeseries_db.id
+            cost_timeseries.write_to_db(db=db.connection, commit=True)
+        except Exception as e:
+            print repr(e)
+            print "error in monthly cost calculation. Skipping"
+            continue
+
+
+
 @transaction.commit_manually
 def process_data(data, usernames, force, name):
     """
@@ -326,7 +435,10 @@ def process_data(data, usernames, force, name):
         log.info("*** Created DMA {x} with id {y}".format(x=dma.name, y=dma.id))
         #create_dma_series(dma.id)  # this might not be needed, actually
         #dma = DMA.objects.get(pk=dma.id)
-        create_objects(data, usernames, force, dma)
+        households = create_objects(data, usernames, force, dma)
+        for household in households:
+            log.info("Processing ts records for household %s" % household)
+            process_household(household, bounds)
         log.info("Process ended... Committing!")
         #transaction.commit()
         log.info("SUCCESS!")
