@@ -3,7 +3,61 @@ September 2014
 Modified utils.py and summary.html to show the correct next target value according to current consumption rate for period. I added get_next_target() in utils.py that calculates
 the correct next target. Also I modified get_lpd_arr() for that reason.
 
-August 2014
+Added model "UserValidationKey" in iwidget/models.py for users to signup using meter id and a random generated key
+
+added csv_parser app for parsing csv files
+
+added create_pwds to read csv and create unique passwords (don't know why. I was asked)
+
+It seems there is a problem with the Unit of Measurements. I get this error while importing data.
+:::
+    Transaction failed while entering data for zone 384 because of error
+    IntegrityError('insert or update on table "hcore_timeseries" violates foreign
+    key constraint "unit_of_measurement_id_refs_id_22fbc216"\nDETAIL:
+    Key (unit_of_measurement_id)=(3) is not present in table "hcore_unitofmeasurement".\n',)
+:::
+
+I will create two new entries in the database table hcore_unitofmeasurement
+2: Euro
+3: KilowattHour
+
+Now I get this:
+
+:::
+    Transaction failed while entering data for zone 388 because of error IntegrityError
+    ('insert or update on table "hcore_timeseries" violates foreign key constraint
+    "variable_id_refs_id_ecccee61"\nDETAIL:  Key (variable_id)=(6)
+    is not present in table "hcore_variable".\n',)
+:::
+
+I will also have to add rows in table "hcore_variable"
+
+Added these rows in hcore_variable
+"1";"Cumulative water consumption"
+"2";"Water consumption for a period"
+"3";"Cost of Consumption"
+"4";"Cold Water Consumption for Period"
+"5";"Hot Water Consumption for period"
+"6";"Energy consumption for period"
+"7";"Cumulative Cold Water consumption"
+"8";"Cumulative Hot Water consumption"
+"9";"Cumulative Energy Consumption"
+"10";"Cost of Energy Consumption"
+
+Added these lines to hcore_unitofmeasurement_variables
+"1";1;1
+"2";1;2
+"3";2;3
+"4";1;4
+"5";1;5
+"6";3;6
+"7";1;7
+"8";1;8
+"9";3;9
+"10";2;10
+
+
+
 ===========
 - Added the ability for the user to view hourly and 15 min charts filtered by day.
 - Modified iwidget/utils.py for the dashboard to load consumption for yesterday, last week, last month. This happened in method: statistics_on_daily.

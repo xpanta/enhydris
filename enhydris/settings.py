@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     'uc_03_1',
     'iwidget',
     'unexe',
+    'csv_parser',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -211,8 +212,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -222,23 +223,31 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'ierror.log',
+            'filename': 'debug.log',
             'formatter': 'verbose'
         },
     },
     'loggers': {
         'django': {
-            'handlers':['file'],
+            'handlers': ['file'],
             'propagate': True,
-            'level':'ERROR',
+            'level': 'DEBUG',
         },
         'iwidget': {
             'handlers': ['file'],
-            'level': 'ERROR',
+            'level': 'DEBUG',
         },
         'enhydris': {
             'handlers': ['file'],
-            'level': 'ERROR',
+            'level': 'DEBUG',
+        },
+        'csv_parser': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+        'uc_03_1': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
         },
     }
 }

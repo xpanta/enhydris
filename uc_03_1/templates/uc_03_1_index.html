@@ -13,7 +13,7 @@
             </div>
 
             <div class="col-md-3">
-                <p><strong>{% trans "Choose Data Resolution" %}</strong></p>
+                <p><strong>{% trans "Choose Interval Type" %}</strong></p>
                 <select class="chart-selector form-control" name="resolution1" id="resolution1" onchange="toggleDeserialization();">
                     <option value="15min" {% if action == "15min" %}selected{% endif %}>Fifteen minute (1 day only)</option>
                     <option value="hourly" {% if action == "hourly" %}selected{% endif %}>Hourly (1 day only)</option>
@@ -46,7 +46,7 @@
                     <input type="radio" id="period_sw" checked="checked" name="period_sw" value="0" onclick="hideYearSW()"/> This Year
                 </label>
                 <label>
-                    <input type="radio" id="period_sw" name="period_sw" value="1" onclick="hideYearSW()"  /> Previous Year
+                    <input type="radio" id="period_sw" name="period_sw" value="1" onclick="hideYearSW();"  /> Previous Year
                 </label>
                 <label>
                     <input type="radio" id="period_sw" name="period_sw" value="custom1" onclick="showYearSW1();" /> Specify Period

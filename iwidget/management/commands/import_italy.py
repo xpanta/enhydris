@@ -32,8 +32,8 @@ from iwidget.models import (DMA, Household, IWTimeseries,
 from pthelma.timeseries import Timeseries as TSeries
 from pthelma.timeseries import timeseries_bounding_dates_from_db
 from pthelma.timeseries import IntervalType
-  
-AVERAGE_UNIT_WATER_CONSUMPTION = 100.000 
+
+AVERAGE_UNIT_WATER_CONSUMPTION = 100.000
 """
 This parameter will be used to estimate the occupancy of each
 household on import
@@ -69,7 +69,7 @@ def _parse_line(line):
             'variable_type': variable_type,
             'timestamp': timestamp,
             'value': value}
-    
+
 def read_file(filename, dma, force=False):
     """
     Reads file ``filename`` line by line and when household changes
@@ -80,13 +80,13 @@ def read_file(filename, dma, force=False):
     """
 
     def initialize_series():
-        return dict(WaterCold = [], WaterHot = [], Electricity = [])
+        return dict(WaterCold=[], WaterHot=[], Electricity=[])
 
     household = None
     series = initialize_series()
     with open(filename, 'rt') as fp:
         for line in fp:
-            parsed =  _parse_line(line)
+            parsed = _parse_line(line)
             if not parsed:
                 continue
             if household and household != parsed['household']:
@@ -143,7 +143,7 @@ def create_objects(dma, household_identifier, series, force=False):
                 commit=False)
     if 'WaterCold' in timeseries_data:
         calc_occupancy(timeseries_data['WaterCold'], household)
-    
+
 def calc_occupancy(timeseries, household):
     """
     Now it is time to estimate household occupancy, we use the
@@ -287,18 +287,18 @@ def create_dma_series(zone):
     # nominal_offset_minutes, months, actual_offset_minutes, months
     # name, variable, munit
     tseries_list = {
-            (TSTEP_HOURLY, VAR_PERIOD): [0,0,0,0,'Hourly consumption', VAR_PERIOD,
-                    CUBIC_METERS],
-            (TSTEP_DAILY, VAR_PERIOD): [0,0,1440,0,'Daily consumption', VAR_PERIOD,
-                    CUBIC_METERS],
-            (TSTEP_MONTHLY, VAR_PERIOD): [0,0,0,1,'Monthly consumption', VAR_PERIOD,
-                    CUBIC_METERS],
-            (TSTEP_HOURLY, VAR_ENERGY_PERIOD): [0,0,0,0,'Hourly energy', VAR_ENERGY_PERIOD,
-                    UNIT_KILOWATTHOUR],
-            (TSTEP_DAILY, VAR_ENERGY_PERIOD): [0,0,1440,0,'Daily energy', VAR_ENERGY_PERIOD,
-                    UNIT_KILOWATTHOUR],
-            (TSTEP_MONTHLY, VAR_ENERGY_PERIOD): [0,0,0,1,'Monthly energy', VAR_ENERGY_PERIOD,
-                    UNIT_KILOWATTHOUR],
+        (TSTEP_HOURLY, VAR_PERIOD): [0,0,0,0,'Hourly consumption', VAR_PERIOD,
+                                     CUBIC_METERS],
+        (TSTEP_DAILY, VAR_PERIOD): [0,0,1440,0,'Daily consumption', VAR_PERIOD,
+                                    CUBIC_METERS],
+        (TSTEP_MONTHLY, VAR_PERIOD): [0,0,0,1,'Monthly consumption', VAR_PERIOD,
+                                      CUBIC_METERS],
+        (TSTEP_HOURLY, VAR_ENERGY_PERIOD): [0,0,0,0,'Hourly energy', VAR_ENERGY_PERIOD,
+                                            UNIT_KILOWATTHOUR],
+        (TSTEP_DAILY, VAR_ENERGY_PERIOD): [0,0,1440,0,'Daily energy', VAR_ENERGY_PERIOD,
+                                           UNIT_KILOWATTHOUR],
+        (TSTEP_MONTHLY, VAR_ENERGY_PERIOD): [0,0,0,1,'Monthly energy', VAR_ENERGY_PERIOD,
+                                             UNIT_KILOWATTHOUR],
     }
     skipped = True
     for ts in tseries_list:

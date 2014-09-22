@@ -271,3 +271,21 @@ class UserProfile(models.Model):
     address  = models.TextField() 
     user     = models.ForeignKey(User,unique=True)
     country  = models.ForeignKey(Country,blank=True,null=True)
+
+
+"""
+    Next model is added by Chris Pantazis on 15/Sept/2014.
+    It will be used to store a unique key for each household user.
+    This key along with the meter id (or something else) will be used
+    together for the user to login and change username and password.
+"""
+
+
+class UserValidationKey(models.Model):
+    user = models.ForeignKey(User, related_name='validation_key')
+    identifier = models.CharField(max_length=128, help_text="meter identifier")
+    key = models.CharField(max_length=64)
+    used = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
