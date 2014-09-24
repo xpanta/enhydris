@@ -56,6 +56,13 @@ Added these lines to hcore_unitofmeasurement_variables
 "9";3;9
 "10";2;10
 
+***
+
+Modified Idma.py.
+"sum_households = sum_households + 1" added to the right place (check lines 870-890)
+because for len(months) < 12 it was giving sum_households = 0
+The same applies for the vairavle "sum_occupants" in the same context.
+
 
 
 ===========

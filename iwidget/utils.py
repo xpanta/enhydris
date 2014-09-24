@@ -88,7 +88,10 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     """
         ADDED YESTERDAY's CONSUMPTION VALUE BY CHRIS PANTAZIS
     """
-    result['yesterday'] = timeseries[today-timedelta(days=1)]*1000.0
+    try:
+        result['yesterday'] = timeseries[today-timedelta(days=1)]*1000.0
+    except KeyError:
+        result['yesterday'] = 0
     """
         ADDED CURRENT WEEK CONSUMPTION VALUE BY CHRIS PANTAZIS
     """
@@ -99,10 +102,13 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     """
         ADDED LAST WEEK CONSUMPTION VALUE BY CHRIS PANTAZIS
     """
-    result['last_week'] = aggregate_period(
-        timeseries,
-        today-timedelta(days=today.weekday()+7),
-        today-timedelta(days=today.weekday()+1))*1000.0
+    try:
+        result['last_week'] = aggregate_period(
+            timeseries,
+            today-timedelta(days=today.weekday()+7),
+            today-timedelta(days=today.weekday()+1))*1000.0
+    except KeyError:
+        result['last_week'] = 0
     """
         ADDED CURRENT WEEK LAST YEAR CONSUMPTION VALUE BY CHRIS PANTAZIS
     """

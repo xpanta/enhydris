@@ -872,15 +872,27 @@ class idma():
         for household in dma: #get every household
             ts_monthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
             length = len(ts_monthly) #check timeseries months
-            if length>=months: #if timeseries months greater that months, default is 12
-                temp          = household.num_of_occupants
+            # Added by Chris Pantazis. Read comment in line 889!
+            sum_households += 1  # total household in DMA
+            temp = household.num_of_occupants
+            sum_occupants = sum_occupants + temp #total occupants in DMA
+            if length >= months: #if timeseries months greater that months, default is 12
+                # Changed by Chris Pantazis
+                # Again, like sum_households. This variable should be moved
+                # outside of "IF" statement
+                #temp = household.num_of_occupants
                 if months==0: #this is for doing all users in DMA irrespect of any period, >0 period means hat calculation consider all household with range of months of units  
                     avg_units = avg_units + series.getAvg(ts_monthly,length) #average units/ per month
                 else:
                     ts_monthly= ts_monthly[length-months:]
-                     
-                sum_households= sum_households + 1 #total household in DMA
-                sum_occupants = sum_occupants + temp #total occupants in DMA
+
+                # Change by Chris Pantazis on 24/09/2014.
+                # Households and occupants should be increased
+                # before the "IF" statement
+                # because if months < 12 then it gives 0 to all those vars
+                #sum_households= sum_households + 1 #total household in DMA
+                #sum_occupants = sum_occupants + temp #total occupants in DMA
+
                 sum_units     = sum_units + series.getSum(ts_monthly) #total units in DMA
 
                 #finding minimum number of occupants

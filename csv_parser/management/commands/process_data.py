@@ -143,8 +143,7 @@ def process_household(household, bounds):
         for time_step_id in (TSTEP_HOURLY, TSTEP_DAILY, TSTEP_MONTHLY):
             if not result:
                 break
-            result = aggregate_household_series(bounds, household,
-                                                result, time_step_id, variable)
+            result = aggregate_household_series(bounds, household, result, time_step_id, variable)
             if time_step_id == TSTEP_MONTHLY:
                 monthly_series = result
         if not monthly_series:
@@ -170,8 +169,7 @@ def process_household(household, bounds):
             continue
 
 
-def aggregate_household_series(bounds, household, source_time_series,
-                               dest_timestep_id, variable):
+def aggregate_household_series(bounds, household, source_time_series, dest_timestep_id, variable):
     MISSING_ALLOWED = {
         TSTEP_HOURLY: 4,
         TSTEP_DAILY: 12,

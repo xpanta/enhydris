@@ -5,6 +5,7 @@ from django import db
 from django.db import transaction
 import logging
 from enhydris.hcore.models import Variable
+from enhydris.hcore.models import ReadTimeStep
 from iwidget.models import (DMA, Household, IWTimeseries, CUBIC_METERS,
                             TZONE_UTC, VAR_CUMULATIVE, VAR_ENERGY_CUMULATIVE,
                             UNIT_KILOWATTHOUR, VAR_PERIOD,
@@ -41,6 +42,14 @@ bounds = {
         'daily_start': MAX_DATE, 'daily_end': MIN_DATE,
         'monthly_start': MAX_DATE, 'monthly_end': MIN_DATE}
 }
+
+
+def _dif_in_secs(d1, d2):
+    """
+    This is a helper function, calculating the difference in seconds
+    between two timestamps
+    """
+    return float((d2-d1).days*86400+(d2-d1).seconds)
 
 
 def create_zone(name):
@@ -167,25 +176,27 @@ def create_raw_timeseries(household):
             series = IWTimeseries.objects.get(gentity=household,
                                               time_step__isnull=True,
                                               variable=variable)
-            db_series[variable] = series
+            db_series[{
+                VAR_CUMULATIVE: 'WaterCold',
+                VAR_ENERGY_CUMULATIVE: 'Electricity'}
+                [variable]] = series
             continue
         except IWTimeseries.DoesNotExist:
-            pass
-        var = Variable.objects.get(pk=variable)
-        name = var.descr
-        # used to be "create" but I changed it to get_or_create
-        # so as not to create duplicate items.
-        series, created = IWTimeseries.objects.get_or_create(
-            gentity=household,
-            variable_id=variable,
-            time_zone_id=TZONE_UTC,
-            unit_of_measurement_id=unit,
-            name=name,
-        )
-        db_series[{
-            VAR_CUMULATIVE: 'WaterCold',
-            VAR_ENERGY_CUMULATIVE: 'Electricity'}
-            [variable]] = series
+            var = Variable.objects.get(pk=variable)
+            name = var.descr
+            # used to be "create" but I changed it to get_or_create
+            # so as not to create duplicate items.
+            series, created = IWTimeseries.objects.get_or_create(
+                gentity=household,
+                variable_id=variable,
+                time_zone_id=TZONE_UTC,
+                unit_of_measurement_id=unit,
+                name=name,
+            )
+            db_series[{
+                VAR_CUMULATIVE: 'WaterCold',
+                VAR_ENERGY_CUMULATIVE: 'Electricity'}
+                [variable]] = series
     return db_series
 
 
@@ -241,9 +252,8 @@ def create_processed_timeseries(household):
 def create_objects(data, usernames, force, zone):
     """
 
-    :param dma: the DMA the household belongs
     :param data: meter_id -> consumption_type -> [timestamp, volume]
-    :param force: True to overwritte
+    :param force: True to overwrite
     :return: True for success
     """
     households = []
@@ -255,6 +265,7 @@ def create_objects(data, usernames, force, zone):
         user = create_user(username, hh_id)
         log.info("*** created user %s ***" % user)
         household = create_household(hh_id, user, zone.id)
+        households.append(household)
         log.info("*** created household %s ***" % hh_id)
         db_series = create_raw_timeseries(household)
         log.info("*** created raw timeseries ***")
@@ -266,25 +277,19 @@ def create_objects(data, usernames, force, zone):
         for variable in db_series:
             if variable not in ('WaterCold', 'Electricity'):
                 continue
+            exists = False
             s, e = timeseries_bounding_dates_from_db(db.connection,
                                                      db_series[variable].id)
-            if not force and (s or e):
-                log.debug('Raw timeseries id=%s has data, '
-                          'skipping.' % db_series[variable].id)
-                continue
             ts_id = db_series[variable].id
             # checking to see if timeseries records already exist in order
             # to append
-            d = read_timeseries_tail_from_db(db.connection, ts_id)
-            exists = False
-            if not d:
-                timeseries = TSeries()
-            else:
-                timeseries = TSeries(ts_id)
+            # d = read_timeseries_tail_from_db(db.connection, ts_id)
+            if s or e:
                 exists = True
-
-            timeseries.id = ts_id
-            households.append(household)
+                timeseries = TSeries(ts_id)
+            else:
+                timeseries = TSeries()
+                timeseries.id = ts_id
             total = 0.0
             _dict = data[hh_id]
             arr = _dict[variable]
@@ -308,6 +313,7 @@ def create_objects(data, usernames, force, zone):
         if 'WaterCold' in timeseries_data:
             calc_occupancy(timeseries_data['WaterCold'], household)
     return households
+
 
 def calc_occupancy(timeseries, household):
     """
@@ -346,12 +352,107 @@ def calc_occupancy(timeseries, household):
         household.save()
 
 
-def regularize():
-    pass
+def regularize(raw_series_db, proc_series_db, rs, re):
+    """
+    This function regularize raw_series_db object from database and
+    writes a processed proc_series_db in database.
+    Raw series is a continuously increasing values time series,
+    aggregating the water consumption. Resulting processed timeseries
+    contains water consumption for each of its interval. I.e. if the
+    timeseries is of 15 minutes time step, then each record contains
+    the water consumption for each record period.
+    """
+    raw_series = TSeries(id=raw_series_db.id)
+    raw_series.read_from_db(db.connection)
+    # We keep the last value for x-checking reasons, see last print
+    # command
+    test_value = raw_series[raw_series.bounding_dates()[1]]
+    time_step = ReadTimeStep(proc_series_db.id, proc_series_db)
+    proc_series = TSeries(id=proc_series_db.id, time_step=time_step)
+    # The following code can be used in real conditions to append only
+    # new records to db, in a next version
+    #if not pe:
+    #    start = proc_series.time_step.down(rs)
+    #else:
+    #    start = proc_series.time_step.up(pe)
+    # Instead of the above we use now:
+    start = proc_series.time_step.down(rs)
+    end = proc_series.time_step.up(re)
+    pointer = start
+    # Pass 1: Initialize proc_series
+    while pointer <= end:
+        proc_series[pointer] = float('nan')
+        pointer = proc_series.time_step.next(pointer)
+    # Pass 2: Transfer cummulative raw series to differences series:
+    prev_s = 0
+    for i in xrange(len(raw_series)):
+        dat, value = raw_series.items(pos=i)
+        if not isnan(value):
+            raw_series[dat] = value-prev_s
+            prev_s = value
+    # Pass 3: Regularize step: loop over raw series records and distribute
+    # floating point values to processed series
+    for i in xrange(len(raw_series)):
+        dat, value = raw_series.items(pos=i)
+        if not isnan(value):
+            # find previous, next timestamp of the proc time series
+            d1 = proc_series.time_step.down(dat)
+            d2 = proc_series.time_step.up(dat)
+            if isnan(proc_series[d1]):
+                proc_series[d1] = 0
+            if isnan(proc_series[d2]):
+                proc_series[d2] = 0
+            if d1 == d2:  # if dat on proc step then d1=d2
+                proc_series[d1] += value
+                continue
+            dif1 = _dif_in_secs(d1, dat)
+            dif2 = _dif_in_secs(dat, d2)
+            dif = dif1+dif2
+            # Distribute value to d1, d2
+            proc_series[d1] += (dif2/dif)*value
+            proc_series[d2] += (dif1/dif)*value
+    # Uncomment the following line in order to show debug information.
+    # Usually the three following sums are consistent by equality. If
+    # not equality is satisfied then there is a likelyhood of algorith
+    # error
+    print raw_series.sum(), proc_series.sum(), test_value
+    proc_series.write_to_db(db=db.connection, commit=True)  # False)
+    #return the full timeseries
+    return proc_series
 
 
-def aggregate():
-    pass
+def aggregate(household, source_time_series, dest_timestep_id, variable):
+    MISSING_ALLOWED = {
+        TSTEP_HOURLY: 4,
+        TSTEP_DAILY: 20,
+        TSTEP_MONTHLY: 30
+    }
+    BOUNDS = {
+        TSTEP_HOURLY: ('hourly_start', 'hourly_end'),
+        TSTEP_DAILY: ('daily_start', 'daily_end'),
+        TSTEP_MONTHLY: ('monthly_start', 'monthly_end')
+    }
+    dest_timeseries_db = household.\
+        timeseries.get(time_step__id=dest_timestep_id, variable__id=variable)
+    dest_time_step = ReadTimeStep(dest_timeseries_db.id,
+                                  dest_timeseries_db)
+    if not source_time_series.bounding_dates():
+        return
+    #
+    # PROBLEM: When I give hourly I can't get daily destination timeseries!!
+    dest_timeseries = source_time_series.aggregate(
+        target_step=dest_time_step,
+        missing_allowed=MISSING_ALLOWED[dest_timestep_id],
+        missing_flag='MISSING')[0]
+    dest_timeseries.id = dest_timeseries_db.id
+    dest_timeseries.write_to_db(db=db.connection, commit=True)
+    for i, func in ((0, min), (1, max)):
+        if not dest_timeseries.bounding_dates():
+            break
+        bounds[variable][BOUNDS[dest_timestep_id][i]] = func(
+            bounds[variable][BOUNDS[dest_timestep_id][i]],
+            dest_timeseries.bounding_dates()[i])
+    return dest_timeseries
 
 
 def process_household(household):
@@ -376,7 +477,8 @@ def process_household(household):
                                                    fifteen_min_series_db.id)
         #    if e2 and (e1-e2).seconds<15*60:
         #        return
-        fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db, s1,e1,s2,e2)
+        fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db,
+                                        s1, e1)
         if fifteen_min_series.bounding_dates():
             bounds[variable]['fifteen_start'] = min(
                 bounds[variable]['fifteen_start'],
@@ -386,10 +488,11 @@ def process_household(household):
                 fifteen_min_series.bounding_dates()[1])
         result = fifteen_min_series
         monthly_series = None
+        # Oh my God. Stefanos wants to aggregate using previous results
+        # Why? The problem is that Monthly series is not inserted.
+        # Was this on purpose?
         for time_step_id in (TSTEP_HOURLY, TSTEP_DAILY, TSTEP_MONTHLY):
-            if not result:
-                break
-            result = aggregate(bounds, household, result, time_step_id, variable)
+            result = aggregate(household, result, time_step_id, variable)
             if time_step_id == TSTEP_MONTHLY:
                 monthly_series = result
         if not monthly_series:
@@ -415,7 +518,6 @@ def process_household(household):
             continue
 
 
-
 @transaction.commit_manually
 def process_data(data, usernames, force, name):
     """
@@ -433,17 +535,16 @@ def process_data(data, usernames, force, name):
         log.info("Processing data...")
         dma = create_zone(name)
         log.info("*** Created DMA {x} with id {y}".format(x=dma.name, y=dma.id))
-        #create_dma_series(dma.id)  # this might not be needed, actually
+        create_dma_series(dma.id)  # this might not be needed, actually
         #dma = DMA.objects.get(pk=dma.id)
         households = create_objects(data, usernames, force, dma)
         for household in households:
             log.info("Processing ts records for household %s" % household)
-            process_household(household, bounds)
+            process_household(household)
         log.info("Process ended... Committing!")
-        #transaction.commit()
+        transaction.commit()
         log.info("SUCCESS!")
     except Exception as e:
         log = logging.getLogger(__name__)
-        log.debug("Transaction failed while entering data for zone {x}"
-                  " because of error {y}". format(x=dma.id, y=repr(e)))
+        log.debug("Transaction failed because %s. Rolling back!" % repr(e))
         transaction.rollback()
