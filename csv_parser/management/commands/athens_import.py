@@ -70,7 +70,7 @@ class Command(BaseCommand):
         try:
             timer1 = datetime.now()
             log.debug("staring athens import. Setting timer at %s" % timer1)
-            _filename = ""
+            _filenames = []
             _path = "data/athens/"
             all_files = listdir(_path)
             today = datetime.today()
@@ -79,9 +79,9 @@ class Command(BaseCommand):
             _pattern = _date + "*"
             for f_name in all_files:
                 if fnmatch(f_name, _pattern):
-                    _filename = f_name
-                    break
-            if _filename:
+                    _filenames.append(f_name)
+            for _filename in _filenames:
+                log.info("parsing file %s" % _filename)
                 force = False  # True = Rewrite
                 process_file(_filename, _path, force)
                 timer2 = datetime.now()

@@ -280,6 +280,7 @@ def create_objects(data, usernames, force, zone):
             exists = False
             s, e = timeseries_bounding_dates_from_db(db.connection,
                                                      db_series[variable].id)
+            latest_ts = e
             ts_id = db_series[variable].id
             # checking to see if timeseries records already exist in order
             # to append
@@ -294,12 +295,16 @@ def create_objects(data, usernames, force, zone):
             _dict = data[hh_id]
             arr = _dict[variable]
             series = arr
+            # At this point we should check that the timestamp of the data
+            # we are trying to enter is not less the the last latest
+            # timestamp of the previous import. But how?
             for timestamp, value in series:
-                if not isnan(value):
-                    total += value
-                    timeseries[timestamp] = total
-                else:
-                    timeseries[timestamp] = float('NaN')
+                if not timestamp <= latest_ts:
+                    if not isnan(value):
+                        total += value
+                        timeseries[timestamp] = total
+                    else:
+                        timeseries[timestamp] = float('NaN')
             timeseries_data[variable] = timeseries
             log.info("*** writing timeseries data to db")
             if not exists:
