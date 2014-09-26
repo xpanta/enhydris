@@ -57,9 +57,9 @@ def process_file(_filename, _path, force):
                 meter_data[serial_no] = series
                 # when we create a HH we need a new username
                 username = serial_no
-                usernames[serial_no] = username
-                name = "Greece electric-water"
-        process_data(meter_data, usernames, force, name)
+                usernames[serial_no] = "GR%s" % username
+        z_name = "Greece electric-water"
+        process_data(meter_data, usernames, force, z_name)
 
 
 class Command(BaseCommand):
@@ -72,7 +72,7 @@ class Command(BaseCommand):
             log.debug("staring athens import. Setting timer at %s" % timer1)
             _filenames = []
             _path = "data/athens/"
-            all_files = listdir(_path)
+            all_files = sorted(listdir(_path))
             today = datetime.today()
             # I used %02d to format two digits from the datetime object
             _date = "%s%02d%02d" % (today.year, today.month, today.day)
@@ -89,7 +89,5 @@ class Command(BaseCommand):
                 secs = (timer2 - timer1).seconds % 60
                 log.debug("process ended. It took %s "
                           "minutes and %s seconds." % (mins, secs))
-            else:
-                log.debug("No file name found for Athens. Stopping!")
         except Exception as e:
             raise CommandError(repr(e))

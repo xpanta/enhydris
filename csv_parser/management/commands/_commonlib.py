@@ -299,7 +299,7 @@ def create_objects(data, usernames, force, zone):
             # we are trying to enter is not less the the last latest
             # timestamp of the previous import. But how?
             for timestamp, value in series:
-                if not timestamp <= latest_ts:
+                if (latest_ts and latest_ts < timestamp) or (not latest_ts):
                     if not isnan(value):
                         total += value
                         timeseries[timestamp] = total
@@ -310,11 +310,11 @@ def create_objects(data, usernames, force, zone):
             if not exists:
                 timeseries.write_to_db(db=db.connection,
                                        transaction=transaction,
-                                       commit=False)
+                                       commit=True)
             else:
                 timeseries.append_to_db(db=db.connection,
                                         transaction=transaction,
-                                        commit=False)
+                                        commit=True)
         if 'WaterCold' in timeseries_data:
             calc_occupancy(timeseries_data['WaterCold'], household)
     return households
@@ -420,8 +420,9 @@ def regularize(raw_series_db, proc_series_db, rs, re):
     # Usually the three following sums are consistent by equality. If
     # not equality is satisfied then there is a likelyhood of algorith
     # error
-    print raw_series.sum(), proc_series.sum(), test_value
-    proc_series.write_to_db(db=db.connection, commit=True)  # False)
+    log.info("%s = %s = %s ?" % (raw_series.sum(),
+                                 proc_series.sum(), test_value))
+    proc_series.write_to_db(db=db.connection, commit=True)
     #return the full timeseries
     return proc_series
 
@@ -461,7 +462,7 @@ def aggregate(household, source_time_series, dest_timestep_id, variable):
 
 
 def process_household(household):
-    print "Processing household: %s" % (household.alt_codes.all()[0],)
+    log.info("Processing household: %s" % (household.alt_codes.all()[0],))
     for variable in (VAR_PERIOD, VAR_ENERGY_PERIOD):
         raw_series_db = household \
             .timeseries \
@@ -482,6 +483,8 @@ def process_household(household):
                                                    fifteen_min_series_db.id)
         #    if e2 and (e1-e2).seconds<15*60:
         #        return
+        log.info("Now regularizing %s with id %s for s1=%s and e1=%s"
+                 % (raw_series_db, raw_series_db.id, s1, e1))
         fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db,
                                         s1, e1)
         if fifteen_min_series.bounding_dates():
@@ -496,7 +499,9 @@ def process_household(household):
         # Oh my God. Stefanos wants to aggregate using previous results
         # Why? The problem is that Monthly series is not inserted.
         # Was this on purpose?
+        log.info("Starting aggregation process")
         for time_step_id in (TSTEP_HOURLY, TSTEP_DAILY, TSTEP_MONTHLY):
+            log.info("Now aggregating %s" % time_step_id)
             result = aggregate(household, result, time_step_id, variable)
             if time_step_id == TSTEP_MONTHLY:
                 monthly_series = result
@@ -518,8 +523,7 @@ def process_household(household):
             cost_timeseries.id = cost_timeseries_db.id
             cost_timeseries.write_to_db(db=db.connection, commit=True)
         except Exception as e:
-            print repr(e)
-            print "error in monthly cost calculation. Skipping"
+            log.info("Error in monthly calculation %s. Skipping!" % repr(e))
             continue
 
 

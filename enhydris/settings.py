@@ -231,7 +231,7 @@ LOGGING = {
         'django': {
             'handlers': ['file'],
             'propagate': True,
-            'level': 'DEBUG',
+            'level': 'ERROR',
         },
         'iwidget': {
             'handlers': ['file'],
