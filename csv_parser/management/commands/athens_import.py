@@ -26,9 +26,12 @@ def process_file(_filename, _path, force):
         usernames = {}
         data = csv.reader(f, encoding="utf-8")
         meter_data = {}
-        series = initialize_series()
+        used_meters = []  # to create a new empty series for each new meter
         for row in data:
             meter_id = row[0]
+            if meter_id not in used_meters:
+                used_meters.append(meter_id)
+                series = initialize_series()  # new meter! Init new series!
             _dt = row[1]
             consumption = row[3]
             if not consumption:

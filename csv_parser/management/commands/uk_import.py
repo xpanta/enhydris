@@ -8,6 +8,19 @@ import logging
 from _commonlib import process_data
 
 
+def create_15_mins(dt, consumption):
+    min_dt = dt.replace(hour=0, minute=15)
+    min_dt = min_dt - timedelta(days=1)
+    max_dt = dt.replace(hour=0, minute=0)
+    dc = consumption / 96.0
+    _tuples = []
+    while min_dt <= max_dt:
+        _tuples.append((min_dt, dc))
+        min_dt = min_dt + timedelta(minutes=15)
+
+    return _tuples
+
+
 def parse_prev_consumption(_filename, _path):
     meter_data = {}
     with open(path.join(_path, _filename), 'r') as f:
@@ -52,13 +65,17 @@ def process_file(_filename, _path, old_cons):
         usernames = {}
         data = csv.reader(f, encoding="utf-8")
         meter_data = {}
-        series = initialize_series()
+        fifteen_data = {}
         x = 0
+        used_meters = []  # to create a new empty series for each new meter
         for row in data:
             if x == 0:
                 x += 1  # skip first row
                 continue
             meter_id = row[0]
+            if meter_id not in used_meters:
+                used_meters.append(meter_id)
+                series = initialize_series()  # new meter! Init new series!
             if meter_id:
                 _date = row[3]
                 _time = row[4]
@@ -82,17 +99,21 @@ def process_file(_filename, _path, old_cons):
                 """
                     meter_data = dict of dicts of arrays
                 """
-                try:  # find previously inserted value
+                try:
                     _dict = meter_data[meter_id]
-                    _dict[_type].append((dt, consumption))
+                    _tuples = create_15_mins(dt, consumption)
+                    _dict[_type].append(_tuples)
                 except KeyError:  # add new meter data
-                    series[_type].append((dt, consumption))
+                    _tuples = create_15_mins(dt, consumption)
+                    series[_type].append(_tuples)
                     meter_data[meter_id] = series
                     # when we create a HH we need a new username
                     username = "UK" + meter_id
                     usernames[meter_id] = username
         z_name = "UK electric-water"
-        #process_data(meter_data, usernames, force, z_name)
+        # TODO! Create 15min and hourly data!!
+
+        #process_data(meter_data, usernames, False, z_name)
 
 
 class Command(BaseCommand):
