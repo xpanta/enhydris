@@ -371,7 +371,12 @@ def regularize(raw_series_db, proc_series_db, rs, re):
     raw_series.read_from_db(db.connection)
     # We keep the last value for x-checking reasons, see last print
     # command
-    test_value = raw_series[raw_series.bounding_dates()[1]]
+    try:
+        test_value = raw_series[raw_series.bounding_dates()[1]]
+    except Exception as e:
+        log.debug("Trying to get test value for raw series %s failed with %s. "
+                  "Skipping!" % (raw_series_db.id, repr(e)))
+        return None
     time_step = ReadTimeStep(proc_series_db.id, proc_series_db)
     proc_series = TSeries(id=proc_series_db.id, time_step=time_step)
     # The following code can be used in real conditions to append only
@@ -487,44 +492,44 @@ def process_household(household):
                  % (raw_series_db, raw_series_db.id, s1, e1))
         fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db,
                                         s1, e1)
-        if fifteen_min_series.bounding_dates():
+        if fifteen_min_series and fifteen_min_series.bounding_dates():
             bounds[variable]['fifteen_start'] = min(
                 bounds[variable]['fifteen_start'],
                 fifteen_min_series.bounding_dates()[0])
             bounds[variable]['fifteen_end'] = max(
                 bounds[variable]['fifteen_end'],
                 fifteen_min_series.bounding_dates()[1])
-        result = fifteen_min_series
-        monthly_series = None
-        # Oh my God. Stefanos wants to aggregate using previous results
-        # Why? The problem is that Monthly series is not inserted.
-        # Was this on purpose?
-        log.info("Starting aggregation process")
-        for time_step_id in (TSTEP_HOURLY, TSTEP_DAILY, TSTEP_MONTHLY):
-            log.info("Now aggregating %s" % time_step_id)
-            result = aggregate(household, result, time_step_id, variable)
-            if time_step_id == TSTEP_MONTHLY:
-                monthly_series = result
-        if not monthly_series:
-            return
-        # Cost calculation only if monthly_series present
-        try:
-            cost_timeseries_db = household \
-                .timeseries.get(time_step__id=TSTEP_MONTHLY,
-                                variable__id={
-                                    VAR_PERIOD: VAR_COST,
-                                    VAR_ENERGY_PERIOD: VAR_ENERGY_COST
-                                }[variable])
-            cost_timeseries = calculate_cost(monthly_series,
-                                             rate={
-                                                 VAR_PERIOD: CUBIC_METER_FLAT_RATE,
-                                                 VAR_ENERGY_PERIOD: KWH_FLAT_RATE
-                                             }[variable])
-            cost_timeseries.id = cost_timeseries_db.id
-            cost_timeseries.write_to_db(db=db.connection, commit=True)
-        except Exception as e:
-            log.info("Error in monthly calculation %s. Skipping!" % repr(e))
-            continue
+
+            result = fifteen_min_series
+            monthly_series = None
+            # Oh my God. Stefanos wants to aggregate using previous results
+            # Why? The problem is that Monthly series is not inserted.
+            # Was this on purpose?
+            log.info("Starting aggregation process")
+            for time_step_id in (TSTEP_HOURLY, TSTEP_DAILY, TSTEP_MONTHLY):
+                result = aggregate(household, result, time_step_id, variable)
+                if time_step_id == TSTEP_MONTHLY:
+                    monthly_series = result
+            if not monthly_series:
+                return
+            # Cost calculation only if monthly_series present
+            try:
+                cost_timeseries_db = household \
+                    .timeseries.get(time_step__id=TSTEP_MONTHLY,
+                                    variable__id={
+                                        VAR_PERIOD: VAR_COST,
+                                        VAR_ENERGY_PERIOD: VAR_ENERGY_COST
+                                    }[variable])
+                cost_timeseries = calculate_cost(monthly_series,
+                                                 rate={
+                                                     VAR_PERIOD: CUBIC_METER_FLAT_RATE,
+                                                     VAR_ENERGY_PERIOD: KWH_FLAT_RATE
+                                                 }[variable])
+                cost_timeseries.id = cost_timeseries_db.id
+                cost_timeseries.write_to_db(db=db.connection, commit=True)
+            except Exception as e:
+                log.info("Error in monthly calculation %s. Skipping!" % repr(e))
+                continue
 
 
 @transaction.commit_manually

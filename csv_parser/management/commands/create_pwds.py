@@ -18,7 +18,10 @@ class Command(BaseCommand):
                 meter_ids = []
                 data = csv.reader(f, encoding="utf-8")
                 for row in data:
-                    meter_ids.append(row[0])
+                    mid = row[0]
+                    if not mid:
+                        mid = row[1]
+                    meter_ids.append(mid)
 
             with open(path.join(_path, _outfile), 'w') as of:
                 a = csv.writer(of, delimiter=',',
@@ -28,7 +31,11 @@ class Command(BaseCommand):
                 used = []
                 for mid in meter_ids:
                     if mid not in used:
-                        key = binascii.hexlify(os.urandom(5))
+                        key = str(binascii.hexlify(os.urandom(5)).upper())
+                        key = key.replace('E', 'B')
+                        key = key.replace('0', '1')
+                        if not key[0].isalpha():
+                            key = "A" + key[:-1]
                         out.append([mid, key])
                         used.append(mid)
                 a.writerows(out)

@@ -102,10 +102,12 @@ def process_file(_filename, _path, old_cons):
                 try:
                     _dict = meter_data[meter_id]
                     _tuples = create_15_mins(dt, consumption)
-                    _dict[_type].append(_tuples)
+                    for t in _tuples:
+                        _dict[_type].append(t)
                 except KeyError:  # add new meter data
                     _tuples = create_15_mins(dt, consumption)
-                    series[_type].append(_tuples)
+                    for t in _tuples:
+                        series[_type].append(t)
                     meter_data[meter_id] = series
                     # when we create a HH we need a new username
                     username = "UK" + meter_id
@@ -113,7 +115,7 @@ def process_file(_filename, _path, old_cons):
         z_name = "UK electric-water"
         # TODO! Create 15min and hourly data!!
 
-        #process_data(meter_data, usernames, False, z_name)
+        process_data(meter_data, usernames, False, z_name)
 
 
 class Command(BaseCommand):

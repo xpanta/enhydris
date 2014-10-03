@@ -151,6 +151,7 @@ INSTALLED_APPS = (
     'iwidget',
     'unexe',
     'csv_parser',
+    'core',
 )
 
 MIDDLEWARE_CLASSES = (

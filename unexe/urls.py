@@ -4,6 +4,10 @@ from unexe.views import *
 from django.contrib import admin
 from iwidget import views as iwidget_views
 from iwidget.views import TimeseriesDetailView
+""" Added by Chris Pantazis to redirect signup/ to core/signup. Why?
+    because it is easier for the user to remember that
+"""
+from django.views.generic.base import RedirectView
 
 #from enhydris.iwidget.views import (timeseries_detail, index,
 #        household_view, dma_view, household_properties)
@@ -75,6 +79,10 @@ urlpatterns = patterns('',
     url(r'^dma/d/(?P<dma_id>\d+)/$', iwidget_views.dma_view, {}, 'dma_view'),
     url(r'^household/properties/update/$',
         iwidget_views.household_properties, {}, 'household_properties'),
+
+    # Added by Chris Pantazis to redirect to core/signup
+    url(r'^signup/$', RedirectView.as_view(url='/core/signup/',
+                                           permanent=False)),
 )
 
 """ url confs from other use cases go here """
@@ -82,4 +90,5 @@ urlpatterns = patterns('',
 urlpatterns += patterns(
     "",
     url(r'^uc_03_1/',include('uc_03_1.urls')),
+    url(r'^core/',include('core.urls')),
 )
