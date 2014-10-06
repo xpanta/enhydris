@@ -73,6 +73,8 @@ def process_file(_filename, _path, old_cons):
                 x += 1  # skip first row
                 continue
             meter_id = row[0]
+            if not meter_id:
+                meter_id = row[1]
             if meter_id not in used_meters:
                 used_meters.append(meter_id)
                 series = initialize_series()  # new meter! Init new series!
@@ -110,12 +112,13 @@ def process_file(_filename, _path, old_cons):
                         series[_type].append(t)
                     meter_data[meter_id] = series
                     # when we create a HH we need a new username
-                    username = "UK" + meter_id
+                    username = "GB" + meter_id
                     usernames[meter_id] = username
         z_name = "UK electric-water"
         # TODO! Create 15min and hourly data!!
 
         process_data(meter_data, usernames, False, z_name)
+
 
 
 class Command(BaseCommand):

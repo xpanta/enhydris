@@ -55,9 +55,11 @@ def process_file(_filename, _path, force):
             try:  # find previously inserted value
                 _dict = meter_data[serial_no]
                 _dict[_type].append((dt, consumption))
+                #print "append for %s value %s (%s)" % (_type, consumption, dt)
             except KeyError:  # add new meter data
                 series[_type].append((dt, consumption))
                 meter_data[serial_no] = series
+                #print "create for %s value %s (%s)" % (_type, consumption, dt)
                 # when we create a HH we need a new username
                 username = serial_no
                 usernames[serial_no] = "GR%s" % username

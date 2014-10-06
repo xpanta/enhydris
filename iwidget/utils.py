@@ -103,10 +103,11 @@ def statistics_on_daily(ts_daily, occupancy = 1):
         ADDED LAST WEEK CONSUMPTION VALUE BY CHRIS PANTAZIS
     """
     try:
-        result['last_week'] = aggregate_period(
+        vv = aggregate_period(
             timeseries,
             today-timedelta(days=today.weekday()+7),
             today-timedelta(days=today.weekday()+1))*1000.0
+        result['last_week'] = vv
     except KeyError:
         result['last_week'] = 0
     """

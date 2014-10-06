@@ -139,15 +139,20 @@ def create_user(identifier, m_id):
         # assign random validation key
         import os
         import binascii
-        key = binascii.hexlify(os.urandom(5))
+        key = str(binascii.hexlify(os.urandom(4)).upper())
+        key = key.replace('E', 'B')
+        key = key.replace('0', '1')
+        if not key[0].isalpha():
+            key = "A" + key[:-1]
         UserValidationKey\
             .objects.get_or_create(user=u, identifier=m_id, key=key)
+        print "%s, %s" % (u.username, key)
         return u
 
 
 def create_household(identifier, user, dma_id):
     try:
-        return Household.objects.get(user=user)
+        return Household.objects.get(user=user), True
     except Household.DoesNotExist:
         pass
     # DMA (it is 1) should be one created at the start. But we removed DMAs
@@ -165,7 +170,7 @@ def create_household(identifier, user, dma_id):
     # identifier, for future use
     household.alt_codes.create(type_id=GENTITYALTCODETYPE,
                                value=identifier.lstrip('0'))
-    return household
+    return household, False
 
 
 def create_raw_timeseries(household):
@@ -260,11 +265,12 @@ def create_objects(data, usernames, force, zone):
     log.debug("processing household data now...")
     # Create user (household owner), household, database series placeholders
     hh_ids = data.keys()
+    found = False
     for hh_id in hh_ids:
         username = usernames[hh_id]
         user = create_user(username, hh_id)
         log.info("*** created user %s ***" % user)
-        household = create_household(hh_id, user, zone.id)
+        household, found = create_household(hh_id, user, zone.id)
         households.append(household)
         log.info("*** created household %s ***" % hh_id)
         db_series = create_raw_timeseries(household)
@@ -285,13 +291,15 @@ def create_objects(data, usernames, force, zone):
             # checking to see if timeseries records already exist in order
             # to append
             # d = read_timeseries_tail_from_db(db.connection, ts_id)
+            total = 0.0
             if s or e:
                 exists = True
                 timeseries = TSeries(ts_id)
+                tail = read_timeseries_tail_from_db(db.connection, ts_id)
+                total = float(tail[1])  # keep up from last value
             else:
                 timeseries = TSeries()
                 timeseries.id = ts_id
-            total = 0.0
             _dict = data[hh_id]
             arr = _dict[variable]
             series = arr
@@ -303,6 +311,7 @@ def create_objects(data, usernames, force, zone):
                     if not isnan(value):
                         total += value
                         timeseries[timestamp] = total
+                        print "%s -> %s" % (timestamp, total)
                     else:
                         timeseries[timestamp] = float('NaN')
             timeseries_data[variable] = timeseries
@@ -315,7 +324,7 @@ def create_objects(data, usernames, force, zone):
                 timeseries.append_to_db(db=db.connection,
                                         transaction=transaction,
                                         commit=True)
-        if 'WaterCold' in timeseries_data:
+        if 'WaterCold' in timeseries_data and not found:  # only for new HH
             calc_occupancy(timeseries_data['WaterCold'], household)
     return households
 
