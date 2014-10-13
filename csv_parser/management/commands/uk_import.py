@@ -114,9 +114,7 @@ def process_file(_filename, _path, old_cons):
                     # when we create a HH we need a new username
                     username = "GB" + meter_id
                     usernames[meter_id] = username
-        z_name = "UK electric-water"
-        # TODO! Create 15min and hourly data!!
-
+        z_name = "UK water"
         process_data(meter_data, usernames, False, z_name)
 
 
@@ -127,31 +125,51 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         log = logging.getLogger(__name__)
         try:
+            _curr_user_filename = args[0]
+            _prev_user_filename = args[1]
+        except IndexError:
+            _curr_user_filename = ""
+            _prev_user_filename = ""
+        try:
             timer1 = datetime.now()
             log.debug("staring UK import. Setting timer at %s" % timer1)
-            _filename1 = None
-            _filename2 = None
+            _curr_file = None
+            _prev_file = None
             _path = "data/southern/"
             all_files = sorted(listdir(_path))
             today = datetime.today()
-            yesterday = today - timedelta(days=1)
             # I used %02d to format two digits from the datetime object
             _date1 = "%02d_%02d_%s" % (today.day, today.month, today.year)
-            _date2 = "%02d_%02d_%s" % (yesterday.day, yesterday.month,
-                                       yesterday.year)
             _pattern1 = _date1 + "*"
-            _pattern2 = _date2 + "*"
             for f_name in all_files:
                 if fnmatch(f_name, _pattern1):
-                    _filename1 = f_name
-                if fnmatch(f_name, _pattern2):
-                    _filename2 = f_name
-
-            if _filename1 and _filename2:
-                log.info("parsing file %s" % _filename1)
+                    _curr_file = f_name
+            # Let's find previous metre data file (unfortunately
+            # we can't know when was the previous time we had a data file
+            # so we need to go back n (=max 15) days.
+            found = False
+            x = 1
+            while not found and x < 15:
+                prev = today - timedelta(days=x)
+                _date2 = "%02d_%02d_%s" % (prev.day, prev.month,
+                                           prev.year)
+                _pattern2 = _date2 + "*"
+                for f_name in all_files:
+                    if fnmatch(f_name, _pattern2):
+                        _prev_file = f_name
+                        found = True
+                x += 1
+            _prev_file = "08_10_14_UK.csv"
+            _curr_file = "09_10_2014_UK.csv"
+            if _curr_user_filename:
+                _curr_file = _curr_user_filename
+            if _prev_user_filename:
+                _prev_file = _prev_user_filename
+            if _curr_file and _prev_file:
+                log.info("parsing file %s" % _curr_file)
                 force = False  # True = Rewrite
-                old_cons = parse_prev_consumption(_filename2, _path)
-                process_file(_filename1, _path, old_cons)
+                old_cons = parse_prev_consumption(_prev_file, _path)
+                process_file(_curr_file, _path, old_cons)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60
                 secs = (timer2 - timer1).seconds % 60
@@ -162,4 +180,3 @@ class Command(BaseCommand):
                          "Stopping!")
         except Exception as e:
             raise CommandError(repr(e))
-__author__ = 'chris'

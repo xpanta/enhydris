@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load general_tags %}
+{% block pagetitle %}{% trans "Control Panel" %}{% endblock %}
+{% block pagecontent %}
+
+    <script>
+
+    </script>
+
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+
+        <div id="profile-panel" class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">{% trans "User Validation" %} </div>
+            </div>
+            <div class="panel-body" style="padding: 50px;">
+                <h3 class="text-center">{% trans "Welcome to the iWIDGET Platform." %}</h3>
+                <h4 class="text-center">{% trans "Fill in, at least, the required information." %}</h4>
+                {% for message in messages %}
+                    <div id="profile-msg" class="text-center" style="color: indianred">{{ message }}</div>
+                {% endfor %}
+                <form class="form-horizontal" accept-charset="UTF-8" action="{% url 'signup' %}" method="POST" role="form" id="signup-form">
+                    {% csrf_token %}
+                    <div class="form-group" style="margin-top: 40px">
+                        <label class="col-md-4 control-label">{% trans "Validation Key" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(required...)" name="key" id="key" type="text" value="" required="true"></div>
+                    </div>
+                    <div class="form-group" style="margin-top: 40px">
+                        <label class="col-md-4 control-label">{% trans "First Name" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(not required...)" name="first" id="first" type="text" value="{{ first }}" required="false"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Last Name" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(not required...)" name="last" id="last" type="text" value="{{ last }}" required="false"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Preferred Username" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(required...)" name="username" id="username" type="text" value="{{ username }}" required="true"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Choose a Password" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(required...)" name="passwd1" id="passwd1" type="password" required="true"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Retype Password" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(required...)" name="passwd2" id="passwd2" type="password" required="true"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Occupants in your Household" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(required...)" name="nocc" id="nocc" type="text" value="{{ nocc }}" required="true"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Street Address" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(not required...)" name="address" id="address" type="text" value="{{ address }}" required="false"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Post Code" %}:</label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(not required...)" name="postal" id="postal" type="text" value="{{ postal }}" required="false"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Email" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(in case you forget your password)" name="email" id="email" type="text" value="{{ email }}" required="true" email="true"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-12">
+                            <button type="button" class="btn btn-lg btn-primary col-md-4" onClick="$('#signup-form').submit()">
+                                <span class="glyphicon glyphicon-floppy-disk"></span> {% trans "Submit" %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div> <!-- profile-panel -->
+
+    </div>
+    <div class="col-md-3"></div>
+{% endblock %}

@@ -2,10 +2,19 @@ __author__ = 'chris'
 from django.core.management.base import BaseCommand, CommandError
 from fnmatch import fnmatch
 from os import path, listdir
-from datetime import datetime
+from datetime import datetime, timedelta
 import unicodecsv as csv
 import logging
 from _commonlib import process_data
+
+
+def create_15_mins(dt, consumption):
+    _tuples = []
+    dt1 = dt - timedelta(minutes=15)
+    d_cons = consumption / 2
+    _tuples.append((dt1, d_cons))
+    _tuples.append((dt, d_cons))
+    return _tuples
 
 
 def process_file(_filename, _path, force):
@@ -22,53 +31,52 @@ def process_file(_filename, _path, force):
     def initialize_series():
         return dict(WaterCold=[], Electricity=[])
 
-    with open(path.join(_path, _filename), 'r') as f:
+    ## "U" for universal-newline mode.
+    with open(path.join(_path, _filename), 'rU') as f:
         usernames = {}
         data = csv.reader(f, encoding="utf-8")
         meter_data = {}
         used_meters = []  # to create a new empty series for each new meter
+        x = 0
         for row in data:
+            if x == 0:
+                x += 1  # skip first row
+                continue
             meter_id = row[0]
             if meter_id not in used_meters:
                 used_meters.append(meter_id)
                 series = initialize_series()  # new meter! Init new series!
             _dt = row[1]
+            _tm = row[2]
             consumption = row[3]
             if not consumption:
                 consumption = 0
             consumption = float(consumption)
-            if 'Electricity' in meter_id:
-                _type = "Electricity"
-            elif 'Water' in meter_id:
-                _type = "WaterCold"
-            else:
-                log.debug("Consumption type not found! Skipping this row!")
-                continue
-            dt = datetime.strptime(_dt, "%Y/%m/%d %H:%M")
-            #series[_type].append((dt, consumption))
+            _type = "WaterCold"
+            str_dt = "%s %s" % (_dt, _tm)
+            dt = datetime.strptime(str_dt, "%d/%m/%Y %H:%M")
             """
                 meter_data = dict of dicts of arrays
             """
-            beg = meter_id.rfind("_") + 1
-            end = meter_id.rfind("/")
-            serial_no = meter_id[beg:end]
-            try:  # find previously inserted value
-                _dict = meter_data[serial_no]
-                _dict[_type].append((dt, consumption))
-                #print "append for %s value %s (%s)" % (_type, consumption, dt)
+            try:
+                _dict = meter_data[meter_id]
+                _tuples = create_15_mins(dt, consumption)
+                for t in _tuples:
+                    _dict[_type].append(t)
             except KeyError:  # add new meter data
-                series[_type].append((dt, consumption))
-                meter_data[serial_no] = series
-                #print "create for %s value %s (%s)" % (_type, consumption, dt)
+                _tuples = create_15_mins(dt, consumption)
+                for t in _tuples:
+                    series[_type].append(t)
+                meter_data[meter_id] = series
                 # when we create a HH we need a new username
-                username = serial_no
-                usernames[serial_no] = "GR%s" % username
-        z_name = "Greece electric-water"
+                username = "GB" + meter_id
+                usernames[meter_id] = username
+        z_name = "UK water"
         process_data(meter_data, usernames, force, z_name)
 
 
 class Command(BaseCommand):
-    help = 'Command that imports from Athens Consumption Data csv file'
+    help = 'Command that imports from UK ADM Loggers Consumption Data csv file'
 
     def handle(self, *args, **options):
         log = logging.getLogger(__name__)
@@ -78,9 +86,9 @@ class Command(BaseCommand):
             user_filename = ""
         try:
             timer1 = datetime.now()
-            log.debug("staring athens import. Setting timer at %s" % timer1)
+            log.debug("staring ADM UK import. Setting timer at %s" % timer1)
             _filenames = []
-            _path = "data/athens/"
+            _path = "data/southern/ADM/"
             all_files = sorted(listdir(_path))
             today = datetime.today()
             # I used %02d to format two digits from the datetime object
@@ -89,8 +97,6 @@ class Command(BaseCommand):
             for f_name in all_files:
                 if fnmatch(f_name, _pattern):
                     _filenames.append(f_name)
-            if not _filenames:
-                log.info(" *** did not find file with pattern %s" % _pattern)
             if user_filename:
                 _filenames = [user_filename]
             for _filename in _filenames:

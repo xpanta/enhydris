@@ -56,7 +56,7 @@ def create_zone(name):
     """
     We create a hard coded DMA containing the word 'greece'
     """
-    zones = DMA.objects.filter(name__icontains='greece')[:1]
+    zones = DMA.objects.filter(name__icontains=name)[:1]
     if zones:
         return zones[0]
     dma = DMA.objects.create(name=name)
@@ -139,14 +139,19 @@ def create_user(identifier, m_id):
         # assign random validation key
         import os
         import binascii
-        key = str(binascii.hexlify(os.urandom(4)).upper())
-        key = key.replace('E', 'B')
-        key = key.replace('0', '1')
-        if not key[0].isalpha():
-            key = "A" + key[:-1]
-        UserValidationKey\
-            .objects.get_or_create(user=u, identifier=m_id, key=key)
-        print "%s, %s" % (u.username, key)
+        key_found = True
+        while key_found:
+            key = str(binascii.hexlify(os.urandom(4)).upper())
+            key = key.replace('E', 'B')
+            key = key.replace('0', '1')
+            if not key[0].isalpha():
+                key = "A" + key[:-1]
+            try:
+                UserValidationKey.objects.get(key=key)
+            except UserValidationKey.DoesNotExist:
+                key_found = False
+                UserValidationKey\
+                    .objects.get_or_create(user=u, identifier=m_id, key=key)
         return u
 
 
@@ -155,10 +160,6 @@ def create_household(identifier, user, dma_id):
         return Household.objects.get(user=user), True
     except Household.DoesNotExist:
         pass
-    # DMA (it is 1) should be one created at the start. But we removed DMAs
-    # so I hardcoded 1 because creating DMA and Household objects both
-    # create entries in the Gentity model for no reason (this is why
-    # model inheritance is a bitch and we should avoid it.
     dma = DMA.objects.get(pk=dma_id)
     household = Household.objects.create(
         user=user,
@@ -268,6 +269,8 @@ def create_objects(data, usernames, force, zone):
     found = False
     for hh_id in hh_ids:
         username = usernames[hh_id]
+        if username == "PT84253":
+            pass
         user = create_user(username, hh_id)
         log.info("*** created user %s ***" % user)
         household, found = create_household(hh_id, user, zone.id)
@@ -311,7 +314,7 @@ def create_objects(data, usernames, force, zone):
                     if not isnan(value):
                         total += value
                         timeseries[timestamp] = total
-                        print "%s -> %s" % (timestamp, total)
+                        #print "%s -> %s" % (timestamp, total)
                     else:
                         timeseries[timestamp] = float('NaN')
             timeseries_data[variable] = timeseries

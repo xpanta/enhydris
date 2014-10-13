@@ -2,40 +2,43 @@
 {% load i18n %}
 {% block pagetitle %}iWidget User Login{% endblock %}
 {% block pagecontent %}
-<script type="text/javascript">
-</script>
-<!--<div class="row">-->
-	<div class="col-md-4 col-md-offset-4">
-    	<div class="panel panel-default">
-		<div class="panel-heading">
-		    <div class="panel-title">{% trans "Please sign in" %}</div>
-		 </div>
-		 <div class="panel-body">
-		 <div id="login-msg"></div>
-		 <form accept-charset="UTF-8" action="{% url 'login' %}" method="POST" role="form" id="login-form">
-			{% csrf_token %}
-                 	<fieldset>
-				<div class="input-group form-group">
-						<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-			    		<input class="form-control" placeholder="Username" name="username" id="username" type="text" required="true">
-			    	</div>
-			    	<div class="input-group form-group">
-			    		<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-			    		<input class="form-control" placeholder="Password" name="password" id="password" type="password" value="" required="true">
-			    	</div>
-			    	<div class="form-group"><a href="#">{% trans "Forget Password" %}</a></div>
-			    	<!--
-			    	<div class="checkbox">
-			    	  	<label><input name="remember" type="checkbox" value="Remember Me"> Remember Me</label>
-			    	</div>
-					-->
-				<div class="form-group">
-			    		<button class="btn btn-lg btn-primary btn-block" type="button" onClick="apputil.sendToserver('#login-form');">{% trans "Login" %}</button>
-			    </div>
-		    	</fieldset>
-		</form>
-		</div>
-	</div>
-	</div>
-<!--</div>-->
+    <script type="text/javascript">
+    </script>
+    <!--<div class="row">-->
+    <div class="col-md-4 col-md-offset-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">{% trans "Please sign in" %}</div>
+            </div>
+            <div class="panel-body">
+                {% for message in messages %}
+                    <div id="profile-msg" class="text-center" style="margin-bottom: 20px; color: indianred">{{ message }}</div>
+                {% endfor %}
+                <div id="login-msg"></div>
+                <form accept-charset="UTF-8" action="{% url 'login' %}" method="POST" role="form" id="login-form">
+                    {% csrf_token %}
+                    <fieldset>
+                        <div class="input-group form-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <input class="form-control" placeholder="Username" name="username" id="username" type="text" required="true">
+                        </div>
+                        <div class="input-group form-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            <input class="form-control" placeholder="Password" name="password" id="password" type="password" value="" required="true">
+                        </div>
+                        <div class="form-group"><a href="#">{% trans "Forgot Password" %}</a></div>
+                        <!--
+                        <div class="checkbox">
+                              <label><input name="remember" type="checkbox" value="Remember Me"> Remember Me</label>
+                        </div>
+                        -->
+                        <div class="form-group">
+                            <button class="btn btn-lg btn-primary btn-block" type="button" onClick="apputil.sendToserver('#login-form');">{% trans "Login" %}</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--</div>-->
 {% endblock %}
