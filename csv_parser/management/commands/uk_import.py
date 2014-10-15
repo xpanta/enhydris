@@ -159,8 +159,8 @@ class Command(BaseCommand):
                         _prev_file = f_name
                         found = True
                 x += 1
-            _prev_file = "08_10_14_UK.csv"
-            _curr_file = "09_10_2014_UK.csv"
+            _prev_file = "13_10_14.csv"
+            _curr_file = "14_10_10_UK.csv"
             if _curr_user_filename:
                 _curr_file = _curr_user_filename
             if _prev_user_filename:

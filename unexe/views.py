@@ -144,13 +144,29 @@ class home(TemplateView):
     template_name = "index.html"
 
     def get(self, request):
+        # Added by Chris Pantazis on 14/10/2014
+        # in order to pre-fillin the username in the username field
+        # in case of readirection (e.g. after SSO or custom sign-in
+        # process. We might not need it in the end, but it is good to
+        # have the option
+        username = request.GET.get('u', '')
         if request.user.is_authenticated(): #if already authenticated
             return redirect(reverse('dashboard'))   #redirect to a dashboard
-        return self.render_to_response({})
+        return self.render_to_response({'username': username})
 
 class login(TemplateView):
     template_name = "index.html"
-    def post(self, request):    
+
+    # Get, Added by Chris Pantazis on 14/10/2014
+    # in order to pre-fillin the username in the username field
+    # in case of readirection (e.g. after SSO or custom sign-in
+    # process. We might not need it in the end, but it is good to
+    # have the option
+    def get(self, request):
+        username = request.GET.get('u', '')
+        return self.render_to_response({'username': username})
+
+    def post(self, request):
         wuser = iuser()        
         status = wuser.login(iutility.getPostValue('username',request), iutility.getPostValue('password',request), request)
         #    if not (request.user.is_superuser or request.user.is_staff):

@@ -64,7 +64,7 @@ def create_zone(name):
 
 
 def create_dma_series(zone):
-    log.info("*** creating DMA series for zone {x}".format(x=zone))
+    #log.info("*** creating DMA series for zone {x}".format(x=zone))
     # nominal_offset_minutes, months, actual_offset_minutes, months
     # name, variable, unit
     tseries_list = {
@@ -122,7 +122,7 @@ def create_dma_series(zone):
 def create_user(identifier, m_id):
     """Identifier will be used as username == household name"""
     try:
-        return User.objects.get(username=identifier)
+        return User.objects.get(username=identifier), False
     except User.DoesNotExist:
         u = User.objects.create(username=identifier,
                                 first_name='Unspecified',
@@ -152,7 +152,7 @@ def create_user(identifier, m_id):
                 key_found = False
                 UserValidationKey\
                     .objects.get_or_create(user=u, identifier=m_id, key=key)
-        return u
+        return u, True
 
 
 def create_household(identifier, user, dma_id):
@@ -263,7 +263,6 @@ def create_objects(data, usernames, force, zone):
     :return: True for success
     """
     households = []
-    log.debug("processing household data now...")
     # Create user (household owner), household, database series placeholders
     hh_ids = data.keys()
     found = False
@@ -271,15 +270,15 @@ def create_objects(data, usernames, force, zone):
         username = usernames[hh_id]
         if username == "PT84253":
             pass
-        user = create_user(username, hh_id)
-        log.info("*** created user %s ***" % user)
+        user, created = create_user(username, hh_id)
+        if created:
+            log.info("*** created user %s ***" % user)
+        else:
+            log.info("*** found user %s ***" % user)
         household, found = create_household(hh_id, user, zone.id)
         households.append(household)
-        log.info("*** created household %s ***" % hh_id)
         db_series = create_raw_timeseries(household)
-        log.info("*** created raw timeseries ***")
         create_processed_timeseries(household)
-        log.info("*** created processed timeseries ***")
         timeseries_data = {}
         # Now we will create timeseries.Timeseries() and we will add
         # parsed values
@@ -318,7 +317,6 @@ def create_objects(data, usernames, force, zone):
                     else:
                         timeseries[timestamp] = float('NaN')
             timeseries_data[variable] = timeseries
-            log.info("*** writing timeseries data to db")
             if not exists:
                 timeseries.write_to_db(db=db.connection,
                                        transaction=transaction,
@@ -386,8 +384,8 @@ def regularize(raw_series_db, proc_series_db, rs, re):
     try:
         test_value = raw_series[raw_series.bounding_dates()[1]]
     except Exception as e:
-        log.debug("Trying to get test value for raw series %s failed with %s. "
-                  "Skipping!" % (raw_series_db.id, repr(e)))
+        #log.debug("Trying to get test value for raw series %s failed with %s. "
+        #          "Skipping!" % (raw_series_db.id, repr(e)))
         return None
     time_step = ReadTimeStep(proc_series_db.id, proc_series_db)
     proc_series = TSeries(id=proc_series_db.id, time_step=time_step)
@@ -479,7 +477,6 @@ def aggregate(household, source_time_series, dest_timestep_id, variable):
 
 
 def process_household(household):
-    log.info("Processing household: %s" % (household.alt_codes.all()[0],))
     for variable in (VAR_PERIOD, VAR_ENERGY_PERIOD):
         raw_series_db = household \
             .timeseries \
@@ -500,8 +497,8 @@ def process_household(household):
                                                    fifteen_min_series_db.id)
         #    if e2 and (e1-e2).seconds<15*60:
         #        return
-        log.info("Now regularizing %s with id %s for s1=%s and e1=%s"
-                 % (raw_series_db, raw_series_db.id, s1, e1))
+        #log.info("Now regularizing %s with id %s for s1=%s and e1=%s"
+        #         % (raw_series_db, raw_series_db.id, s1, e1))
         fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db,
                                         s1, e1)
         if fifteen_min_series and fifteen_min_series.bounding_dates():
@@ -517,7 +514,6 @@ def process_household(household):
             # Oh my God. Stefanos wants to aggregate using previous results
             # Why? The problem is that Monthly series is not inserted.
             # Was this on purpose?
-            log.info("Starting aggregation process")
             for time_step_id in (TSTEP_HOURLY, TSTEP_DAILY, TSTEP_MONTHLY):
                 result = aggregate(household, result, time_step_id, variable)
                 if time_step_id == TSTEP_MONTHLY:
@@ -558,14 +554,12 @@ def process_data(data, usernames, force, name):
     dma = None
     try:
         global log
-        log.info("Processing data...")
         dma = create_zone(name)
-        log.info("*** Created DMA {x} with id {y}".format(x=dma.name, y=dma.id))
         create_dma_series(dma.id)  # this might not be needed, actually
         #dma = DMA.objects.get(pk=dma.id)
         households = create_objects(data, usernames, force, dma)
         for household in households:
-            log.info("Processing ts records for household %s" % household)
+            #log.info("Processing ts records for household %s" % household)
             process_household(household)
         log.info("Process ended... Committing!")
         transaction.commit()

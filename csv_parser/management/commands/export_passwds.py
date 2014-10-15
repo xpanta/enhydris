@@ -18,7 +18,8 @@ class Command(BaseCommand):
         _min = _range.split('-')[0]
         _max = _range.split('-')[1]
         try:
-            users = User.objects.filter(id__gte=_min, id__lte=_max)
+            users = User.objects.filter(id__gte=_min, id__lte=_max)\
+                .order_by("username")
             out = []
             for user in users:
                 try:

@@ -29,7 +29,6 @@ def signup(request):
         first = request.POST.get("first", None)
         last = request.POST.get("last", None)
         email = request.POST.get("email", None)
-        username = request.POST.get("username", None)
         pwd1 = request.POST.get("passwd1", None)
         pwd2 = request.POST.get("passwd2", None)
         addr = request.POST.get("addr", "")
@@ -56,46 +55,35 @@ def signup(request):
             except (ValueError, KeyError):
                 nocc = 0
 
-            try:
-                User.objects.get(username=username)
-                user_found = True
-            except User.DoesNotExist:
-                user_found = False
             if nocc:
                 if is_email(email):
-                    if not user_found:
-                        if pwd1 == pwd2:
-                            user.username = username
-                            user.first_name = first
-                            user.last_name = last
-                            user.email = email
-                            user.set_password(pwd1)
-                            user.save()
-                            profile = user.get_profile()
-                            profile.fname = first
-                            profile.lname = last
-                            profile.address = ", ".join([addr, postal])
-                            profile.save()
-                            household.num_of_occupants = nocc
-                            household.address = ", ".join([addr, postal])
-                            household.save()
-                            uvk.used = True
-                            uvk.save()
-                            messages.add_message(request,
-                                                 messages.INFO,
-                                                 "Thank you! You may now login "
-                                                 "with your "
-                                                 "chosen username and password!")
-                            return HttpResponseRedirect("/login")
-                        else:
-                            messages.add_message(request,
-                                                 messages.ERROR,
-                                                 "Passwords do not match")
+                    if pwd1 == pwd2:
+                        user.first_name = first
+                        user.last_name = last
+                        user.email = email
+                        user.set_password(pwd1)
+                        user.save()
+                        profile = user.get_profile()
+                        profile.fname = first
+                        profile.lname = last
+                        profile.address = " ".join([addr, postal])
+                        profile.save()
+                        household.num_of_occupants = nocc
+                        household.address = " ".join([addr, postal])
+                        household.save()
+                        uvk.used = True
+                        uvk.save()
+                        messages.add_message(request,
+                                             messages.INFO,
+                                             "Thank you! You may now login "
+                                             "with your "
+                                             "username (%s) and "
+                                             "password!" % user.username)
+                        return HttpResponseRedirect("/login?u=" + user.username)
                     else:
                         messages.add_message(request,
                                              messages.ERROR,
-                                             "Username is taken. "
-                                             "Please choose another one.")
+                                             "Passwords do not match")
                 else:
                     messages.add_message(request,
                                          messages.ERROR,
