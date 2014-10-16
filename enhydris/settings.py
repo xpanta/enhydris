@@ -152,6 +152,7 @@ INSTALLED_APPS = (
     'unexe',
     'csv_parser',
     'core',
+    'sso',
 )
 
 MIDDLEWARE_CLASSES = (

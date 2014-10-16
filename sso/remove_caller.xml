@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <RemoveCaller xmlns="https://services.up-ltd.co.uk/adminservice_iwidget/">
+      <tag>hh2</tag>
+      <serviceUsername>IWidgetService</serviceUsername>
+      <servicePassword>1-Widg3t##Crypt0Service</servicePassword>
+    </RemoveCaller>
+  </soap:Body>
+</soap:Envelope>
