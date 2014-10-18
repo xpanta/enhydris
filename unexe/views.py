@@ -175,13 +175,22 @@ class login(TemplateView):
         #    return super_index(request)            
         #return self.render_to_response({})
     
+#class logout(TemplateView):
+#    template_name = "index.html"
+#
+#    def get(self, request):
+#        auth_logout(request)
+#        return redirect(reverse('home'))   #redirect to home page
+#        return self.render_to_response({})
+
+# Added by Chris Pantazis in order for the user to logout
+# and get redirected to SSO login page
 class logout(TemplateView):
-    template_name = "index.html"
+    template_name = ""
 
     def get(self, request):
         auth_logout(request)
-        return redirect(reverse('home'))   #redirect to home page
-        return self.render_to_response({})
+        return HttpResponseRedirect("https://services.up-ltd.co.uk/iwidget/?c=hhApp")
 
 #change user password
 class changepassword(TemplateView):

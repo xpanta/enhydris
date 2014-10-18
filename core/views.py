@@ -4,11 +4,56 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate, logout
 #!TODO import ugetext for internationalizing texts
 from django.contrib.auth.models import User
-
+import logging
 from iwidget.models import UserValidationKey, Household
+import requests
+from xml.dom import minidom
+
+
+def sso_redirect(request):
+    xml = """
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <Decrypt xmlns="https://services.up-ltd.co.uk/cryptoservice_iwidget/">
+              <CipherText>##TOKEN##</CipherText>
+              <ServiceAccountName>IWidgetService</ServiceAccountName>
+              <ServiceAccountPassword>1-Widg3t##Crypt0Service</ServiceAccountPassword>
+            </Decrypt>
+          </soap:Body>
+        </soap:Envelope>
+    """
+    token = request.GET.get('t')
+    if token:
+        logging.debug("Received token %s" % token)
+        xml = xml.strip()
+        xml = xml.replace("##TOKEN##", token)
+        url = "https://services.up-ltd.co.uk/cryptoservice_iwidget/service.asmx"
+        headers = {'Content-Type': 'text/xml'}
+        res = requests.post(url, data=xml, headers=headers)
+        logging.debug("received answer %s" % res.text)
+        if res.status_code == requests.codes.ok:
+            doc = minidom.parseString(res.text)
+            result = doc.getElementsByTagName("DecryptResult")[0]
+            text = result.firstChild.data
+            logging.debug("text is %s" % text)
+            username = text.split("|")[0]
+            username = username.replace('@', '')
+            logging.debug("username is %s" % username)
+            user = User.objects.get(username=username)
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            #user = authenticate(username=user.username, password=user.password)
+            login(request, user)
+            return HttpResponseRedirect(reverse("dashboard"))
+        else:
+            logout(request)
+            return HttpResponseRedirect(reverse("login"))
+    else:
+        logout(request)
+        return HttpResponseRedirect(reverse("login"))
 
 
 def signup(request):
@@ -104,7 +149,6 @@ def signup(request):
             "key": key,
             'first': first,
             'last': last,
-            'username': username,
             'address': addr,
             'postal': postal,
             'email': email,

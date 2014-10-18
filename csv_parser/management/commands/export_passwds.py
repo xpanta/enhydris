@@ -28,8 +28,10 @@ class Command(BaseCommand):
                     out.append([user.username, key])
                 except UserValidationKey.DoesNotExist:
                     continue
-            _outfile = "exported_keys.csv"
-            _path = "data/southern/"
+            import time
+            ts = int(time.time())
+            _outfile = "exported_password_%s.csv" % ts
+            _path = "data/"
             with open(path.join(_path, _outfile), 'w') as of:
                 a = csv.writer(of, delimiter=',',
                                quotechar='"',
