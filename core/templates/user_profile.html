@@ -13,54 +13,28 @@
 
         <div id="profile-panel" class="panel panel-default">
             <div class="panel-heading">
-                <div class="panel-title">{% trans "STEP 2/2" %} </div>
+                <div class="panel-title">{% trans "User Information" %} </div>
             </div>
             <div class="panel-body" style="padding: 50px;">
                 <h3 class="text-center">{% trans "Welcome to the iWIDGET Platform." %}</h3>
-                <h4 class="text-center">{% trans "Please, fill in the following important information!" %}</h4>
+                <h4 class="text-center">{% trans "Please, fill in the required information!" %}</h4>
                 {% for message in messages %}
                     <div id="profile-msg" class="text-center" style="color: indianred">{{ message }}</div>
                 {% endfor %}
-                <form class="form-horizontal" accept-charset="UTF-8" action="{% url 'user_profile' user_id %}" method="POST" role="form" id="signup-form">
+                <form class="form-horizontal" accept-charset="UTF-8" action="{% url 'user_profile' %}" method="POST" role="form" id="signup-form">
                     {% csrf_token %}
-                    <input type="hidden" name="mid" value="{{ mid }}">
-                    <input type="hidden" name="key" value="{{ key }}">
-                    <input type="hidden" name="uid" value="{{ user_id }}">
+                    <input type="hidden" name="t" value="{{ user_id }}">
                     <div class="form-group" style="margin-top: 40px">
-                        <label class="col-md-4 control-label">{% trans "Firs Name" %}: *</label>
+                        <label class="col-md-4 control-label">{% trans "First Name" %}: </label>
                         <div class="col-md-6"><input class="form-control" placeholder="First name..." name="first" id="first" type="text" value="{{ first }}" required="true"></div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-4 control-label">{% trans "Last Name" %}: *</label>
+                        <label class="col-md-4 control-label">{% trans "Last Name" %}: </label>
                         <div class="col-md-6"><input class="form-control" placeholder="Last name..." name="last" id="last" type="text" value="{{ last }}" required="true"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-4 control-label">{% trans "Preferred Username" %}: *</label>
-                        <div class="col-md-6"><input class="form-control" placeholder="Preferred username..." name="username" id="username" type="text" value="{{ username }}" required="true"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-4 control-label">{% trans "Choose a Password" %}: *</label>
-                        <div class="col-md-6"><input class="form-control" placeholder="Password..." name="passwd1" id="passwd1" type="password" required="true"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-4 control-label">{% trans "Retype Password" %}: *</label>
-                        <div class="col-md-6"><input class="form-control" placeholder="Password again..." name="passwd2" id="passwd2" type="password" required="true"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-4 control-label">{% trans "Occupants in your Household" %}: *</label>
                         <div class="col-md-6"><input class="form-control" placeholder="Number of occupants..." name="nocc" id="nocc" type="text" value="{{ nocc }}" required="true"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-4 control-label">{% trans "Street Address" %}: *</label>
-                        <div class="col-md-6"><input class="form-control" placeholder="Street adress..." name="address" id="address" type="text" value="{{ address }}" required="true"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-4 control-label">{% trans "Post Code" %}: *</label>
-                        <div class="col-md-6"><input class="form-control" placeholder="Postal code..." name="postal" id="postal" type="text" value="{{ postal }}" required="true"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-4 control-label">{% trans "Email" %}: *</label>
-                        <div class="col-md-6"><input class="form-control" placeholder="Your email..." name="email" id="email" type="text" value="{{ email }}" required="true" email="true"></div>
                     </div>
                     <p class="text-warning text-center">{% trans "Required" %} (*)</p>
                     <div class="form-group">
@@ -70,6 +44,7 @@
                             </button>
                         </div>
                     </div>
+                    <p class="text-warning text-center"><a href="{% url 'dashboard' %}">{% trans "I will provide my details, next time!" %}</a></p>
                 </form>
             </div>
         </div> <!-- profile-panel -->

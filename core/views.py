@@ -27,33 +27,97 @@ def sso_redirect(request):
         </soap:Envelope>
     """
     token = request.GET.get('t')
+    log = logging.getLogger(__name__)
     if token:
-        logging.debug("Received token %s" % token)
+        #http://iwidget.up-ltd.co.uk/core/sso/auth/?t=8A-6B-80-B7-D8-87-CC-EE-2D-58-1B-72-08-F6-7F-20-BC-FB-CE-5D-C8-6B-76-43-F0-C1-8A-15-15-68-85-7C-1E-98-7D-E2-F7-D4-AF-61-ED-62-D3-3C-F6-67-8B-10-DE-7C-73-48-74-65-34-F8-A4-B2-65-1A-B9-9E-32-FE
+        log.debug("Received token %s" % token)
         xml = xml.strip()
         xml = xml.replace("##TOKEN##", token)
         url = "https://services.up-ltd.co.uk/cryptoservice_iwidget/service.asmx"
         headers = {'Content-Type': 'text/xml'}
         res = requests.post(url, data=xml, headers=headers)
-        logging.debug("received answer %s" % res.text)
+        log.debug("received answer %s" % res.text)
         if res.status_code == requests.codes.ok:
             doc = minidom.parseString(res.text)
             result = doc.getElementsByTagName("DecryptResult")[0]
             text = result.firstChild.data
-            logging.debug("text is %s" % text)
+            log.debug("text is %s" % text)
             username = text.split("|")[0]
             username = username.replace('@', '')
-            logging.debug("username is %s" % username)
+            log.debug("username is %s" % username)
             user = User.objects.get(username=username)
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             #user = authenticate(username=user.username, password=user.password)
             login(request, user)
-            return HttpResponseRedirect(reverse("dashboard"))
+            popup = False
+            try:
+                uvk = UserValidationKey.objects.get(user=user)
+                popup = uvk.popup
+            except UserValidationKey.DoesNotExist:
+                pass
+            if popup:
+                return HttpResponseRedirect(reverse("user_profile"))
+            else:
+                return HttpResponseRedirect(reverse("dashboard"))
         else:
             logout(request)
             return HttpResponseRedirect(reverse("login"))
     else:
         logout(request)
         return HttpResponseRedirect(reverse("login"))
+
+
+def user_profile(request):
+    user = request.user
+    if request.method == "GET":
+        data = {
+            "user_id": user.id
+        }
+        variables = RequestContext(request, data)
+        return render_to_response("user_profile.html", variables)
+    elif request.method == "POST":
+        user_id = request.POST.get("t", "0")
+        user_id = int(user_id)
+        user = request.user
+        if user.id == user_id:
+            first = request.POST.get("first", "")
+            last = request.POST.get("last", "")
+            nocc = request.POST.get("nocc", "")
+            try:
+                nocc = int(nocc)
+            except ValueError:
+                nocc = 0
+            profile = user.get_profile()
+            profile.fname = first
+            profile.lname = last
+            profile.save()
+            user.first_name = first
+            user.last_name = last
+            user.save()
+            if nocc:
+                household = user.households.all()[0]
+                household.num_of_occupants = nocc
+                household.save()
+                try:
+                    uvk = UserValidationKey.objects.get(user=user)
+                    uvk.popup = False
+                    uvk.save()
+                except UserValidationKey.DoesNotExist:
+                    pass
+                return HttpResponseRedirect(reverse("dashboard"))
+            else:
+                messages.add_message(request,
+                                     messages.ERROR,
+                                     "Please, provide the number of "
+                                     "occupants in your house")
+                return HttpResponseRedirect(reverse("user_profile"))
+        else:
+            messages.add_message(request,
+                                 messages.ERROR,
+                                 "User is not authenticated!")
+            return HttpResponseRedirect(reverse("user_profile"))
+    else:
+        return HttpResponseRedirect(reverse("user_profile"))
 
 
 def signup(request):

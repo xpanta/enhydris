@@ -26,7 +26,11 @@ urlpatterns = patterns('',
         login_required(dashboard.as_view()),
         name='dashboard'),  # consumer dashboard
     url(r'^logout$', logout.as_view(), name='logout'),  # logout
-    url(r'^login$', login.as_view(), name='login'),  # logout
+    #url(r'^super/$', login.as_view(), name='adminlogin'),  # logout
+    url(r'^login/$', RedirectView.as_view(
+        url='https://services.up-ltd.co.uk/iwidget/?c=hhApp', permanent=False),
+        name='login'),
+    #url(r'^login$', login.as_view(), name='login'),  # logout
     url(r'^changepassword$', login_required(changepassword.as_view()),
         name='changepassword'),  # changepassword
     url(r'^updateuser$', login_required(updateuser.as_view()),
@@ -81,8 +85,8 @@ urlpatterns = patterns('',
         iwidget_views.household_properties, {}, 'household_properties'),
 
     # Added by Chris Pantazis to redirect to core/signup
-    url(r'^signup/$', RedirectView.as_view(url='/core/signup/',
-                                           permanent=False)),
+    #url(r'^signup/$', RedirectView.as_view(url='/core/signup/',
+    #                                       permanent=False)),
 )
 
 """ url confs from other use cases go here """

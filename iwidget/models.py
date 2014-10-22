@@ -289,4 +289,5 @@ class UserValidationKey(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     sso = models.BooleanField(default=False)  # user in SSO Service?
+    popup = models.BooleanField(default=True)  # new user? (show popup)
 
