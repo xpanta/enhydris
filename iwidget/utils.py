@@ -60,7 +60,9 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     :param occupancy:
     :return:
     """
-    cache_key = 'daily_statistics__%d'%(ts_daily.id,)
+    # Added by Chris Pantazis cache key should include consumption type
+    key = "%s-%s" % (ts_daily.id, ts_daily.variable.id)
+    cache_key = 'daily_statistics__%s' % key
     cache_value = cache.get(cache_key)
     if cache_value is not None:
         return cache_value
@@ -176,11 +178,15 @@ def statistics_on_daily(ts_daily, occupancy = 1):
         (IF array is empty then show sad face, instead!)
     """
     targets = [80, 90, 105, 110, 120]
+    targets_nrg = [80, 90, 105, 110, 120]
     daily_max = []
     weekly_max = []
     monthly_max = []
     yearly_max = []
     cc = monthrange(today.year, today.month)
+    _type = ts_daily.variable.id
+    if _type == 6:
+        targets = targets_nrg  # For Energy consumption we have other targets
     for t in targets:
         daily_max.append(t * occupancy)
         weekly_max.append(t * 7 * occupancy)

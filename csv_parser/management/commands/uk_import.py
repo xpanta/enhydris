@@ -114,8 +114,8 @@ def process_file(_filename, _path, old_cons):
                     # when we create a HH we need a new username
                     username = "GB" + meter_id
                     usernames[meter_id] = username
-        z_name = "UK water"
-        process_data(meter_data, usernames, False, z_name)
+        z_names = ["UK water"]
+        process_data(meter_data, usernames, False, z_names, {})
 
 
 
@@ -139,7 +139,7 @@ class Command(BaseCommand):
             all_files = sorted(listdir(_path))
             today = datetime.today()
             # I used %02d to format two digits from the datetime object
-            _date1 = "%02d_%02d_%s" % (today.day, today.month, today.year)
+            _date1 = "%02d_%02d_%s" % (today.day, today.month, str(today.year)[2:])
             _pattern1 = _date1 + "*"
             for f_name in all_files:
                 if fnmatch(f_name, _pattern1):
@@ -152,15 +152,15 @@ class Command(BaseCommand):
             while not found and x < 15:
                 prev = today - timedelta(days=x)
                 _date2 = "%02d_%02d_%s" % (prev.day, prev.month,
-                                           prev.year)
+                                           str(prev.year)[2:])
                 _pattern2 = _date2 + "*"
                 for f_name in all_files:
                     if fnmatch(f_name, _pattern2):
                         _prev_file = f_name
                         found = True
                 x += 1
-            _prev_file = "15_10_14_UK.csv"
-            _curr_file = "16_10_14_UK.csv"
+            _prev_file = "23_10_14_UK.csv"
+            _curr_file = "24_10_14_UK.csv"
             if _curr_user_filename:
                 _curr_file = _curr_user_filename
             if _prev_user_filename:

@@ -76,7 +76,7 @@ class iusecase():
         data["chart"]    = list1
         data["electdata"] = electdata
         data["waterdata"] = waterdata
-        
+
         return data
     
     '''

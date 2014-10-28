@@ -190,7 +190,44 @@ class changepassword(TemplateView):
     def post(self, request):
         if request.user.is_authenticated(): #only change password if authenticated
             wuser = iuser()
-            status = wuser.changepassword(request.user,iutility.getPostValue('oldpasswd',request),iutility.getPostValue('newpasswd',request))
+            status = wuser\
+                .changepassword(request.user,
+                                iutility.getPostValue('oldpasswd', request),
+                                iutility.getPostValue('newpasswd', request))
+            # Added by Chris Pantazis to change password to UPL, too
+            if status:
+                from sso.common import encrypt_and_hash_pwd
+                import requests
+                from xml.dom import minidom
+                xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><SetUserPassword xmlns="https://services.up-ltd.co.uk/adminservice_iwidget/"><name>##USER##</name><password>##PASSWORD##</password><serviceUsername>IWidgetService</serviceUsername><servicePassword>1-Widg3t##Crypt0Service</servicePassword></SetUserPassword></soap:Body></soap:Envelope>"""
+                new_pwd = iutility.getPostValue('newpasswd', request)
+                enc_pwd = encrypt_and_hash_pwd(new_pwd)
+                xml = xml.replace("##USER##", request.user.username)\
+                    .replace("##PASSWORD##", enc_pwd)
+                headers = {'Content-Type': 'text/xml'}
+                res = requests.post('https://services.up-ltd.co.uk/'
+                                    'adminservice_iwidget/service.asmx',
+                                    data=xml, headers=headers)
+                if res.status_code == requests.codes.ok:
+                    doc = minidom.parseString(res.text)
+                    result = doc.getElementsByTagName("SetUserPasswordResult")[0]
+                    val = result.firstChild.data
+                    if val == "true":  # True only if SSO update was OK!!
+                        status = True
+                        try:
+                            uvk = UserValidationKey.\
+                                objects.get(user=request.user)
+                            uvk.key = new_pwd
+                            uvk.save()
+                        except UserValidationKey.DoesNotExist:
+                            uvk = UserValidationKey. \
+                                objects.create(user=request.user,
+                                               identifier="",
+                                               key=new_pwd,
+                                               sso=True,
+                                               popup=False)
+                    else:
+                        status = False
             return HttpResponse(json.dumps(status),content_type='application/javascript')
         else:   #otherwise return -1 to show unexpected error message
             return HttpResponse(json.dumps(-1),content_type='application/javascript')
@@ -280,19 +317,36 @@ class consumer(TemplateView):
             
         values = dashboard_view(request,hid) #call method from django_iwidget. sometimes I need to replace this
         household = values['household']
+
+        # Added by Chris Pantazis because I was getting a
+        # tsid template (UC4.1) error in superuser's dashboard
+        # So I had to add tsid value to the dictionary.
+
+        series = iseries()
+        ts_monthly = series.getmonthlyseries(household)
+        ###
+
         #end of NTUA use case
+        # overview_nrg added by Chris Pantazis
+        # to show Energy Consumption in Dashboard
+        # Remeber this data dict goes to the dashboard
         data = {
             "household": household,
             "overview": values['overview'],
+            "overview_nrg": values['overview_nrg'],
+            "has_energy": values['has_energy'],
             'charts': values["charts"],
+            'charts_nrg': values["charts_nrg"],
             'js_data': values["js_data"],
             'chart_selectors': values["chart_selectors"],
             "hid": hid,
+            "tsid": ts_monthly.id,
         }
         
         ##start of my code
         user = request.user
-        if not (user.is_staff or user.is_superuser): #only execute these use cases if logged user is not admin
+        #only execute these use cases if logged user is not admin
+        if not (user.is_staff or user.is_superuser):
             usecase= iusecase(user)
             series = iseries()
             household = user.households.all()[0]
@@ -418,10 +472,16 @@ class consumer(TemplateView):
             '''
                                     
             #data = {"household":household,"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,"tsid":ts_monthly.id,"dmastats":dmasummary,"uc32chart1":json.dumps(list1),"dmastats":dmastats,}    
+            # overview_nrg added by Chris Pantazis
+            # to show Energy Consumption in Dashboard
+            # NO! This goes to the Dashboard! Oh My God. Spaghetti Code Attack!
             data = {
                 "household": household,
                 "overview": values['overview'],
+                "overview_nrg": values['overview_nrg'],
+                "has_energy": values['has_energy'],
                 'charts': values["charts"],
+                'charts_nrg': values["charts_nrg"],
                 'js_data': values["js_data"],
                 'chart_selectors': values["chart_selectors"],
                 "hid": hid,

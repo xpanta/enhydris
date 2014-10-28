@@ -212,6 +212,10 @@ LOGIN_URL = LOGIN_REDIRECT_URL+'accounts/login'
 #    }
 #}
 
+EMAIL_HOST = 'mail.sch.gr'
+EMAIL_HOST_USER = 'xpanta'
+EMAIL_HOST_PASSWORD = 'tre5183'
+DEFAULT_FROM_EMAIL = 'no-reply@iwidget.up-ltd.co.uk'
 
 LOGGING = {
     'version': 1,

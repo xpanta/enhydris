@@ -1021,6 +1021,35 @@ def dashboard_view(request, household_id=None):
     ts_cost = household.timeseries.filter(
             time_step__id=TSTEP_MONTHLY,
             variable__id=VAR_COST)[:1]
+
+    # ENERGY DATA ADDED By Chris Pantazis
+    has_energy = False
+    try:
+        ts_fifteen_nrg = household.timeseries.filter(
+            time_step__id=TSTEP_FIFTEEN_MINUTES,
+            variable__id=VAR_ENERGY_PERIOD)[0]
+        has_energy =True
+    except IndexError:
+        pass
+
+    if has_energy:
+        ts_hourly_nrg = household.timeseries.filter(
+            time_step__id=TSTEP_HOURLY,
+            variable__id=VAR_PERIOD)[0]
+        ts_daily_nrg = household.timeseries.filter(
+            time_step__id=TSTEP_DAILY,
+            variable__id=VAR_ENERGY_PERIOD)[0]
+        ts_monthly_nrg = household.timeseries.filter(
+            time_step__id=TSTEP_MONTHLY,
+            variable__id=VAR_ENERGY_PERIOD)[0]
+        ts_cost_nrg = household.timeseries.filter(
+            time_step__id=TSTEP_MONTHLY,
+            variable__id=VAR_ENERGY_COST)[:1]
+        if len(ts_cost_nrg):
+            ts_cost_nrg = ts_cost_nrg[0]
+        else:
+            # Fallback
+            ts_cost = ts_monthly_nrg
     # TODO: Remove this after full migration to rest api
     if len(ts_cost):
         ts_cost = ts_cost[0]
@@ -1118,36 +1147,150 @@ def dashboard_view(request, household_id=None):
             'span_options': [],
         },
     ]
+    # Energy Charts added by Chris Pantazis
+    charts_nrg = []
+    if has_energy:
+        charts_nrg = [
+            {
+                'id': 10,
+                'name': 'Fifteen minutes energy consumption (Wh)',
+                'display_min': False, 'display_max': True, 'display_avg': False,
+                'display_sum': True, 'time_span': 'day', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': True,
+                'main_timeseries_id': ts_fifteen_nrg.id,
+                'span_options': ['month', 'week', 'day'],
+            },
+            {
+                'id': 11,
+                'name': 'Daily energy consumption (Wh)',
+                'display_min': False, 'display_max': True, 'display_avg': False,
+                'display_sum': True, 'time_span': 'day', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': True,
+                'main_timeseries_id': ts_daily_nrg.id,
+                'span_options': ['month', 'week', 'day'],
+            },
+            {
+                'id': 12,
+                'name': 'Energy Cost per Month (Wh)',
+                'display_min': False, 'display_max': True, 'display_avg': False,
+                'display_sum': True, 'time_span': 'day', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': True,
+                'main_timeseries_id': ts_cost_nrg.id,
+                'span_options': ['month', 'week', 'day'],
+            },
+            {
+                'id': 13,
+                'name': 'Hourly energy consumption (Wh)',
+                'display_min': False, 'display_max': True, 'display_avg': False,
+                'display_sum': True, 'time_span': 'week', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'main_timeseries_id': ts_hourly_nrg.id,
+                'has_pie': 1,
+                'span_options': ['year', 'month', 'week', 'day'],
+            },
+            {
+                'id': 14,
+                'name': 'Cumulative consumption - raw measurements (KWh)',
+                'display_min': False, 'display_max': False, 'display_avg': False,
+                'display_sum': False, 'time_span': 'week', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'main_timeseries_id': ts_raw.id,
+                'span_options': ['month', 'week', 'day'],
+            },
+            {
+                'id': 15,
+                'name': 'Daily energy consumption per capita (Wh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'month', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'span_options': ['year', 'month', 'week'],
+            },
+            {
+                'id': 16,
+                'name': u'Energy cost per month, up to a year period (€)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': True,
+                'main_timeseries_id': ts_cost.id, 'occupancy': nocc,
+                'span_options': [],
+            },
+            {
+                'id': 17,
+                'name': 'Energy consumption per month, per capita, up to a year period (Wh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': False,
+                'span_options': [],
+            },
+        ]
     # chart_selectors items:
-    # key: id: the id attribue of chart instance in above chart list
+    # key: id: the id attribute of chart instance in above chart list
     #          Select input element will be above the chart
     # value: selections: a list of ('chart_id', 'Displayed name')
     #        title: a category title to display
     #        default: default item from selections
     chart_selectors = {
-            1: {
-                'selections': [(1, 'Fifteen minutes water '
-                                   'consumption'),
-                               (7, 'Hourly water consumption'),
-                               (6, 'Raw measurements'),],
-                'title': 'High resolution data',
-                'default': 1
-            },
-            2: {
-                'selections': [(2, 'Daily water consumption'),
-                               (3, 'Daily water consumption '
-                                   'per capita'),],
-                'title': 'Daily data',
-                'default': 2
-            },
-            4: {
-                'selections': [(4, 'Monthly water consumption'),
-                               (8, 'Monthly water cost'),
-                               (5, 'Monthly water consumption '
-                                   'per capita'),],
-                'title': 'Monthly data',
-                'default': 8
-            },
+        1: {
+            'selections': [(1, 'Fifteen minutes water '
+                               'consumption'),
+                           (7, 'Hourly water consumption'),
+                           (6, 'Raw measurements'),],
+            'title': 'High resolution data',
+            'default': 1
+        },
+        2: {
+            'selections': [(2, 'Daily water consumption'),
+                           (3, 'Daily water consumption '
+                               'per capita'),],
+            'title': 'Daily data',
+            'default': 2
+        },
+        4: {
+            'selections': [(4, 'Monthly water consumption'),
+                           (8, 'Monthly water cost'),
+                           (5, 'Monthly water consumption '
+                               'per capita'),],
+            'title': 'Monthly data',
+            'default': 8
+        },
+        10: {
+            'selections': [(10, 'Fifteen minutes energy '
+                                'consumption'),
+                           (13, 'Hourly energy consumption')],
+            'title': 'High resolution data',
+            'default': 10
+        },
+        11: {
+            'selections': [(11, 'Daily energy consumption'),
+                           (15, 'Daily energy consumption '
+                                'per capita')],
+            'title': 'Daily data',
+            'default': 11
+        },
+        12: {
+            'selections': [(12, 'Monthly energy consumption'),
+                           (16, 'Monthly energy cost'),
+                           (17, 'Monthly energy consumption '
+                                'per capita')],
+            'title': 'Monthly data',
+            'default': 12
+        },
     }
     variables = [
         {
@@ -1209,19 +1352,67 @@ def dashboard_view(request, household_id=None):
             'factor': 1,
         },
     ]
+    # Energy Variables added by Chris Pantazis. These are needed
+    # for the charts.js (js=javascript and not json)
+    variables_nrg = []
+    if has_energy:
+        variables_nrg = [
+            {
+                'id': 11, 'chart_id': 10, 'name': 'energy',
+                'timeseries_id': ts_fifteen_nrg.id,
+                'is_bar': True, 'bar_width': 7*60*1000,
+                'factor': 1000.000,
+            },
+            {
+                'id': 12, 'chart_id': 11, 'name': 'energy',
+                'timeseries_id': ts_daily_nrg.id,
+                'is_bar': True, 'bar_width': 11*60*60*1000,
+                'factor': 1000.000,
+            },
+            {
+                'id': 13, 'chart_id': 12, 'name': 'energy',
+                'timeseries_id': ts_cost_nrg.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': 1,
+            },
+            {
+                'id': 14, 'chart_id': 13, 'name': 'energy',
+                'timeseries_id': ts_hourly_nrg.id,
+                'is_bar': True, 'bar_width': 30*60*1000,
+                'factor': 1000.000,
+            },
+            {
+                'id': 15, 'chart_id': 15, 'name': 'energy',
+                'timeseries_id': ts_daily_nrg.id,
+                'is_bar': True, 'bar_width': 11*60*60*1000,
+                'factor': 1000.000/nocc,
+            },
+            {
+                'id': 16, 'chart_id': 16, 'name': 'energy',
+                'timeseries_id': ts_cost_nrg.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': 1,
+            },
+            {
+                'id': 17, 'chart_id': 17, 'name': 'energy',
+                'timeseries_id': ts_monthly_nrg.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': 1.000/nocc,
+            },
+        ]
     pies = {
-                1: {'timeseries_id': ts_hourly.id,
-                    'period_unit': 'hour',
-                    'period_from': 1,
-                    'period_to': 6,
-                    'default_period': 'Nightly consumption 0:00-06:00',
-                    'alternate_period': 'Daily consumption 06:00-24:00'},
-                2: {'timeseries_id': ts_monthly.id,
-                    'period_unit': 'month',
-                    'period_from': 5,
-                    'period_to': 9,
-                    'default_period': 'Summer consumption (May-September)',
-                    'alternate_period': 'Winter consumption (October-April)'}
+        1: {'timeseries_id': ts_hourly.id,
+            'period_unit': 'hour',
+            'period_from': 1,
+            'period_to': 6,
+            'default_period': 'Nightly consumption 0:00-06:00',
+            'alternate_period': 'Daily consumption 06:00-24:00'},
+        2: {'timeseries_id': ts_monthly.id,
+            'period_unit': 'month',
+            'period_from': 5,
+            'period_to': 9,
+            'default_period': 'Summer consumption (May-September)',
+            'alternate_period': 'Winter consumption (October-April)'}
     }
 
 
@@ -1229,6 +1420,8 @@ def dashboard_view(request, household_id=None):
             'timeseries_data_url': '/timeseries/data/',#reverse('timeseries_data'), commented by Adeel and replace with Static URL
             'periods_stats_url': '/ajax/period_stats/',#reverse('periods_stats'), commented by Adeel and replace with Static URL
             'charts': charts,
+            'charts_nrg': charts_nrg,
+            'variables_nrg': variables_nrg,
             'variables': variables,
             'pies': pies
     }
@@ -1238,13 +1431,23 @@ def dashboard_view(request, household_id=None):
         form.fields[field].required = False
         form.fields[field].widget.attrs['disabled'] = 'disabled'
         form.fields[field].help_text=u''
-
-    return {'household': household,
-             'charts': charts,
-             'form': form,
-             'js_data': js_data,
-             'chart_selectors': chart_selectors,
-             'overview': statistics_on_daily(ts_daily, nocc)}
+    # overview_nrg added by Chris Pantazis to show
+    # energy data on dashboard
+    if has_energy:
+        overview_nrg = statistics_on_daily(ts_daily_nrg, nocc)
+    else:
+        overview_nrg = None
+    return {
+        'household': household,
+        'charts': charts,
+        'charts_nrg': charts_nrg,
+        'form': form,
+        'js_data': js_data,
+        'chart_selectors': chart_selectors,
+        'overview': statistics_on_daily(ts_daily, nocc),
+        'overview_nrg': overview_nrg,
+        'has_energy': has_energy,
+    }
 
 
 '''

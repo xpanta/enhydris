@@ -735,7 +735,7 @@ function LeafletUtil()
 	       map = new L.Map(id,{zooncontrol:true,layers:[basemap]});
 
 	   // start the map in Exeter University
-	   map.setView(new L.LatLng(50.737137, -3.535148),zoom);
+	   //imap.setView(new L.LatLng(50.737137, -3.535148),zoom);
 	   
 	   return map;
 	}//--end load function
@@ -791,13 +791,13 @@ function LeafletUtil()
 	}//--end
     
 	//focus to specific zoom and location (lat, lng)
-	this.setFocus = function(lat, lng,Zoom) 
-	{
-		if(typeof zoom==='undefined')
-			map.setView(new L.LatLng(lat, lng),zoom);
-		else
-			map.setView(new L.LatLng(lat, lng),Zoom);
-	}		
+//	this.setFocus = function(lat, lng,Zoom)
+//	{
+//		if(typeof zoom==='undefined')
+//			map.setView(new L.LatLng(lat, lng),zoom);
+//		else
+//			map.setView(new L.LatLng(lat, lng),Zoom);
+//	}
 
 	this.addLayer = function(layerToadd,addTo)
 	{
@@ -1627,16 +1627,16 @@ function AppUtil()
 		/* This piece of code initialise the map
 		 * and add it to the side bar of the map represented with id (DOM)
 		 */
-        leafletutil.loadMap(iwidgetutil.mapcontainer);
-        var lat = 50.7236000; //initial lat
-        var lng = -3.5275100; //initial lng
-        var marker = leafletutil.createMarker(lat, lng); //create marker
-        var icon   = leafletutil.getIcon(iwidgetutil.usericon); //create icon
-        leafletutil.setIcon(marker,icon);	//set icon
-        leafletutil.addLayer(marker);	//add to map
-        var content = "<html><address><strong>"+initval[0]+"<br>Exeter, UK</strong></address></html>";	//this content can be geolocated address
-        leafletutil.addPopup(marker,content,true);	//add popup to marker
-        leafletutil.setFocus(lat,lng,16);		//focus the map
+//        leafletutil.loadMap(iwidgetutil.mapcontainer);
+//        var lat = 50.7236000; //initial lat
+//        var lng = -3.5275100; //initial lng
+//        var marker = leafletutil.createMarker(lat, lng); //create marker
+//        var icon   = leafletutil.getIcon(iwidgetutil.usericon); //create icon
+//        leafletutil.setIcon(marker,icon);	//set icon
+//        leafletutil.addLayer(marker);	//add to map
+//        //var content = "<html><address><strong>"+initval[0]+"<br>Exeter, UK</strong></address></html>";	//this content can be geolocated address
+//        leafletutil.addPopup(marker,content,true);	//add popup to marker
+//        leafletutil.setFocus(lat,lng,16);		//focus the map
         this.inithousehold();
         this.initpanel();
    
@@ -1668,7 +1668,7 @@ function AppUtil()
         /*this list order must not be changed as it is corresponding to loop variable value and database id.
          * This can be read from DB and added to the list of dropdown values to avoid any logical errors 
          */
-        var list = ["Before 1970","1971-19990","1991-2000","After 2001"];
+        var list = ["Before 1970","1971-1990","1991-2000","After 2001"];
         //add the number list to the dropdown
         $('#contruction_period').append(domutil.getoption(list));
 
@@ -1684,9 +1684,26 @@ function AppUtil()
          */
         var list = ["Flat rate tariff","Water metering tariff","Rising block tariff","Declining block tariff","Seasonal tariff","Time-of-day tariff","Social tariff"];
         //add the number list to the dropdown
-        $('#water_pricing').append(domutil.getoption(list));   		
+        $('#water_pricing').append(domutil.getoption(list));
+
+        //Added by Chris Pantazis
+        var list = ["<= 50","51 - 100", "101 - 200", "> 200"];
+        //add the number list to the dropdown
+        $('#property_area').append(domutil.getoption(list));
+
+        var list = ["<= 20","21 - 50", "51 - 100", "> 100"];
+        //add the number list to the dropdown
+        $('#garden_area').append(domutil.getoption(list));
+
+        var list = ["<= 20","21 - 50", "51 - 70", "> 70"];
+        //add the number list to the dropdown
+        $('#pervious_area').append(domutil.getoption(list));
+
+        var list = ["<= 50","51 - 100", "101 - 200", "> 200"];
+        //add the number list to the dropdown
+        $('#roof_area').append(domutil.getoption(list));
 	}//--end function
-	
+
 	/* This method is for policy.html page and execute when the complete page loaded.
 	 * This method set the applet to encapsulate inside the responsive container
 	 */ 

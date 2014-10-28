@@ -19,7 +19,7 @@
                         </div>
                         <div class="panel-body" id="fold">
                             {% trans "Learn how you can improve the water efficiency of your household and how best to reduce your water consumption, through the new iWIDGET On-line Course on Water" %}!
-                            {% trans "Join the" %} <a href="http://www.i-widget-elearning.eu/iWidget/" target="__blank">{% trans "Be Smart with Water in the House" %}</a> {% trans "course using the link below and become an active player in water efficiency challenge" %}.
+                            {% trans "Join the" %} <a href="http://www.i-widget-elearning.eu/iWidget/login/index.php?CustomUsername={{ user.username }}&token=b4ea06d42eeeb30641abdaea91610a22" target="__blank">{% trans "Be Smart with Water in the House" %}</a> {% trans "course using the link below and become an active player in water efficiency challenge" %}.
                         </div>
                     </div>
                 </div>
@@ -175,8 +175,83 @@
 
     <div class="panel panel-default">
         <div class="panel-heading"><div class="panel-title">{% trans "ELECTRICITY" %}</div></div>
-        haha
         <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-center bg-primary"><strong>{% trans "ENERGY CONSUMPTION" %} as of {{ overview.weekday }} {{ overview.today_timestamp|date:"j/m/o" }}</strong></p>
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped table-hover">
+                            <thead class="bg-primary">
+                            <tr>
+                                <th>{% trans "Measurement Period" %}</th>
+                                <th>{% trans "Consumption This Period" %}</th>
+                                <th>{% trans "Consumption Previous Period (**)" %}</th>
+                                <th>{% trans "Current Target" %} (***)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td style="font-weight: bold">{% trans "Current Day" %}</td>
+                                <td>{{ overview_nrg.today|floatformat:2 }} Wh</td>
+                                <td>{{ overview_nrg.yesterday|floatformat:2 }} Wh</td>
+                                <td>
+                                    {{ overview_nrg.current_target_day }} Wh
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold">{% trans "Current Week" %}</td>
+                                <td>{{ overview_nrg.current_week|floatformat:2 }} Wh</td>
+                                <td>{{ overview_nrg.last_week|floatformat:2 }} Wh</td>
+                                <td>
+                                    {{ overview_nrg.current_target_week }} Wh
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold">{% trans "Current Month" %} (*)</td>
+                                <td>{{ overview_nrg.current_month|floatformat:2 }} Wh</td>
+                                <td>{{ overview_nrg.last_month|floatformat:2 }} Wh</td>
+                                <td>
+                                    {{ overview_nrg.current_target_month }} Wh
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold">{% trans "Current Year" %} (*)</td>
+                                <td>{{ overview_nrg.current_year|floatformat:2 }} Wh;</td>
+                                <td>{{ overview_nrg.last_year|floatformat:2 }} Wh</td>
+                                <td>
+                                    {{ overview_nrg.current_target_year }} Wh
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="text-center bg-primary"><strong>{% trans "ENERGY COST" %}</strong></p>
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped table-hover">
+                            <thead class="bg-primary"><tr><th>{% trans "Accounting period" %}</th><th>{% trans "Current Year" %}({{ overview.today_timestamp.year }})</th><th>{% trans "Previous Year" %} ({{ overview.today_timestamp.year|add:"-1" }})</th></tr></thead>
+                            <tbody>
+                            <tr>
+                                <td>{% trans "Last Seven Day" %} ({{ overview_nrg.last_7_days_timestamp|date:"j/m" }} - {{ overview_nrg.today_timestamp|date:"j/m" }})</td>
+                                <td><strong>{{ overview_nrg.last_7_days_cost|floatformat:2 }} &euro;</strong></td>
+                                <td>{{ overview_nrg.last_7_days_last_year_cost|floatformat:2 }} &euro;</td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "Current month" %} ({{overview_nrg.today_timestamp|date:"F"}})</td>
+                                <td><strong>{{ overview_nrg.current_month_cost|floatformat:2 }} &euro;</strong></td>
+                                <td>{{ overview_nrg.current_month_last_year_cost|floatformat:2 }} &euro;</td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "Current year" %} ({{overview_nrg.today_timestamp|date:"o"}})</td>
+                                <td><strong>{{ overview_nrg.current_year_cost|floatformat:2 }} &euro;</strong></td>
+                                <td>{{ overview_nrg.last_year_cost|floatformat:2 }} &euro;</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> <!--row -->
         </div>
     </div>
 

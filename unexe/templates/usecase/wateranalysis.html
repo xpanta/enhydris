@@ -37,7 +37,7 @@
       
 $(window).load(function() {
 	//load the function when DOM is ready
-	
+
     $('.chart-selector').change(function(event){
     	var optionValues = [];
     	$("#"+event.target.id+' option').each(function() {
@@ -46,18 +46,17 @@ $(window).load(function() {
         var chart_div = parseInt($(this).val());
         for(i=0;i<optionValues.length;i++)
         	$('.chartdiv'+optionValues[i]).hide();
-        
+
         chart_div = ".chartdiv"+chart_div;
         domutil.removeCssclass(chart_div,'hide');
-    	
+
         $(chart_div).fadeIn({
-            complete: function(){	 
+            complete: function(){
             	$(chart_div).prop("tabindex",-1).focus(); //make the graph focus in case out of screen
                 redraw_charts(chart_div);
             }
         });
     });
-
 });
 </script>
 

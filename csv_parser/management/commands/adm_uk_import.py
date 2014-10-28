@@ -71,8 +71,8 @@ def process_file(_filename, _path, force):
                 # when we create a HH we need a new username
                 username = "GB" + meter_id
                 usernames[meter_id] = username
-        z_name = "UK water"
-        process_data(meter_data, usernames, force, z_name)
+        z_names = ["UK water"]
+        process_data(meter_data, usernames, force, z_names, {})
 
 
 class Command(BaseCommand):

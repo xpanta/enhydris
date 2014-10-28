@@ -4,6 +4,7 @@ from iwidget.models import UserValidationKey
 import os
 from os import path
 import unicodecsv as csv
+import binascii
 
 
 class Command(BaseCommand):
@@ -25,7 +26,9 @@ class Command(BaseCommand):
                 try:
                     uvk = UserValidationKey.objects.get(user=user)
                     key = uvk.key
-                    out.append([user.username, key])
+                    val = str(binascii.hexlify(os.urandom(4)).upper())
+                    email = "M%s@example.com" % val
+                    out.append([user.username, key, email])
                 except UserValidationKey.DoesNotExist:
                     continue
             import time

@@ -32,7 +32,7 @@ def find_nth(haystack, needle, n):
     return start
 
 
-def process_file(raw_data, _path, force):
+def process_file(raw_data, _path, force, z_dict):
     """
     This function just gets the data row by row and creates a list of arrays
     consistent for all different csv files that will comply with the common
@@ -46,6 +46,7 @@ def process_file(raw_data, _path, force):
     def initialize_series():
         return dict(WaterCold=[], Electricity=[])
 
+    z_names = []
     usernames = {}
     meter_data = {}
     used_meters = []  # to create a new empty series for each new meter
@@ -105,8 +106,12 @@ def process_file(raw_data, _path, force):
                 # when we create a HH we need a new username
                 username = "PT" + meter_id
                 usernames[meter_id] = username
-    z_name = "Portugal water"
-    process_data(meter_data, usernames, force, z_name)
+        keys = z_dict.keys()
+        for k in keys:
+            z = z_dict[k]
+            if z not in z_names:
+                z_names.append(z)
+    process_data(meter_data, usernames, force, z_names, z_dict)
 
 
 class Command(BaseCommand):
@@ -124,6 +129,7 @@ class Command(BaseCommand):
             ## CONNECT TO FTP SERVER AND RETRIEVE FILE LIST
             error = False
             name = ""
+            z_dict = {}
             connection = None
             try:
                 connection = FTP("82.154.251.158")
@@ -171,6 +177,12 @@ class Command(BaseCommand):
                             i = find_nth(line, "|", 3)
                             line = line[0:i]
                             data = line.split('|')
+                            z = 1
+                            if '_2.' in _filename:
+                                z = 2
+                            elif '_3.' in _filename:
+                                z = 3
+                            z_dict['PT%s' % data[0]] = "Portugal water %s" % z
                             # Some files are corrupt. Reading stops in
                             # the middle of the line. We keep only the lines
                             # which have meter id, date and consumption values
@@ -202,7 +214,7 @@ class Command(BaseCommand):
                 for _dt in sorted_dates:
                     print "processing %s" % _dt
                     arr = day_data[_dt]
-                    process_file(arr, _path, force)
+                    process_file(arr, _path, force, z_dict)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60
                 secs = (timer2 - timer1).seconds % 60

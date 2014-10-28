@@ -136,31 +136,33 @@ def create_user(identifier, m_id):
         u.profile.fname = u.first_name
         u.profile.lname = u.last_name
         u.profile.save()
-        # assign random validation key
+        # assign random password
         import os
         import binascii
-        key_found = True
-        while key_found:
-            key = str(binascii.hexlify(os.urandom(4)).upper())
-            key = key.replace('E', 'B')
-            key = key.replace('0', '1')
-            if not key[0].isalpha():
-                key = "A" + key[:-1]
-            try:
-                UserValidationKey.objects.get(key=key)
-            except UserValidationKey.DoesNotExist:
-                key_found = False
-                UserValidationKey\
-                    .objects.get_or_create(user=u, identifier=m_id, key=key)
+        key = str(binascii.hexlify(os.urandom(4)).upper())
+        key = key.replace('E', 'B')
+        key = key.replace('0', '1')
+        if not key[0].isalpha():
+            key = "A" + key[:-1]
+        UserValidationKey\
+            .objects.get_or_create(user=u, identifier=m_id, key=key)
+        u.set_password(key)
+        u.save()
         return u, True
 
 
 def create_household(identifier, user, dma_id):
+    dma = DMA.objects.get(pk=dma_id)
     try:
-        return Household.objects.get(user=user), True
+        # Change dma if dma is different
+        household = Household.objects.get(user=user)
+        if household.dma != dma:
+            household.dma = dma
+            household.save()
+            #print "successfully changed DMA to %s" % dma_id
+        return household, True
     except Household.DoesNotExist:
         pass
-    dma = DMA.objects.get(pk=dma_id)
     household = Household.objects.create(
         user=user,
         dma=dma,
@@ -255,7 +257,7 @@ def create_processed_timeseries(household):
         assert ts_object
 
 
-def create_objects(data, usernames, force, zone):
+def create_objects(data, usernames, force, z_names, z_dict):
     """
 
     :param data: meter_id -> consumption_type -> [timestamp, volume]
@@ -268,14 +270,18 @@ def create_objects(data, usernames, force, zone):
     found = False
     for hh_id in hh_ids:
         username = usernames[hh_id]
-        if username == "PT84253":
-            pass
+        try:
+            zone_name = z_dict[username]
+        except KeyError:
+            zone_name = z_names[0]
+        zone = DMA.objects.get(name=zone_name)
         user, created = create_user(username, hh_id)
         if created:
             log.info("*** created user %s ***" % user)
         else:
             log.info("*** found user %s ***" % user)
         household, found = create_household(hh_id, user, zone.id)
+        #print "added user %s to zone %s with id %s" % (user.username, zone_name, zone.id)
         households.append(household)
         db_series = create_raw_timeseries(household)
         create_processed_timeseries(household)
@@ -541,7 +547,7 @@ def process_household(household):
 
 
 @transaction.commit_manually
-def process_data(data, usernames, force, name):
+def process_data(data, usernames, force, z_names, zone_dict):
     """
     this means to be a common ground for all csv importers. Remember that we
     need the date to be in the format yyyy-mm-dd.
@@ -549,15 +555,18 @@ def process_data(data, usernames, force, name):
     { meter_id -> consumption_type -> [timestamp, volume] }
     :param usernames: dictionary of usernames for the meter_ids
     :param force: True to rewrite
+    :param zone_dict: dictionary to hold zone for each username. Important for
+    cases when there are multiple zones
     :return: Error (0: if none)
     """
     dma = None
     try:
         global log
-        dma = create_zone(name)
-        create_dma_series(dma.id)  # this might not be needed, actually
+        for name in z_names:
+            dma = create_zone(name)
+            create_dma_series(dma.id)  # this might not be needed, actually
         #dma = DMA.objects.get(pk=dma.id)
-        households = create_objects(data, usernames, force, dma)
+        households = create_objects(data, usernames, force, z_names, zone_dict)
         for household in households:
             #log.info("Processing ts records for household %s" % household)
             process_household(household)

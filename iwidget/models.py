@@ -284,8 +284,8 @@ class UserProfile(models.Model):
 class UserValidationKey(models.Model):
     user = models.ForeignKey(User, related_name='validation_key')
     identifier = models.CharField(max_length=128, help_text="meter identifier")
-    key = models.CharField(max_length=64)
-    used = models.BooleanField(default=False)
+    key = models.CharField(max_length=64)  # password in text
+    used = models.BooleanField(default=False)  # not used, at the moment
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     sso = models.BooleanField(default=False)  # user in SSO Service?

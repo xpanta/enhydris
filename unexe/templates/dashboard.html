@@ -101,16 +101,17 @@ $(window).load(function() {
 				{% endif %}
 			</ul>
 		</li>
+        {% if has_energy %}
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Energy Analysis (Use cases)" %} <span class="caret"></span></a>
-			<ul class="dropdown-menu" role="menu" id="energyusecase"> 		
+			<ul class="dropdown-menu" role="menu" id="energyusecase">
+                <li><a href="#energy1-1" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.1" %}</a></li>
 				<li><a href="#cuc41" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC4.1 & Use Case C_UC5.4 (Compare energy pattern & Forecast the component of energy bill)" %}</a></li>
 				<!-- <li><a href="#cuc54" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.4 (Forecast the component of next energy bill associated with water consumption)" %}</a></li> -->												
 			</ul>
-		</li>		
+		</li>
+        {% endif %}
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> {% trans "Settings" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="settings">
-				<li><a href="#Wsettings" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> Water Settings</a></li>
-				<li><a href="#Esettings" data-toggle="tab"><span class="glyphicon glyphicon-flash"></span> Energy Settings</a></li>
 				<!-- 2 in the javascript method is the index of the menu tab -->
 				<li><a href="#Hsettings" data-toggle="tab" onclick="household(2); return false;"><span class="glyphicon glyphicon-edit"></span>{% trans " Household Settings" %}</a></li>
 				<!-- 3 in the javascript method is the index of the menu tab -->
@@ -129,7 +130,10 @@ $(window).load(function() {
 		<div class="tab-pane tabcontent" id="water">
             	 {% include "usecase/wateranalysis.html" %} 
 		</div><!--water-->
-		
+
+        <div class="tab-pane tabcontent" id="energy1-1">
+            {% include "usecase/energyanalysis.html" %}
+        </div><!--water-->
 		{% if not user.is_staff and not user.is_superuser %}
 			<!--use case5.2-->
 			<div class="tab-pane tabcontent" id="cuc52">

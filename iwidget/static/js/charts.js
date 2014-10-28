@@ -181,6 +181,40 @@ $(document).ready(function() {
                        offset: [-65, 10],
                        effect: 'fade'
     };
+
+    // Added by Chris Pantazis to display Energy Chart Data
+    for(i = 0;i < js_data.charts_nrg.length;i++)
+    {
+        var avgpc;
+        if('occupancy' in js_data.charts_nrg[i])
+            avgpc = js_data.charts_nrg[i].occupancy;
+        else
+            avgpc = false;
+        addChart({id: js_data.charts_nrg[i].id,
+            name: js_data.charts_nrg[i].name,
+            min: js_data.charts_nrg[i].display_min,
+            max: js_data.charts_nrg[i].display_max,
+            avg: js_data.charts_nrg[i].display_avg,
+            avgpc: avgpc,
+            has_stats: js_data.charts_nrg[i].has_stats,
+            can_zoom: js_data.charts_nrg[i].can_zoom,
+            is_vector: js_data.charts_nrg[i].is_vector,
+            time_span: js_data.charts_nrg[i].time_span,
+            has_pie: js_data.charts_nrg[i].has_pie
+        });
+        $("#chartarea"+js_data.charts_nrg[i].id).tooltip(tooltipopts);
+    }
+    for(i=0;i<js_data.variables_nrg.length;i++)
+        addVariable({id:js_data.variables_nrg[i].id,
+            name:js_data.variables_nrg[i].name,
+            is_bar: js_data.variables_nrg[i].is_bar,
+            bar_width: js_data.variables_nrg[i].bar_width,
+            factor: js_data.variables_nrg[i].factor,
+            series_id:js_data.variables_nrg[i].timeseries_id,
+            chart_id: js_data.variables_nrg[i].chart_id});
+
+
+    // Water Data Charts
     for(i=0;i<js_data.charts.length;i++)
     {
         var avgpc;
@@ -189,7 +223,7 @@ $(document).ready(function() {
         else
             avgpc = false;
         addChart({id: js_data.charts[i].id,
-                  name: js_data.charts[i].name, 
+                  name: js_data.charts[i].name,
                   min: js_data.charts[i].display_min,
                   max: js_data.charts[i].display_max,
                   avg: js_data.charts[i].display_avg,
@@ -319,10 +353,18 @@ var redraw_charts = function(index){
 };
 
 function flot_init(i) {
+    var clr = "#A9DA88"; // default
     var from_x, to_x, tol;
     var d = [];
     for(var j=0;j<cd[i].length;j++){
-        d[j] = {label: vm[i][j]['name'], data: cd[i][j]}
+        // Added by Chris Pantazis in order to color energy graphs in different
+        var name = vm[i][j]['name'];
+        if (name == "energy"){
+            clr = "#F38630";
+        }else{
+            clr = "#69D2E7";
+        }
+        d[j] = {label: vm[i][j]['name'], data: cd[i][j], color: clr};
         if(('is_bar' in vm[i][j]) && (vm[i][j]['is_bar']))
             d[j]['bars'] = {show: true, fill: true,
                     barWidth: vm[i][j]['bar_width']};
@@ -386,7 +428,8 @@ function flot_init(i) {
         selection: { mode: "x" },
         grid:{markings: marking_opts, hoverable: true,
               autoHighlight: false},
-        legend: {show: (d.length>1), position: 'nw'}
+        legend: {show: false, position: 'nw'}
+        //legend: {show: (d.length>1), position: 'nw'}
     };
     if(cm[i]['is_vector'])
         options['yaxes'] = [ {position: "left", min:0, max:360, show: true,

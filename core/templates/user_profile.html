@@ -33,6 +33,10 @@
                         <div class="col-md-6"><input class="form-control" placeholder="Last name..." name="last" id="last" type="text" value="{{ last }}" required="true"></div>
                     </div>
                     <div class="form-group">
+                        <label class="col-md-4 control-label">{% trans "Email" %}: </label>
+                        <div class="col-md-6"><input class="form-control" placeholder="(in case you forget your password...)" name="email" id="email" type="email" value="{{ email }}" required="true"></div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-md-4 control-label">{% trans "Occupants in your Household" %}: *</label>
                         <div class="col-md-6"><input class="form-control" placeholder="Number of occupants..." name="nocc" id="nocc" type="text" value="{{ nocc }}" required="true"></div>
                     </div>
@@ -44,7 +48,7 @@
                             </button>
                         </div>
                     </div>
-                    <p class="text-warning text-center"><a href="{% url 'dashboard' %}">{% trans "I will provide my details, next time!" %}</a></p>
+                    <p class="text-warning text-center"><a href="{% url 'dashboard' %}" style="color: #eee">{% trans "I will provide my details, next time!" %}</a></p>
                 </form>
             </div>
         </div> <!-- profile-panel -->

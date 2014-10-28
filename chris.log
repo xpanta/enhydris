@@ -2,6 +2,8 @@ October 2014
 ============
 Added "core" app to be used for core functionality, like singup and other things.
 
+To change DMA of (a) Household(s):
+update iwidget_household set dma_id=995 where user_id between 367 and 994;
 
 
 September 2014
