@@ -12,8 +12,7 @@ from pthelma.timeseries import Timeseries, TimeStep
 CUBIC_METER_FLAT_RATE = 0.40
 KWH_FLAT_RATE = 0.10
 
-def monthly_cost_from_consumption(consumption,
-        rate=CUBIC_METER_FLAT_RATE):
+def monthly_cost_from_consumption(consumption, rate=CUBIC_METER_FLAT_RATE):
     """
     Calculates the monthly cost from monthly consumption. Consumption
     in cubic meters, returns cost in Euro

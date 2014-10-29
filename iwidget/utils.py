@@ -16,8 +16,7 @@ from pthelma.timeseries import Timeseries
 
 from enhydris.hcore.models import ReadTimeStep
 
-from .cost_calculation import (monthly_cost_from_consumption,
-    KWH_FLAT_RATE)
+from .cost_calculation import (monthly_cost_from_consumption, KWH_FLAT_RATE)
 
 # Target consumption in cubic meters per capita per day
 TARGET_CONSUMPTION = 0.120
@@ -136,7 +135,7 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     result['current_month'] = aggregate_period(
         timeseries,
         today.replace(day=1),
-        today) * 1000.0
+        today)
     result['current_month_last_year'] = aggregate_period(
         timeseries,
         _dec_year(today.replace(day=1)),

@@ -609,7 +609,9 @@ class iusecase():
             gateway = JavaGateway() #connect to JVM
             entry = gateway.entry_point            
             ts = entry.getTimeSeries(str(User.id)) #get JAVA timeseries Object for this user
-            forecast = Forecast.objects.create(user=User)
+            # get_or_create: Added by Chris Pantazis because sometimes
+            # two forecast keys are made for a user
+            forecast, created = Forecast.objects.get_or_create(user=User)
             #ts.safeThread();
             #entry.shutGateway()
             if len(tsmonthly)>0:
@@ -699,7 +701,9 @@ class iusecase():
             gateway = JavaGateway() #connect to JVM
             entry = gateway.entry_point            
             ts = entry.getTimeSeries(str(self.User.id)) #get JAVA timeseries Object for this user
-            forecast = ElectricForecast.objects.create(user=self.User)
+            # get_or_create: Added by Chris Pantazis because sometimes
+            # two forecast keys are made for a user
+            forecast, created = ElectricForecast.objects.get_or_create(user=self.User)
             #ts.safeThread();
             #entry.shutGateway()
             if len(tsmonthly)>0:
