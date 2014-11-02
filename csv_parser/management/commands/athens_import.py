@@ -3,6 +3,9 @@ from django.core.management.base import BaseCommand, CommandError
 from fnmatch import fnmatch
 from os import path, listdir
 from datetime import datetime
+from pytz import timezone
+from django.utils.timezone import make_aware
+from django.utils.timezone import make_naive
 import unicodecsv as csv
 import logging
 from _commonlib import process_data
@@ -45,6 +48,10 @@ def process_file(_filename, _path, force):
                 log.debug("Consumption type not found! Skipping this row!")
                 continue
             dt = datetime.strptime(_dt, "%Y/%m/%d %H:%M")
+            dt_aware = make_aware(dt, timezone('UTC'))
+            gr_tz = timezone("Europe/Athens")
+            athens_dt = gr_tz.normalize(dt_aware.astimezone(gr_tz))
+            dt = make_naive(athens_dt, gr_tz)  # athens time in naive format
             #series[_type].append((dt, consumption))
             """
                 meter_data = dict of dicts of arrays
@@ -78,7 +85,7 @@ class Command(BaseCommand):
             user_filename = ""
         try:
             timer1 = datetime.now()
-            log.debug("staring athens import. Setting timer at %s" % timer1)
+            log.debug("starting athens import. Setting timer at %s" % timer1)
             _filenames = []
             _path = "data/athens/"
             all_files = sorted(listdir(_path))

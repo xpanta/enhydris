@@ -33,7 +33,6 @@ from classes.Iemail import iemail
 from classes.Iusecase import iusecase
 from classes.Iconfig import iconfig
 from classes.Irest import irest
-
 from enhydris.hcore.views import (TimeseriesDetailView as TDV,
         bufcount)
 from enhydris.hcore.models import Timeseries, Gentity, Garea
@@ -49,6 +48,8 @@ from django.db.models import Avg,Max,Min,Count,Sum
 #from enhydris.hcore.models import (Lookup as HLookup, Timeseries, Gpoint,
 #        Garea, Instrument)
 # added some comments!
+
+#from django.views.decorators.cache import cache_page
 
 '''
 This method return the webpage of UK Case study registration page
@@ -139,7 +140,7 @@ class test(TemplateView):
         #if request.user.is_authenticated(): #if already authenticated
         #    return redirect(reverse('dashboard'))   #redirect to a dashboard
         return self.render_to_response({})
-    
+
 class home(TemplateView):
     template_name = "index.html"
 
@@ -500,10 +501,11 @@ class consumer(TemplateView):
 
 '''
 TemplateView class for consumer use case 3.4
-'''                                                                  
+'''
 class c_uc34(TemplateView):
-    template_name = "dashboard.html"  
+    template_name = "dashboard.html"
 
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         comparechart=[{"Units":"","Data":"Efficient User"},{"Units":"","Data":"You"}]
         compare = iutility.getPostValue("compare",request)
@@ -572,11 +574,12 @@ class c_uc34(TemplateView):
 
 '''
 TemplateView class for consumer use case 4.1
-'''                                                                  
+'''
 class c_uc41(TemplateView):
-    template_name = "dashboard.html"  
+    template_name = "dashboard.html"
 
-    def post(self, request, *args, **kwargs):    
+    #@cache_page(30 * 60)  # cache for 30 minutes
+    def post(self, request, *args, **kwargs):
         data = None            
         return HttpResponse(json.dumps(data),content_type='application/javascript')
 
@@ -584,9 +587,10 @@ class c_uc41(TemplateView):
 TemplateView class for consumer use case 5.4
 '''                                                                  
 class c_uc54(TemplateView):
-    template_name = "dashboard.html"  
+    template_name = "dashboard.html"
 
-    def post(self, request, *args, **kwargs):    
+    #@cache_page(30 * 60)  # cache for 30 minutes
+    def post(self, request, *args, **kwargs):
         data = None            
         return HttpResponse(json.dumps(data),content_type='application/javascript')
     
@@ -594,8 +598,9 @@ class c_uc54(TemplateView):
 TemplateView class for consumer use case 3.2
 '''                                                                  
 class c_uc32(TemplateView):
-    template_name = "dashboard.html"  
-         
+    template_name = "dashboard.html"
+
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         #donutchart=[{"label":"You"   , "value":"", "color":"#80B1D3"},{"label":"Area" , "value":"", "color":"#C0C0C0"}]
         comparechart=[{"Units":"","Data":"Area"},{"Units":"","Data":"You"}]
@@ -706,10 +711,11 @@ class c_uc32(TemplateView):
     
 '''
 TemplateView class for consumer use case 3.3
-'''                                                                  
+'''
 class c_uc33(TemplateView):
-    template_name = "dashboard.html"  
-         
+    template_name = "dashboard.html"
+
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         donutchart=[{"label":"You", "value":"", "color":"#80B1D3"},{"label":"Area" , "value":"", "color":"#C0C0C0"}]
         comparechart=[{"Units":"","Data":"Area"},{"Units":"","Data":"You"}]
@@ -826,7 +832,8 @@ class c_uc33(TemplateView):
 #TemplateView class for consumer dashboard                                                                  
 class c_uc52(TemplateView):
     template_name = "dashboard.html"
-    
+
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         #declaration
         stdate = "" #start date
@@ -1156,7 +1163,8 @@ class dmas(TemplateView):
 #TemplateView to show timeseries that ope in new window
 class timeseries(TemplateView):
     template_name = "timeseries.html"
-        
+
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def get(self,request,**kwargs):
         object_id = self.kwargs['object_id']
         user = request.user
@@ -1187,7 +1195,8 @@ The bridge between JAVA and python is made using py4j which connect python throu
 '''
 class c_uc53(TemplateView):
     template_name = "index.html"
-    
+
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self,request):
         user = request.user #get authenticated user
         household = user.households.all()[0] #get user household id
@@ -1284,7 +1293,8 @@ The bridge between JAVA and python is made using py4j which connect python throu
 '''
 class c_uc54(TemplateView):
     template_name = "index.html"
-    
+
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self,request):
         user = request.user #get authenticated user
         household = user.households.all()[0] #get user household id

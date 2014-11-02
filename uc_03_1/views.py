@@ -1,15 +1,15 @@
 # Create your views here.
-from django.core.cache import cache
+#from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.views.decorators.cache import cache_page
+#from django.views.decorators.cache import cache_page
 from math import isnan
 from lib.common import get_chart_data
 #!TODO import ugetext for internationalizing texts
 
 
-#@cache_page(15 * 60)  # cache for 15 minutes
+#@cache_page(30 * 60)  # cache for 30 minutes
 @login_required
 def compare(request, username):
     # cache_key = 'uc0301__%d' % str(request.GET)
