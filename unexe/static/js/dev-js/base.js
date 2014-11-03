@@ -1813,7 +1813,7 @@ function AppUtil()
 	}//--end
 	/* This method submits form to the server using ajax. It validated form, collect data in dictionary 
 	 * and send it to server. Methods also process any error code and data from server
-	 * id: It is the form id (DOM)
+	 * id: It is the fmrm id (DOM)
 	 */
 	this.sendToserver = function(id)
 	{
@@ -2000,8 +2000,8 @@ function AppUtil()
 					//domutil.addCssclass("#c_uc33cont","show");
 					return;
 				}
-				
-				domutil.removeCssclass("#c_uc32cont","hide"); //make chart container visible 
+                $("#init_prompt32").hide();
+				domutil.removeCssclass("#c_uc32cont","hide"); //make chart container visible
 				$("#c_uc32chartcont").empty(); //clear previous chart
 				$("#c_uc32donutchart").empty(); //clear previous chart
 				$("#c_uc32title").empty();
@@ -2191,7 +2191,9 @@ function AppUtil()
 					alert("No data is available for this selection");
 					return;
 				}
-
+                $("#panel52_t1").removeClass("hide").show();
+                $("#panel52_t2").removeClass("hide").show();
+                $("#init_prompt52").hide();
 				$("#c_uc52chartcont").empty();
 				$("#c_uc52compchart").empty(); 
 				$("#c_uc52title").empty(); //clear previous chart
@@ -2283,8 +2285,9 @@ function AppUtil()
 					alert("No data is available for analysis");
 					return;
 				}
-				
-				domutil.removeCssclass("#c_uc33cont","hide"); //make chart container visible 
+
+                $("#init_prompt33").hide();
+				domutil.removeCssclass("#c_uc33cont","hide"); //make chart container visible
 				$("#c_uc33chartcont").empty(); //clear previous chart
 				$("#c_uc33donutchart").empty(); //clear previous chart
 				$("#c_uc33title").empty();

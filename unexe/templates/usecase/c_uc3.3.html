@@ -91,8 +91,8 @@ $(window).load(function() {
     if(domutil.hasCssclass("#c_uc33container","hide") && id=="#cuc33") //tab id value, need to make global to make effective and avoid error
     {
     	domutil.removeCssclass("#c_uc33container","hide");
-    	uc33Chart(data);
-    }//--end if	 	
+    	//uc33Chart(data);
+    }//--end if
 });
 
 /*
@@ -254,6 +254,8 @@ function c_uc33toggle()
 	<!-- End chart menu/toolbar -->
 
 	<!--  charts and table -->
+    <div id="c_uc33title"><p class="bg-primary text-center"><strong>Your last 12 Months bill comparison vs other consumers</strong></p></div>
+    <p id="init_prompt33" style="font-size: 24px; text-align: center; color: #aaa">{% trans "Please, select a period to analyse!" %}</p>
 	<div class="panel-body" id="panel">
 		<div id="c_uc33cont" class="row hide">
 		<div id="c_uc33title"><p class="bg-primary text-center"><strong></strong></p></div>
@@ -278,31 +280,6 @@ function c_uc33toggle()
 		</div>		
 		</div>
 			
-		<div class="row hide" id="c_uc33container">
-			<div id="c_uc33title"><p class="bg-primary text-center"><strong>Your last 12 Months bill comparison vs other consumers</strong></p></div>	
-			<div class="col-md-7" id="c_uc33chart"></div>
-			<div class="col-md-5" id="c_uc33summary">
-			    <div class="panel panel-primary">
-			        <div class="panel-heading">{% trans "AREA SUMMARY" %}</div>
-			        <ul class="list-group list-group-flush">
-				        <li class="list-group-item" id="c_uc33Yearly"></li>
-				        <li class="list-group-item" id="c_uc33Half"></li>
-				        <li class="list-group-item" id="c_uc33Quarter"></li>
-				        <li class="list-group-item" id="c_uc33Month"></li>
-			        </ul>
-			    </div>
-			    <div class="panel panel-primary">
-			        <div class="panel-heading">{% trans "YOUR SUMMARY" %}</div>
-			        <ul class="list-group list-group-flush">
-				        <li class="list-group-item" id="c_uc33yearly"></li>
-				        <li class="list-group-item" id="c_uc33half"></li>
-				        <li class="list-group-item" id="c_uc33quarter"></li>
-				        <li class="list-group-item" id="c_uc33month"></li>
-			            <li class="list-group-item text-center"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>
-			        </ul>
-			    </div>				    				
-			</div>		
-		</div>							
 	</div>
 	<!--  End charts and table -->	        
 </div>

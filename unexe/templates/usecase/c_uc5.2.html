@@ -65,7 +65,7 @@ $(window).load(function() {
     if(domutil.hasCssclass("#c_uc52container","hide") && id=="#cuc52") //tab id value, need to make global to make effective and avoid error
     {
     	domutil.removeCssclass("#c_uc52container","hide"); 	
-    	uc52Chart(data);
+    	//uc52Chart(data);
     }//--end if	
 });
 
@@ -200,13 +200,15 @@ function c_uc52toggle()
 	<!-- End chart menu/toolbar -->
 	
 	<!--  charts and table -->
-	<div class="panel-body" id="panel">	
+	<div class="panel-body" id="panel">
+        <p id="init_prompt52" style="font-size: 24px; text-align: center; color: #aaa">{% trans "Please, select a period to analyse!" %}</p>
 		<div class="row hide" id="c_uc52container">
 		<div id="c_uc52title"><p class="bg-primary text-center"><strong></strong></p></div>
 		<div class="col-md-6" id="c_uc52chartcont"></div>
 		<div class="col-md-3" id="c_uc52compchart"></div>	  
 		<div class="col-md-3">
-		    <div class="panel panel-primary">
+            <strong>* {% trans "You are subscribed to Tariff1" %}</strong>
+		    <div class="panel panel-primary hide" id="panel52_t1">
 		        <div class="panel-heading">{% trans "Tariff1 (Cost Summary)" %}
 		        </div>
 		        <ul class="list-group list-group-flush text-center">
@@ -218,7 +220,7 @@ function c_uc52toggle()
 		        </ul>
 		    </div>
 
-		    <div class="panel panel-primary">
+		    <div class="panel panel-primary hide" id="panel52_t2">
 		        <div class="panel-heading">{% trans "Tariff2 (Cost Summary)" %}
 
 		        </div>
@@ -230,8 +232,7 @@ function c_uc52toggle()
 		            <li class="list-group-item"><a target="_blank" href="{% url 'timeseries_detail' tsid %}">{% trans "Open time series" %}</a></li>
 		        </ul>
 		    </div>
-		    <strong>* {% trans "You are subscribed to Tariff1" %}</strong>
-		</div>					
+		</div>
 		</div>
 		<div class="row hide c_uc52containe">
 			<div class="col-md-6" id="c_uc52donutchart"></div>
