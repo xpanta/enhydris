@@ -491,7 +491,7 @@ class consumer(TemplateView):
                 "endate": endate,
                 "c_uc32data": json.dumps(c_uc32data),
                 "c_uc33data": json.dumps(c_uc33data),
-                "c_uc34data": json.dumps(c_uc34data),                
+                "c_uc34data": json.dumps(c_uc34data),
                 "c_uc41data": json.dumps(c_uc41data),
                 "c_uc52data": json.dumps(c_uc52data),
                 "c_uc53data": json.dumps(c_uc53data),

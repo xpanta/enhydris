@@ -125,6 +125,7 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     first_day_of_last_month = last_day_of_last_month.replace(day=1)
     result['last_month'] = aggregate_period(
         timeseries, first_day_of_last_month, last_day_of_last_month)*1000.0
+    result['last_month_m3'] = round(result['last_month'] / 1000, 2)
     """
         CODE ADDED BY CHRIS PANTAZIS ENDS HERE
     """
@@ -136,6 +137,7 @@ def statistics_on_daily(ts_daily, occupancy = 1):
         timeseries,
         today.replace(day=1),
         today)
+    result['current_month_m3'] = round(result['current_month'] / 1000, 2)
     result['current_month_last_year'] = aggregate_period(
         timeseries,
         _dec_year(today.replace(day=1)),
@@ -200,6 +202,7 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     ctd = result['current_target_day'] = get_next_target(cdc, daily_max)
     ctw = result['current_target_week'] = get_next_target(cwc, weekly_max)
     ctm = result['current_target_month'] = get_next_target(cmc, monthly_max)
+    result['current_target_month_m3'] = round(ctm / 1000, 2)
     cty = result['current_target_year'] = get_next_target(cyc, yearly_max)
 
     result['today_lpd'] = get_lpd_arr(ctd, daily_max)

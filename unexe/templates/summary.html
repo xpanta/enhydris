@@ -18,8 +18,12 @@
                             <span class="pull-right clickable"><i class="glyphicon glyphicon-minus"></i></span>
                         </div>
                         <div class="panel-body" id="fold">
+                            <div class="col-md-10" style="font-size: 16px; color: #555; font-style: italic; text-align: center">
                             {% trans "Learn how you can improve the water efficiency of your household and how best to reduce your water consumption, through the new iWIDGET On-line Course on Water" %}!
-                            {% trans "Join the" %} <a href="http://www.i-widget-elearning.eu/iWidget/login/index.php?CustomUsername={{ user.username }}&token=b4ea06d42eeeb30641abdaea91610a22" target="__blank">{% trans "Be Smart with Water in the House" %}</a> {% trans "course using the link below and become an active player in water efficiency challenge" %}.
+                            </div>
+                            <div class="col-md-2">
+                                <a href="http://www.i-widget-elearning.eu/iWidget/login/index.php?CustomUsername={{ user.username }}&token=b4ea06d42eeeb30641abdaea91610a22"><button class="btn btn-primary" type="button">{% trans "Click to Learn More" %}</button></a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -71,10 +75,10 @@
                                 </tr>
                                 <tr>
                                     <td style="font-weight: bold">{% trans "Current Month" %} (*)</td>
-                                    <td>{{ overview.current_month|floatformat:2 }} lit</td>
-                                    <td>{{ overview.last_month|floatformat:2 }} lit</td>
+                                    <td>{{ overview.current_month_m3|floatformat:2 }} m&#179;</td>
+                                    <td>{{ overview.last_month_m3|floatformat:2 }} m&#179;</td>
                                     <td>
-                                        {{ overview.current_target_month }} lit
+                                        {{ overview.current_target_month_m3 }} m&#179;
                                     </td>
                                     <td>
                                         {% for v in overview.current_month_lpd %}
@@ -173,7 +177,8 @@
         </div>
     </div> <!-- water panel -->
 
-    <div class="panel panel-default">
+    {% if has_energy %}
+        <div class="panel panel-default">
         <div class="panel-heading"><div class="panel-title">{% trans "ELECTRICITY" %}</div></div>
         <div class="panel-body">
             <div class="row">
@@ -254,5 +259,5 @@
             </div> <!--row -->
         </div>
     </div>
-
+    {% endif %}
 {% endblock %}	               
