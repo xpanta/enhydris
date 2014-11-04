@@ -18,7 +18,6 @@ def notify_admins():
     from_email = 'no-reply@iwidget.up-ltd.co.uk'
     message = "Missing Data File for Athens"
     msg = EmailMessage(subject, message, to=to, from_email=from_email)
-    msg.content_subtype = 'text'
     msg.send()
 
 
