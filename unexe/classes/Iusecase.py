@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 01 Apr 2014
 
@@ -76,6 +77,12 @@ class iusecase():
         data["chart"]    = list1
         data["electdata"] = electdata
         data["waterdata"] = waterdata
+        # Added by Chris Pantazis to send the currency to the graphs
+        # see: uc32barplot1 javascript function in base.js
+        if "GB" in self.User.username:
+            data["currency"] = u"£"
+        else:
+            data["currency"] = u"€"
 
         return data
     
@@ -136,6 +143,12 @@ class iusecase():
             data["chart"]    = list1
             data["effdata"]  = effdata
             data["yourdata"] = yourdata
+            # Added by Chris Pantazis to send the currency to the graphs
+            # see: uc32barplot1 javascript function in base.js
+            if "GB" in self.User.username:
+                data["currency"] = u"£"
+            else:
+                data["currency"] = u"€"
         else:
             data = None
             
@@ -201,7 +214,13 @@ class iusecase():
         data["chart"]    = list1
         data["areadata"] = areadata
         data["yourdata"] = yourdata
-        
+        # Added by Chris Pantazis to send the currency to the graphs
+        # see: uc32barplot1 javascript function in base.js
+        if "GB" in self.User.username:
+            data["currency"] = u"£"
+        else:
+            data["currency"] = u"€"
+
         return data
     
     '''
@@ -508,6 +527,7 @@ class iusecase():
             #obj["Cost"]  = str(series.getCost(dic["sum_units"]))
             obj["Period"]= str(period)+" Month"
             obj["Data"]  = "You"
+
             dic = {}
             list1.append(obj)          
             obj = {}
@@ -516,6 +536,12 @@ class iusecase():
         data["chart"]    = list1
         data["areadata"] = areadata
         data["yourdata"] = yourdata
+        # Added by Chris Pantazis to send the currency to the graphs
+        # see: uc32barplot1 javascript function in base.js
+        if "GB" in self.User.username:
+            data["currency"] = u"£"
+        else:
+            data["currency"] = u"€"
 
         return data
 

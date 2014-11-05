@@ -1388,7 +1388,7 @@ function ChartUtil()
 	    
 	}
 	*/
-	this.uc32barplot1 = function(id,dim,data)
+	this.uc32barplot1 = function(id, dim, data, currency)
 	{
 		//var data = '[{"Units": "273.881880739", "Cost": "273.881880739", "Data": "DMA", "Period": "12"}, {"Units": "9.47616916667", "Cost": "9.47616916667", "Data": "You", "Period": "12"}, {"Units": "115.149275501", "Cost": "115.149275501", "Data": "DMA", "Period": "6"}, {"Units": "10.793005", "Cost": "10.793005", "Data": "You", "Period": "6"}, {"Units": "74.2850266667", "Cost": "74.2850266667", "Data": "DMA", "Period": "4"}, {"Units": "11.161", "Cost": "11.161", "Data": "You", "Period": "4"}]';
 		var margin = {top: 30, right: 80, bottom: 110, left: 60};
@@ -1408,7 +1408,7 @@ function ChartUtil()
 		var y = chart.addMeasureAxis("y", "Cost");
 		y.showGridlines = true;
 		y.tickFormat = ',.2f';
-		y.title = "Cost(£)";
+		y.title = "Cost(" + currency + ")";
 		chart.addLegend(65, 10, 510, 20, "right");
 		var s = chart.addSeries(["Cost", "Data"], dimple.plot.bar);
 		chart.assignColor("DMA", "#C0C0C0");
@@ -1424,7 +1424,7 @@ function ChartUtil()
 	    /*Change tooltip data*/
 	    s.getTooltipText = function (e) {
             return [
-                "Cost: £" + e.y,
+                "Cost: " + currency + " " + e.y,
                 "Period: "+ e.x,
                 "Data: "+ e.aggField[1] 
             ];
@@ -1455,7 +1455,7 @@ function ChartUtil()
 	        .style("opacity", 0.7)
 	
 	        // Format the number
-	        .text("£"+d3.format(",.2f")(d.yValue));
+	        .text(currency + "" + d3.format(",.2f")(d.yValue));
         });			
 	}//--end function
 	
@@ -2000,7 +2000,6 @@ function AppUtil()
 					//domutil.addCssclass("#c_uc33cont","show");
 					return;
 				}
-                $("#init_prompt32").hide();
 				domutil.removeCssclass("#c_uc32cont","hide"); //make chart container visible
 				$("#c_uc32chartcont").empty(); //clear previous chart
 				$("#c_uc32donutchart").empty(); //clear previous chart
@@ -2191,9 +2190,7 @@ function AppUtil()
 					alert("No data is available for this selection");
 					return;
 				}
-                $("#panel52_t1").removeClass("hide").show();
-                $("#panel52_t2").removeClass("hide").show();
-                $("#init_prompt52").hide();
+
 				$("#c_uc52chartcont").empty();
 				$("#c_uc52compchart").empty(); 
 				$("#c_uc52title").empty(); //clear previous chart
@@ -2286,7 +2283,6 @@ function AppUtil()
 					return;
 				}
 
-                $("#init_prompt33").hide();
 				domutil.removeCssclass("#c_uc33cont","hide"); //make chart container visible
 				$("#c_uc33chartcont").empty(); //clear previous chart
 				$("#c_uc33donutchart").empty(); //clear previous chart

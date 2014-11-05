@@ -11,7 +11,7 @@ function uc41Chart(data)
 {
 	var w = domutil.getdivwidth("c_uc41chart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 	var dim = {"width":w,"height":450}; //width and height of chart container	
-	chartutil.uc32barplot1("#c_uc41chart",dim,data["chart"]);
+	chartutil.uc32barplot1("#c_uc41chart",dim,data["chart"], data["currency"]);
 	
 	var values= data["electdata"]["month"];
 	household = values["sum_units"];
