@@ -9,8 +9,12 @@ import os
 import logging
 from datetime import datetime, timedelta
 
+from math import isnan
+from itertools import izip
 from django.utils import simplejson
 
+from unexe.classes.Iseries import iseries
+import numpy as np
 from django import db
 from django.db.models import Q
 from django.http import (Http404, HttpResponseRedirect, HttpResponse,)
@@ -1028,7 +1032,17 @@ def dashboard_view(request, household_id=None):
         ts_fifteen_nrg = household.timeseries.filter(
             time_step__id=TSTEP_FIFTEEN_MINUTES,
             variable__id=VAR_ENERGY_PERIOD)[0]
-        has_energy =True
+        # Energy Exists. Try to check if all values are 0
+        series = iseries()
+        timeseries1 = series.readseries(ts_fifteen_nrg)
+        dates, units = izip(*timeseries1)
+        units1 = np.array(units)
+        units1[np.isnan(units1)] = 0
+        nrg_sum = sum(units1)
+        if nrg_sum < 1.0:
+            has_energy = False
+        else:
+            has_energy = True
     except IndexError:
         pass
 
