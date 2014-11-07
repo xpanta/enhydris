@@ -1,0 +1,29 @@
+{% load sekizai_tags %}
+{% load i18n %}
+
+<table class="table table-condensed table-striped table-hover">
+    <thead class="">
+    <tr>
+        <th></th>
+        <th>{% trans "Date" %}</th>
+        <th>{% trans "Event Message" %}</th>
+        <th>{% trans "Action" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for event in events %}
+        <tr>
+            <td><i class="glyphicon glyphicon-exclamation-sign" style="color: #d62728;"></i></td>
+            <td style="font-weight: normal">{{ event.detected|date:"d M, Y" }}</td>
+            {% if event.notification == "leakage" %}
+                <td style="font-weight: normal; color: #d62728">{% trans "Possible leakage!" %}</td>
+            {% endif %}
+            {% if event.notification == "burst" %}
+                <td style="font-weight: normal">{% trans "Possible burst!" %}</td>
+            {% endif %}
+            <td style="font-weight: normal"><a href="javascript:void(0);" onclick="hideEventAndReload('{{ event.id }}');">{% trans "Hide" %}</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+

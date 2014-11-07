@@ -138,6 +138,10 @@ $(window).load(function() {
 			$(iwidgetutil.householdform +" button").prop('disabled', true);
 		{% endif %} 
 	{% endif %}
+
+    //Added by Chris Pantazis to load the events table.
+    $("#user_events").load("{% url 'user_events' user.username %}?f=new");
+
 });
 </script>	
 </head>

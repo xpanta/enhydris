@@ -476,11 +476,7 @@ class consumer(TemplateView):
             # overview_nrg added by Chris Pantazis
             # to show Energy Consumption in Dashboard
             # This goes to the Dashboard
-            notifications = UserNotifications. \
-                objects.filter(user=household.user, read=False). \
-                order_by("-added")
             data = {
-                "events": notifications,
                 "household": household,
                 "overview": values['overview'],
                 "overview_nrg": values['overview_nrg'],

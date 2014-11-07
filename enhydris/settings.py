@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'enhydris.permissions',
     'tl',
     'uc_03_1',
+    'uc_03_6',
     'iwidget',
     'unexe',
     'csv_parser',

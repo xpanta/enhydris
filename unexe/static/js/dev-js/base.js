@@ -2509,3 +2509,10 @@ jQuery.validator.setDefaults({
     }		
 });
 //--------------------------------------------------End overriding methods-----------------------------------------//
+
+
+//added by Chris Pantazis to load the table of events after hiding a user event
+
+function hideEventAndReload(id){
+    $("#user_events").empty().load("{% url 'user_events' user.username %}?f=new&hide=" + id);
+}

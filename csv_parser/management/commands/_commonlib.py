@@ -343,10 +343,7 @@ def has_leakage(household):
     This method checks for leakages. The way it is done is pretty simple
      I open the hourly timeseries and retrieve all timestamps.
      I create a dictionary with keys be the dates (not time) and values arrays
-     of lengths of nightly consumptions. Eg if nightly consumption
-     (1:00 -> 4:00) is 0,0,2,0 then length is 1 if it is 0,2,3,0 then
-     length is 2, etc. I take the percentile-90 for all these values and
-     compare it to today's nightly length.
+     be the percentage of night/total consumption
     :param household:
     :return: False for no leakage, True for leakage
     """
@@ -356,61 +353,47 @@ def has_leakage(household):
     series = TSeries(id=timeseries.id)
     series.read_from_db(db.connection)
     timestamps = series.keys()
-    # for each date we will add an array with nightly usage in lengths
-    # e.g. ts -> [1, 1, 2] for usage (0,0,0,2,0,0,0,1,0,0,0,4,6,0,0)
-    # sequence is not important
-    date_dict = {}
+    night_dict = {}
+    total_dict = {}
     for ts in timestamps:
         _d = ts.date()
         _t = ts.time()
         val = series[ts]
         if 1 <= _t.hour <= 4:
             try:
-                arr = date_dict[_d]
-                arr.append(val)
+                x = night_dict[_d]
+                night_dict[_d] = x + val
             except KeyError:
-                arr = [val]
-                date_dict[_d] = arr
+                night_dict[_d] = val
+        try:
+            x = total_dict[_d]
+            total_dict[_d] = x + val
+        except KeyError:
+            total_dict[_d] = val
 
     _all = []  # all lengths will be in here
     _today = []  # today's lengths
 
-    _dates = date_dict.keys()[:-2]  # all except last day 4 * 15min for 4 hrs
+    _dates = total_dict.keys()[:-2]  # all except last day 4 * 15min for 4 hrs
     for _d in _dates:
-        arr0 = date_dict[_d]
-        _len = 0
-        arr = np.array(arr0)
-        arr[np.isnan(arr)] = 0
-        for x in arr:
-            if x > 0:
-                _len += 1
-            else:
-                if _len:
-                    _all.append(_len)
-                _len = 0
-        if _len:  # in case all values are non-zero
-            _all.append(_len)
+        total = total_dict[_d]
+        night = night_dict[_d]
+        if total > 0:
+            _all.append(float(night) / float(total))
+
     # Now we need only the last day. However sometimes we have
     # some timestamps from the next day because the file has all data from
     # previous day and one entry from today. So we pick today and yesterday
     # instead of today. Today is too small. And too fast some times. But that
     # is for some other time to discuss...
-    _dates = date_dict.keys()[-2:]  # only last day's
+    _dates = total_dict.keys()[-2:]  # only last day's
     for _d in _dates:
-        arr = date_dict[_d]
-        _len = 0
-        for x in arr:
-            if x > 0:
-                _len += 1
-            else:
-                if _len:
-                    _today.append(_len)
-                _len = 0
-        if _len:
-            _today.append(_len)
-
-    _all1 = np.array(_all)
-    p = np.percentile(_all1, 90)
+        total = total_dict[_d]
+        night = night_dict[_d]
+        if total > 0:
+            _today.append(float(night) / float(total))
+    all1 = np.array(_all)
+    p = np.percentile(all1, 90)
     for val in _today:
         if val > p:
             return True
