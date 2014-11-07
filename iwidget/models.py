@@ -278,6 +278,22 @@ class UserProfile(models.Model):
     It will be used to store a unique key for each household user.
     This key along with the meter id (or something else) will be used
     together for the user to login and change username and password.
+
+    UPDATE: After discussions, we decided to use the SSO for users to login.
+    Therefore, the key becomes the password (stored in auth_user, too).
+    I decided to keep it this way
+    because it is easier for the developer to login as any user for testing
+    reasons. Future devs should be aware of this small issue and stop using
+    this key as password. Key is being updated when the user changes his/her
+    password.
+
+    From this table, only two fields are actually needed. The "sso" field that
+    lets us know if the user is stored in SSO database (initially it is false,
+    then if user is stored in SSO server by another scheduled process, it
+    becomes True. And, secondly, popup which lets us know if the user has
+    added extra details we need (if True, it shows a in-between screen that
+    asks for name, email and occupants. If form is submitted this value becomes
+    False and form is never displayed again).
 """
 
 
@@ -290,4 +306,27 @@ class UserValidationKey(models.Model):
     updated = models.DateTimeField(auto_now=True)
     sso = models.BooleanField(default=False)  # user in SSO Service?
     popup = models.BooleanField(default=True)  # new user? (show popup)
+
+"""
+    Next model is added by Chris Pantazis in order to store and show
+    user notification messages. This is a very simple implementation but I
+    think it does the job. I decided against using a two-table implementation
+    with foreign keys, etc for brevity and deadline reasone. Also, I decided
+    not to use full message here as it is hard to translate. Just the type
+    is enough. Message will be created in templates and then translated.
+"""
+
+
+class UserNotifications(models.Model):
+    user = models.ForeignKey(User, related_name="notifications")
+    notification = models.CharField(max_length=64)  # leakage, burst, etc
+    detected = models.DateField()
+    added = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    valid = models.BooleanField(default=False)  # if user agrees with event
+    read = models.BooleanField(default=False)  # if user has seen the message
+    remark = models.CharField(max_length=128, default="")
+
+    def __unicode__(self):
+        return self.user.username + " > " + self.notification
 

@@ -475,8 +475,12 @@ class consumer(TemplateView):
             #data = {"household":household,"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,"tsid":ts_monthly.id,"dmastats":dmasummary,"uc32chart1":json.dumps(list1),"dmastats":dmastats,}    
             # overview_nrg added by Chris Pantazis
             # to show Energy Consumption in Dashboard
-            # NO! This goes to the Dashboard! Oh My God. Spaghetti Code Attack!
+            # This goes to the Dashboard
+            notifications = UserNotifications. \
+                objects.filter(user=household.user, read=False). \
+                order_by("-added")
             data = {
+                "events": notifications,
                 "household": household,
                 "overview": values['overview'],
                 "overview_nrg": values['overview_nrg'],
