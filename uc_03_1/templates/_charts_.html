@@ -39,10 +39,10 @@
                     </td>
                     {% if view == "day_night"  %}
                         <td>
-                            {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
+                            {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
                         </td>
                         <td>
-                            {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
+                            {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
                         </td>
                     {% endif %}
                 </tr>
@@ -79,10 +79,10 @@
                         </td>
                         {% if view == "day_night"  %}
                             <td>
-                                {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
+                                {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
                             </td>
                             <td>
-                                {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
+                                {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} m&#179; {% endif %}
                             </td>
                         {% endif %}
                     </tr>

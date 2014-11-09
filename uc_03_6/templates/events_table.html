@@ -23,7 +23,10 @@
             {% endif %}
             <td style="font-weight: normal"><a href="javascript:void(0);" onclick="hideEventAndReload('{{ event.id }}');">{% trans "Hide" %}</a></td>
         </tr>
+    {% empty %}
+        <td colspan="4"><p class="text-center" style="color: #555; font-style: italic">{% trans "No events to report, at the moment." %}</p></td>
     {% endfor %}
     </tbody>
 </table>
+
 

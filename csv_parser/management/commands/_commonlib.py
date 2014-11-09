@@ -316,12 +316,18 @@ def create_objects(data, usernames, force, z_names, z_dict):
             # At this point we should check that the timestamp of the data
             # we are trying to enter is not less the the last latest
             # timestamp of the previous import. But how?
+            name = household.user.username
+            if name == "GR059E35":
+                pass
             for timestamp, value in series:
+                d = datetime.today()
+                d = d.replace(month=11).replace(day=5)
+                if timestamp.date() == d.date():
+                    pass
                 if (latest_ts and latest_ts < timestamp) or (not latest_ts):
                     if not isnan(value):
                         total += value
                         timeseries[timestamp] = total
-                        #print "%s -> %s" % (timestamp, total)
                     else:
                         timeseries[timestamp] = float('NaN')
             timeseries_data[variable] = timeseries
@@ -338,6 +344,44 @@ def create_objects(data, usernames, force, z_names, z_dict):
     return households
 
 
+def has_burst(household):
+    name = household.user.username
+    #! TODO: Use a field for country and minimum given step in the future
+    if not name.startswith('GR'):
+        return False
+    timeseries = household \
+        .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                        variable__id=VAR_PERIOD)
+    series = TSeries(id=timeseries.id)
+    series.read_from_db(db.connection)
+    timestamps = sorted(series.keys())
+    days_dict = {}  # date -> [consumptions]
+    today = []  # all today's values
+    _all = []
+    for ts in timestamps:
+        val = series[ts]
+        _d = ts.date()
+        try:
+            arr = days_dict[_d]
+            arr.append(val)
+        except KeyError:
+            arr = [val]
+            days_dict[_d] = arr
+
+    dates = sorted(days_dict.keys()[:-2])
+    for _d in dates:
+        _all.extend(days_dict[_d])
+    dates = sorted(days_dict.keys()[-2:])
+    for _d in dates:
+        today.extend(days_dict[_d])
+    all1 = np.array(_all)
+    p = np.percentile(all1, 90)
+    for val in today:
+        if val > p:
+            return True
+    return False
+
+
 def has_leakage(household):
     """
     This method checks for leakages. The way it is done is pretty simple
@@ -347,38 +391,51 @@ def has_leakage(household):
     :param household:
     :return: False for no leakage, True for leakage
     """
+    name = household.user.username
+    if name == "GR059E35":
+        pass
+    #! TODO: Use a field for country and minimum given step in the future
+    if name.startswith('GB'):  # not UK because they send daily data
+        return False
     timeseries = household \
         .timeseries.get(time_step__id=TSTEP_HOURLY,
                         variable__id=VAR_PERIOD)
     series = TSeries(id=timeseries.id)
     series.read_from_db(db.connection)
-    timestamps = series.keys()
+    timestamps = sorted(series.keys())
     night_dict = {}
     total_dict = {}
+    _t = datetime.now().time()
+    _d = datetime.today().date()
     for ts in timestamps:
         _d = ts.date()
         _t = ts.time()
         val = series[ts]
         if 1 <= _t.hour <= 4:
             try:
-                x = night_dict[_d]
-                night_dict[_d] = x + val
+                night_dict[_d] += val
             except KeyError:
                 night_dict[_d] = val
         try:
-            x = total_dict[_d]
-            total_dict[_d] = x + val
+            total_dict[_d] += val
         except KeyError:
             total_dict[_d] = val
 
+    #remove last day if not a whole day (_t < 24:00)
+    if _t.hour < 23:
+        try:
+            del total_dict[_d]
+            del night_dict[_d]
+        except (KeyError, IndexError):
+            pass
     _all = []  # all lengths will be in here
     _today = []  # today's lengths
 
-    _dates = total_dict.keys()[:-2]  # all except last day 4 * 15min for 4 hrs
+    _dates = sorted(total_dict.keys())[:-1]  # all except last day 4 * 15min for 4 hrs
     for _d in _dates:
         total = total_dict[_d]
         night = night_dict[_d]
-        if total > 0:
+        if total > 0 and night > 0 and not isnan(total) and not isnan(night):
             _all.append(float(night) / float(total))
 
     # Now we need only the last day. However sometimes we have
@@ -386,11 +443,11 @@ def has_leakage(household):
     # previous day and one entry from today. So we pick today and yesterday
     # instead of today. Today is too small. And too fast some times. But that
     # is for some other time to discuss...
-    _dates = total_dict.keys()[-2:]  # only last day's
+    _dates = sorted(total_dict.keys())[-1:]  # only last day's
     for _d in _dates:
         total = total_dict[_d]
         night = night_dict[_d]
-        if total > 0:
+        if total > 0 and night > 0 and not isnan(total) and not isnan(night):
             _today.append(float(night) / float(total))
     all1 = np.array(_all)
     p = np.percentile(all1, 90)
@@ -477,7 +534,15 @@ def regularize(raw_series_db, proc_series_db, rs, re):
     prev_s = 0
     for i in xrange(len(raw_series)):
         dat, value = raw_series.items(pos=i)
+        d = datetime.today()
+        d = d.replace(month=11).replace(day=5)
+        if dat.date() == d.date():
+            pass
         if not isnan(value):
+            # "if" Added by Chris Pantazis, because sometimes
+            # We get a negative small value by the meter
+            if prev_s > value:
+                prev_s = value
             raw_series[dat] = value-prev_s
             prev_s = value
     # Pass 3: Regularize step: loop over raw series records and distribute
@@ -569,6 +634,8 @@ def process_household(household):
         #        return
         #log.info("Now regularizing %s with id %s for s1=%s and e1=%s"
         #         % (raw_series_db, raw_series_db.id, s1, e1))
+        if household.user.username == "GR059E35":
+            pass
         fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db,
                                         s1, e1)
         if fifteen_min_series and fifteen_min_series.bounding_dates():
@@ -581,7 +648,7 @@ def process_household(household):
 
             result = fifteen_min_series
             monthly_series = None
-            # Oh my God. Stefanos wants to aggregate using previous results
+            # Stefanos wants to aggregate using previous results
             # Why? The problem is that Monthly series is not inserted.
             # Was this on purpose?
             for time_step_id in (TSTEP_HOURLY, TSTEP_DAILY, TSTEP_MONTHLY):
@@ -639,6 +706,12 @@ def process_data(data, usernames, force, z_names, zone_dict):
                 yesterday = today - timedelta(days=1)
                 UserNotifications.objects.get_or_create(user=household.user,
                                                         notification="leakage",
+                                                        detected=yesterday)
+            if has_burst(household):
+                today = datetime.today()
+                yesterday = today - timedelta(days=1)
+                UserNotifications.objects.get_or_create(user=household.user,
+                                                        notification="burst",
                                                         detected=yesterday)
         log.info("Process ended... Committing!")
         transaction.commit()

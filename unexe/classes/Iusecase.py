@@ -79,7 +79,7 @@ class iusecase():
         data["waterdata"] = waterdata
         # Added by Chris Pantazis to send the currency to the graphs
         # see: uc32barplot1 javascript function in base.js
-        if "GB" in self.User.username:
+        if self.User.username.startswith("GB"):
             data["currency"] = u"£"
         else:
             data["currency"] = u"€"
@@ -145,7 +145,7 @@ class iusecase():
             data["yourdata"] = yourdata
             # Added by Chris Pantazis to send the currency to the graphs
             # see: uc32barplot1 javascript function in base.js
-            if "GB" in self.User.username:
+            if self.User.username.startswith("GB"):
                 data["currency"] = u"£"
             else:
                 data["currency"] = u"€"
@@ -216,7 +216,7 @@ class iusecase():
         data["yourdata"] = yourdata
         # Added by Chris Pantazis to send the currency to the graphs
         # see: uc32barplot1 javascript function in base.js
-        if "GB" in self.User.username:
+        if self.User.username.startswith("GB"):
             data["currency"] = u"£"
         else:
             data["currency"] = u"€"
@@ -538,7 +538,7 @@ class iusecase():
         data["yourdata"] = yourdata
         # Added by Chris Pantazis to send the currency to the graphs
         # see: uc32barplot1 javascript function in base.js
-        if "GB" in self.User.username:
+        if self.User.username.startswith("GB"):
             data["currency"] = u"£"
         else:
             data["currency"] = u"€"
