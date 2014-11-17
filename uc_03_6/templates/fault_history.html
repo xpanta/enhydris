@@ -1,0 +1,86 @@
+{% load sekizai_tags %}
+{% load i18n %}
+<div class="panel panel-default">
+    <!-- chart menu/toolbar -->
+    <div class="panel-heading clearfix" id="">
+        <div class="row">
+            <div class="pull-right col-md-1">
+                <img src="{{STATIC_URL}}/images/pdf.png" alt="Export to PDF" title="Export to PDF" /><img src="{{STATIC_URL}}/images/save.png" alt="Save Raw Data" title="Save Raw Data" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <p class="text-center"><strong>{% trans "Your Fault Consumption History" %}</strong></p>
+                <div class="table-responsive">
+                    <table class="table table-condensed table-striped table-hover">
+                        <thead class="bg-primary">
+                        <tr>
+                            <th>{% trans "Date detected" %}</th>
+                            <th>{% trans "Time of event" %}</th>
+                            <th>{% trans "Event Type" %}</th>
+                            <th>{% trans "Fault Consumption" %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td>{{ event.detected|date:"d M y" }}</td>
+                                <td>
+                                    {% if event.notification == "burst" %}
+                                        {{ event.event_time }}
+                                    {% else %}
+                                        n/a
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if event.notification == "burst" %}
+                                        {% trans "Possible burst!" %}
+                                    {% else %}
+                                        {% trans "Possible leakage!" %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if event.notification == "burst" %}
+                                        {{ event.consumption }}
+                                    {% else %}
+                                        n/a
+                                    {% endif %}
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tr>
+
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <p class="text-center"><strong>{% trans "Day/Night consumption for " %} {{ yesterday|date:"d M y" }}</strong></p>
+                <div id="pie_uc36" style="width: 90%; height: 400px;">
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var pie_data = [
+            { label: "Night", data: {{ night_cons }}, color: "#7580cc" },
+            { label: "Day", data: {{ day_cons }}, color: "#cc823d"}
+        ];
+
+        var pie_chart = $("#pie_uc36");
+
+        $.plot(pie_chart, pie_data, {
+            series: {
+                pie: {
+                    show: true
+                }
+            },
+            legend: {
+                show: false
+            }
+        });
+    </script>
+</div>

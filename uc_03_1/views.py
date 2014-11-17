@@ -74,7 +74,6 @@ def compare(request, username):
         series = iseries()
         if step in ['15min', 'hourly']:
             from datetime import datetime, timedelta
-            #from datetime import datetime, timedelta
             from itertools import izip
             ts_m = None
             if step == '15min':

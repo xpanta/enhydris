@@ -9,7 +9,16 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 ROOT_URLCONF = 'unexe.urls'
 
-LANGUAGES = (('en', 'English'), ('el', 'Greek'))
+LANGUAGES = (
+        ('en', _('English')),
+        ('el', _('Greek')),
+        ('pt', _('Portuguese')),
+)
+
+LOCALE_PATHS = (
+    os.path.join(PROJECT_DIR, "locale/"),
+)
+
 LANGUAGE = 'en'
 
 ADMINS = (
@@ -149,6 +158,7 @@ INSTALLED_APPS = (
     'tl',
     'uc_03_1',
     'uc_03_6',
+    'uc_01_2',
     'iwidget',
     'unexe',
     'csv_parser',

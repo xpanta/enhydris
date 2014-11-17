@@ -3,10 +3,10 @@ __author__ = 'chris'
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-day_start = 6
+day_start = 4
 day_end = 24
-night_start = 0
-night_end = 6
+night_start = 1
+night_end = 4
 
 def get_year_start_end(when, end):
     """

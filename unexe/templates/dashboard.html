@@ -89,13 +89,15 @@ $(window).load(function() {
 	<ul class="tabs nav nav-tabs" id="controltab">
  		<li class="active"><a href="#summary" data-toggle="tab"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Water Analysis" %} <span class="caret"></span></a>
-			<ul class="dropdown-menu" role="menu" id="waterusecase"> 		
+			<ul class="dropdown-menu" role="menu" id="waterusecase">
 				<li><a href="#water" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1 (Monitoring of Water Consumption)" %}</a></li>
 				{% if not user.is_staff and not user.is_superuser %}
+                    <li><a href="#cuc12" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.2 (Obtain per appliance water consumption)" %}</a></li>
                     <li><a href="#cuc31" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.1 (Compare Current and Historical Water Consumption)" %}</a></li>
 					<li><a href="#cuc32" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.2 (Compare Water Consumption with other Consumers)" %}</a></li>
 					<li><a href="#cuc33" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.3 (Compare water consumption with standard profiles)" %}</a></li>
 					<li><a href="#cuc34" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.4 (Compare household water consumption with most efficient users)" %}</a></li>
+                    <li><a href="#cuc36" onclick="loadFaultHistory('{{ user.username }}');" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.6 (Receive warnings about faults (leakages, bursts) and unusual water consumptions)" %}</a></li>
 					<li><a href="#cuc52" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.2 (Receive information on specific and alternatives pricing schemes)" %}</a></li>
                     <li><a href="#cuc53" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.3 (Forecast Water Bill)" %}</a></li>
 				{% endif %}
@@ -162,8 +164,17 @@ $(window).load(function() {
 			<!--use case3.3-->
 			<div class="tab-pane tabcontent" id="cuc34">
 	            	 {% include "usecase/c_uc3.4.html" %} 
-			</div>						
-		{% endif %}
+			</div>
+
+            <div class="tab-pane tabcontent" id="cuc36">
+                {% include "fault_history.html" %}
+            </div>
+
+            <div class="tab-pane tabcontent" id="cuc12">
+                {% include "uc_01_2_index.html" %}
+            </div>
+
+        {% endif %}
 		
 		
 		<!--use case4.1-->

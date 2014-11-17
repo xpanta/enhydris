@@ -511,18 +511,18 @@ def household_view(request, household_id=None):
         ]
 
     pies = {
-                1: {'timeseries_id': ts_hourly.id,
-                    'period_unit': 'hour',
-                    'period_from': 1,
-                    'period_to': 6,
-                    'default_period': 'Nightly consumption 0:00-06:00',
-                    'alternate_period': 'Daily consumption 06:00-24:00'},
-                2: {'timeseries_id': ts_monthly.id,
-                    'period_unit': 'month',
-                    'period_from': 5,
-                    'period_to': 9,
-                    'default_period': 'Summer consumption (May-September)',
-                    'alternate_period': 'Winter consumption (October-April)'}
+        1: {'timeseries_id': ts_hourly.id,
+            'period_unit': 'hour',
+            'period_from': 1,
+            'period_to': 4,
+            'default_period': 'Nightly consumption 1:00-04:00',
+            'alternate_period': 'Daily consumption 04:01-24:59'},
+        2: {'timeseries_id': ts_monthly.id,
+            'period_unit': 'month',
+            'period_from': 5,
+            'period_to': 9,
+            'default_period': 'Summer consumption (May-September)',
+            'alternate_period': 'Winter consumption (October-April)'}
     }
     if ts_daily_energy:
         # There are energy time series, add them to pies
@@ -530,9 +530,9 @@ def household_view(request, household_id=None):
                     3: {'timeseries_id': ts_hourly_energy.id,
                         'period_unit': 'hour',
                         'period_from': 1,
-                        'period_to': 6,
-                        'default_period': 'Nightly consumption 0:00-06:00',
-                        'alternate_period': 'Daily consumption 06:00-24:00'},
+                        'period_to': 4,
+                        'default_period': 'Nightly consumption 1:00-04:00',
+                        'alternate_period': 'Daily consumption 04:01-24:59'},
                     4: {'timeseries_id': ts_monthly_energy.id,
                         'period_unit': 'month',
                         'period_from': 5,
@@ -555,12 +555,12 @@ def household_view(request, household_id=None):
         form.fields[field].widget.attrs['disabled'] = 'disabled'
         form.fields[field].help_text=u''
     context = {'household': household,
-             'charts': charts,
-             'form': form,
-             'js_data': js_data,
-             'chart_selectors': chart_selectors,
-             'overview': statistics_on_daily(ts_daily, nocc),
-             'energy_overview': None}
+               'charts': charts,
+               'form': form,
+               'js_data': js_data,
+               'chart_selectors': chart_selectors,
+               'overview': statistics_on_daily(ts_daily, nocc),
+               'energy_overview': None}
     if ts_daily_energy:
         context['energy_overview'] = energy_statistics_on_daily(
                 ts_daily_energy, nocc)
@@ -1189,7 +1189,7 @@ def dashboard_view(request, household_id=None):
             },
             {
                 'id': 12,
-                'name': 'Energy Cost per Month (Wh)',
+                'name': 'Energy Cost per Month (€)',
                 'display_min': False, 'display_max': True, 'display_avg': False,
                 'display_sum': True, 'time_span': 'day', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -1207,7 +1207,7 @@ def dashboard_view(request, household_id=None):
                 'display_lastvalue': True,
                 'initial_display': False,
                 'main_timeseries_id': ts_hourly_nrg.id,
-                'has_pie': 1,
+                'has_pie': 3,
                 'span_options': ['year', 'month', 'week', 'day'],
             },
             {
@@ -1239,7 +1239,7 @@ def dashboard_view(request, household_id=None):
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': True,
-                'main_timeseries_id': ts_cost.id, 'occupancy': nocc,
+                'main_timeseries_id': ts_cost_nrg.id, 'occupancy': nocc,
                 'span_options': [],
             },
             {
@@ -1250,6 +1250,18 @@ def dashboard_view(request, household_id=None):
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': False,
+                'span_options': [],
+            },
+            {
+                'id': 18,
+                'name': 'Energy consumption per month, up to a year period (Wh)',
+                'display_min': True, 'display_max': True, 'display_avg': True,
+                'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                'display_lastvalue': True,
+                'initial_display': True,
+                'main_timeseries_id': ts_monthly_nrg.id, 'occupancy': nocc,
+                'has_pie': 4,
                 'span_options': [],
             },
         ]
@@ -1413,14 +1425,20 @@ def dashboard_view(request, household_id=None):
                 'is_bar': True, 'bar_width': 14*24*60*60*1000,
                 'factor': 1.000/nocc,
             },
+            {
+                'id': 18, 'chart_id': 18, 'name': 'energy',
+                'timeseries_id': ts_monthly_nrg.id,
+                'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                'factor': 1.000,
+            },
         ]
     pies = {
         1: {'timeseries_id': ts_hourly.id,
             'period_unit': 'hour',
             'period_from': 1,
-            'period_to': 6,
-            'default_period': 'Nightly consumption 0:00-06:00',
-            'alternate_period': 'Daily consumption 06:00-24:00'},
+            'period_to': 4,
+            'default_period': 'Nightly consumption 1:00-04:00',
+            'alternate_period': 'Daily consumption 04:01-24:59'},
         2: {'timeseries_id': ts_monthly.id,
             'period_unit': 'month',
             'period_from': 5,
@@ -1428,7 +1446,21 @@ def dashboard_view(request, household_id=None):
             'default_period': 'Summer consumption (May-September)',
             'alternate_period': 'Winter consumption (October-April)'}
     }
-
+    if has_energy:
+        pies.update({
+            3: {'timeseries_id': ts_hourly_nrg.id,
+                'period_unit': 'hour',
+                'period_from': 1,
+                'period_to': 4,
+                'default_period': 'Nightly consumption 1:00-04:00',
+                'alternate_period': 'Daily consumption 04:01-24:59'},
+            4: {'timeseries_id': ts_monthly_nrg.id,
+                'period_unit': 'month',
+                'period_from': 5,
+                'period_to': 9,
+                'default_period': 'Summer consumption (May-September)',
+                'alternate_period': 'Winter consumption (October-April)'}
+        })
 
     js_data = {
             'timeseries_data_url': '/timeseries/data/',#reverse('timeseries_data'), commented by Adeel and replace with Static URL

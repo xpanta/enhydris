@@ -348,38 +348,34 @@ def has_burst(household):
     name = household.user.username
     #! TODO: Use a field for country and minimum given step in the future
     if not name.startswith('GR'):
-        return False
+        return 0, 0
     timeseries = household \
         .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
                         variable__id=VAR_PERIOD)
     series = TSeries(id=timeseries.id)
     series.read_from_db(db.connection)
     timestamps = sorted(series.keys())
-    days_dict = {}  # date -> [consumptions]
     today = []  # all today's values
     _all = []
+    i = 0
     for ts in timestamps:
-        val = series[ts]
-        _d = ts.date()
-        try:
-            arr = days_dict[_d]
-            arr.append(val)
-        except KeyError:
-            arr = [val]
-            days_dict[_d] = arr
+        if i < len(timestamps) - 100:
+            _all.append(series[ts])
+        else:
+            tm = "%s:%s" % (ts.time().hour, ts.time().minute)
+            val = series[ts]
+            if isnan(val):
+                val = 0
+            today.append((val, tm))
+        i += 1
 
-    dates = sorted(days_dict.keys()[:-2])
-    for _d in dates:
-        _all.extend(days_dict[_d])
-    dates = sorted(days_dict.keys()[-2:])
-    for _d in dates:
-        today.extend(days_dict[_d])
-    all1 = np.array(_all)
-    p = np.percentile(all1, 90)
-    for val in today:
-        if val > p:
-            return True
-    return False
+    if _all and today:
+        all1 = np.array(_all)
+        p = np.percentile(all1, 90)
+        for cons, tm in today:
+            if cons > p:
+                return cons, tm
+    return 0, 0
 
 
 def has_leakage(household):
@@ -396,7 +392,7 @@ def has_leakage(household):
         pass
     #! TODO: Use a field for country and minimum given step in the future
     if name.startswith('GB'):  # not UK because they send daily data
-        return False
+        return 0
     timeseries = household \
         .timeseries.get(time_step__id=TSTEP_HOURLY,
                         variable__id=VAR_PERIOD)
@@ -434,7 +430,12 @@ def has_leakage(household):
     _dates = sorted(total_dict.keys())[:-1]  # all except last day 4 * 15min for 4 hrs
     for _d in _dates:
         total = total_dict[_d]
-        night = night_dict[_d]
+        # there can be a case when I don't get data for 01:00 -> 04:00
+        # so night[_d] might not exist. in this case let it be zero
+        try:
+            night = night_dict[_d]
+        except KeyError:
+            night = 0
         if total > 0 and night > 0 and not isnan(total) and not isnan(night):
             _all.append(float(night) / float(total))
 
@@ -449,12 +450,13 @@ def has_leakage(household):
         night = night_dict[_d]
         if total > 0 and night > 0 and not isnan(total) and not isnan(night):
             _today.append(float(night) / float(total))
-    all1 = np.array(_all)
-    p = np.percentile(all1, 90)
-    for val in _today:
-        if val > p:
-            return True
-    return False
+    if _all and _today:
+        all1 = np.array(_all)
+        p = np.percentile(all1, 90)
+        for val in _today:
+            if val > p:
+                return val
+    return 0
 
 
 def calc_occupancy(timeseries, household):
@@ -701,18 +703,23 @@ def process_data(data, usernames, force, z_names, zone_dict):
         for household in households:
             #log.info("Processing ts records for household %s" % household)
             process_household(household)
-            if has_leakage(household):
+            cons = has_leakage(household)
+            if cons:
                 today = datetime.today()
                 yesterday = today - timedelta(days=1)
                 UserNotifications.objects.get_or_create(user=household.user,
                                                         notification="leakage",
-                                                        detected=yesterday)
-            if has_burst(household):
+                                                        detected=yesterday,
+                                                        consumption=cons * 1000)
+            cons, _time = has_burst(household)
+            if cons:
                 today = datetime.today()
                 yesterday = today - timedelta(days=1)
                 UserNotifications.objects.get_or_create(user=household.user,
                                                         notification="burst",
-                                                        detected=yesterday)
+                                                        detected=yesterday,
+                                                        consumption=cons * 1000,
+                                                        event_time=_time)
         log.info("Process ended... Committing!")
         transaction.commit()
         log.info("SUCCESS!")

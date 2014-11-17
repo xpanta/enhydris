@@ -311,7 +311,7 @@ class UserValidationKey(models.Model):
     Next model is added by Chris Pantazis in order to store and show
     user notification messages. This is a very simple implementation but I
     think it does the job. I decided against using a two-table implementation
-    with foreign keys, etc for brevity and deadline reasone. Also, I decided
+    with foreign keys, etc for brevity and deadline reasons. Also, I decided
     not to use full message here as it is hard to translate. Just the type
     is enough. Message will be created in templates and then translated.
 """
@@ -321,11 +321,14 @@ class UserNotifications(models.Model):
     user = models.ForeignKey(User, related_name="notifications")
     notification = models.CharField(max_length=64)  # leakage, burst, etc
     detected = models.DateField()
+    event_time = models.CharField(max_length=10, default=0)
     added = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     valid = models.BooleanField(default=False)  # if user agrees with event
     read = models.BooleanField(default=False)  # if user has seen the message
     remark = models.CharField(max_length=128, default="")
+    consumption = models.FloatField(default=0)
+
 
     def __unicode__(self):
         return self.user.username + " > " + self.notification

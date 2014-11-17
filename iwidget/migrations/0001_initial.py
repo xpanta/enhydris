@@ -274,8 +274,24 @@ class Migration(SchemaMigration):
             ('used', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('sso', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('popup', self.gf('django.db.models.fields.BooleanField')(default=True)),
         ))
         db.send_create_signal(u'iwidget', ['UserValidationKey'])
+
+        # Adding model 'UserNotifications'
+        db.create_table(u'iwidget_usernotifications', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='notifications', to=orm['auth.User'])),
+            ('notification', self.gf('django.db.models.fields.CharField')(max_length=64)),
+            ('detected', self.gf('django.db.models.fields.DateField')()),
+            ('added', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('valid', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('read', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('remark', self.gf('django.db.models.fields.CharField')(default='', max_length=128)),
+        ))
+        db.send_create_signal(u'iwidget', ['UserNotifications'])
 
 
     def backwards(self, orm):
@@ -362,6 +378,9 @@ class Migration(SchemaMigration):
 
         # Deleting model 'UserValidationKey'
         db.delete_table(u'iwidget_uservalidationkey')
+
+        # Deleting model 'UserNotifications'
+        db.delete_table(u'iwidget_usernotifications')
 
 
     models = {
@@ -761,6 +780,18 @@ class Migration(SchemaMigration):
             'specs': ('django.db.models.fields.CharField', [], {'max_length': '45', 'blank': 'True'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'})
         },
+        u'iwidget.usernotifications': {
+            'Meta': {'object_name': 'UserNotifications'},
+            'added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'detected': ('django.db.models.fields.DateField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'notification': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'read': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'remark': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notifications'", 'to': u"orm['auth.User']"}),
+            'valid': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
         u'iwidget.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
             'address': ('django.db.models.fields.TextField', [], {}),
@@ -774,6 +805,8 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'identifier': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'key': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'popup': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'sso': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'used': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'validation_key'", 'to': u"orm['auth.User']"})

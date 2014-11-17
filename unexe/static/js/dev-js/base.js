@@ -2516,3 +2516,7 @@ jQuery.validator.setDefaults({
 function hideEventAndReload(id){
     $("#user_events").empty().load("{% url 'user_events' user.username %}?f=new&hide=" + id);
 }
+
+function loadFaultHistory(username){
+    $("#cuc36").empty().load("uc_03_6/events/history/" + username +"/");
+}

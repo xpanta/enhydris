@@ -1,0 +1,67 @@
+{% load i18n %}
+{% load sekizai_tags %}
+{% load general_tags %}
+
+
+<h2>{% trans "Per appliance water consumption" %}</h2>
+<div class="col-md-6">
+    <div id="pie_uc12" style="width: 90%; height: 400px;">
+
+
+    </div>
+</div>
+<div class="col-md-6">
+    <table class="table table-condensed table-striped table-hover">
+        <thead class="">
+        <tr>
+            <th>{% trans "Appliance" %}</th>
+            <th>{% trans "Consumption" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr> <td>{% trans "WC (toilet flushing)" %}</td><td>{{ consumptions.wc|floatformat:1 }} litres</td> </tr>
+            <tr> <td>{% trans "Showers" %}</td><td>{{ consumptions.shower|floatformat:1 }} litres</td> </tr>
+            <tr> <td>{% trans "Taps (Kitchen / Bathroom)" %}</td><td>{{ consumptions.tap|floatformat:1 }} litres</td> </tr>
+            <tr> <td>{% trans "Washing Maching" %}</td><td>{{ consumptions.washing_machine|floatformat:1 }} litres</td> </tr>
+            <tr> <td>{% trans "Dish Washer" %}</td><td>{{ consumptions.dish_washer|floatformat:1 }} litres</td> </tr>
+            <tr> <td>{% trans "Baths" %}</td><td>{{ consumptions.bath|floatformat:1 }} litres</td> </tr>
+            <tr> <td>{% trans "Other" %}</td><td>{{ consumptions.other|floatformat:1 }} litres</td> </tr>
+            <tr> <td>{% trans "Outdoor" %}</td><td>{{ consumptions.outdoor|floatformat:1 }} litres</td> </tr>
+            <tr>
+                <td>
+                    <strong>{% trans "Total Consumption in Liters" %}</strong>
+                </td>
+                <td>
+                    <strong>{{ total|floatformat:1 }} {% trans "litres" %}</strong>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var pie_data = [
+        { label: "WC (Toilet Flashing)", data: {{ consumptions.wc }}, color: "#DEA56E" },
+        { label: "Showers", data: {{ consumptions.shower }}, color: "#D7812A" },
+        { label: "Taps (Kitchen / Bathroom)", data: {{ consumptions.tap }}, color: "#7B6D63" },
+        { label: "Washing Machine", data: {{ consumptions.washing_machine }}, color: "#B13406" },
+        { label: "Dish Washer", data: {{ consumptions.dish_washer }}, color: "#A3835D" },
+        { label: "Bath", data: {{ consumptions.bath }}, color: "#51342E" },
+        { label: "Other", data: {{ consumptions.other }}, color: "#893C4E" },
+        { label: "Outdoor", data: {{ consumptions.outdoor }}, color: "#DDB25E" }
+    ];
+
+    var pie_chart = $("#pie_uc12");
+
+    $.plot(pie_chart, pie_data, {
+        series: {
+            pie: {
+                show: true
+            }
+        },
+        legend: {
+            show: false
+        }
+    });
+</script>
