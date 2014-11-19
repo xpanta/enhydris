@@ -3,10 +3,10 @@
 
 {% addtoblock "js" %}
     <script>
-        function fetchChart_uc12(username){
+        function fetchChart_uc21(username){
             var month = $("#c_uc12month").val();
             var year = $("#c_uc12year").val();
-            $("#charts01_2").load("/uc_01_2/analyse/" + username +"/?month=" + month + "&year=" + year);
+            $("#charts02_1").load("/uc_02_1/analyse/" + username +"/?month=" + month + "&year=" + year);
         }
     </script>
 {% endaddtoblock %}
@@ -20,10 +20,10 @@
         </div>
         <div class="row">
             <div class="col-md-12 date_yr" id="date_year1">
-                <div class="form-inline col-md-6" id="c_uc12_daterange">
+                <div class="form-inline col-md-6" id="c_uc21_daterange">
                     {% trans "Please, select Month and Year" %}
                     <div class="form-group">
-                        <select id="c_uc12month" class="form-control" required="true">
+                        <select id="c_uc21month" class="form-control" required="true">
                             <option value="1">{% trans "January" %}</option>
                             <option value="2">{% trans "February" %}</option>
                             <option value="3">{% trans "March" %}</option>
@@ -39,15 +39,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <select id="c_uc12year" class="form-control" required="true"></select>
+                        <select id="c_uc21year" class="form-control" required="true"></select>
                     </div>
-                    <button onclick="fetchChart_uc12('{{ request.user.username }}')" class="btn btn-primary" type="button">{% trans " Submit " %}</button>
+                    <button onclick="fetchChart_uc21('{{ request.user.username }}')" class="btn btn-primary" type="button">{% trans " Submit " %}</button>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div id="charts01_2"></div>
+                <div id="charts02_1"></div>
             </div>
         </div>
     </div>

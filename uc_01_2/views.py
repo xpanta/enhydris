@@ -29,13 +29,13 @@ def calculate_appliance_consumption(request, username):
 
         wcs = {
             "wc": 0.3,
-            "shower": 0.12,
-            "tap": 0.15,
-            "washing_machine": 0.13,
-            "dish_washer": 0.08,
-            "bath": 0.1,
-            "other": 0.05,
-            "outdoor": 0.07
+            "shower": 0.22,
+            "tap": 0.35,
+            "washing_machine": 0,
+            "dish_washer": 0,
+            "bath": 0,
+            "other": 0.13,
+            "outdoor": 0
         }
 
         total_cons = 0
@@ -72,20 +72,27 @@ def calculate_appliance_consumption(request, username):
             wcs["outdoor"] += d
         total_cons *= 1000.0
         consumptions = {
-            "wc": wcs["wc"] * total_cons,
-            "shower": wcs["shower"] * total_cons,
-            "tap": wcs["tap"] * total_cons,
-            "washing_machine": wcs["washing_machine"] * total_cons,
-            "dish_washer": wcs["dish_washer"] * total_cons,
-            "bath": wcs["bath"] * total_cons,
-            "other": wcs["other"] * total_cons,
-            "outdoor": wcs["outdoor"] * total_cons,
-            "total": total_cons
+            "wc": round(wcs["wc"] * total_cons, 1),
+            "shower": round(wcs["shower"] * total_cons, 1),
+            "tap": round(wcs["tap"] * total_cons, 1),
+            "washing_machine": round(wcs["washing_machine"] * total_cons, 1),
+            "dish_washer": round(wcs["dish_washer"] * total_cons, 1),
+            "bath": round(wcs["bath"] * total_cons, 1),
+            "other": round(wcs["other"] * total_cons, 1),
+            "outdoor": round(wcs["outdoor"] * total_cons, 1),
         }
 
         data = {
             "consumptions": consumptions,
-            "total": total_cons,
+            "total": round(total_cons, 1),
+            "wc": wc,
+            "shower": shower,
+            "tap": tap,
+            "washing_machine": washing_machine,
+            "dish_washer": dish_washer,
+            "bath": bath,
+            "other": other,
+            "outdoor": outdoor,
         }
         variables = RequestContext(request, data)
         return render_to_response("_chart.html", variables)

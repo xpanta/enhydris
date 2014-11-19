@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'uc_03_1',
     'uc_03_6',
     'uc_01_2',
+    'uc_02_1',
     'iwidget',
     'unexe',
     'csv_parser',

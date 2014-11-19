@@ -113,6 +113,7 @@ class Command(BaseCommand):
                 _filenames = [user_filename]
             for _filename in sorted(_filenames):
                 log.info("parsing file %s" % _filename)
+                print("parsing file %s" % _filename)
                 force = False  # True = Rewrite
                 process_file(_filename, _path, force)
                 timer2 = datetime.now()
