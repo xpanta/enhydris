@@ -20,10 +20,10 @@
         <tbody>
             <tr>
                 <td>
-                    <strong>{% trans "Energy related" %}</strong>
+                    <strong>{% trans "Energy to heat water" %}</strong>
                 </td>
                 <td>
-                    <strong>{{ energy }} {% trans "litres" %}</strong>
+                    {{ energy }} {% trans "litres" %}
                 </td>
             </tr>
             <tr>
@@ -31,7 +31,15 @@
                     <strong>{% trans "Rest uses" %}</strong>
                 </td>
                 <td>
-                    <strong>{{ rest }} {% trans "litres" %}</strong>
+                    {{ rest }} {% trans "litres" %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>{% trans "Total" %}</strong>
+                </td>
+                <td>
+                    {{ total }} {% trans "litres" %}
                 </td>
             </tr>
         </tbody>

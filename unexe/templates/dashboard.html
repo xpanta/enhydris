@@ -108,6 +108,7 @@ $(window).load(function() {
 			<ul class="dropdown-menu" role="menu" id="energyusecase">
                 <li><a href="#energy1-1" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1: Monitoring of Energy Consumption" %}</a></li>
                 <li><a href="#cuc21" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.1: Energy consumption related to water" %}</a></li>
+                <li><a href="#cuc23" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.3: Carbon emmisions related to water" %}</a></li>
 				<li><a href="#cuc41" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC4.1 & Use Case C_UC5.4 (Compare energy pattern & Forecast the component of energy bill)" %}</a></li>
 				<!-- <li><a href="#cuc54" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.4 (Forecast the component of next energy bill associated with water consumption)" %}</a></li> -->												
 			</ul>
@@ -177,6 +178,9 @@ $(window).load(function() {
 
             <div class="tab-pane tabcontent" id="cuc21">
                 {% include "uc_02_1_index.html" %}
+            </div>
+            <div class="tab-pane tabcontent" id="cuc23">
+                {% include "uc_02_3_index.html" %}
             </div>
         {% endif %}
 		

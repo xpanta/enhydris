@@ -1,0 +1,56 @@
+{% load sekizai_tags %}
+{% load i18n %}
+
+{% addtoblock "js" %}
+    <script>
+        function fetchChart_uc23(username){
+            var month = $("#c_uc12month").val();
+            var year = $("#c_uc12year").val();
+            $("#charts02_3").load("/uc_02_3/analyse/" + username +"/?month=" + month + "&year=" + year);
+        }
+    </script>
+{% endaddtoblock %}
+<div class="panel panel-default">
+    <!-- chart menu/toolbar -->
+    <div class="panel-heading clearfix" id="">
+        <div class="row">
+            <div class="pull-right col-md-1">
+                <img src="{{STATIC_URL}}/images/pdf.png" alt="Export to PDF" title="Export to PDF" /><img src="{{STATIC_URL}}/images/save.png" alt="Save Raw Data" title="Save Raw Data" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 date_yr" id="date_year1">
+                <div class="form-inline col-md-6" id="c_uc23_daterange">
+                    {% trans "Please, select Month and Year" %}
+                    <div class="form-group">
+                        <select id="c_uc21month" class="form-control" required="true">
+                            <option value="1">{% trans "January" %}</option>
+                            <option value="2">{% trans "February" %}</option>
+                            <option value="3">{% trans "March" %}</option>
+                            <option value="4">{% trans "April" %}</option>
+                            <option value="5">{% trans "May" %}</option>
+                            <option value="6">{% trans "June" %}</option>
+                            <option value="7">{% trans "July" %}</option>
+                            <option value="8">{% trans "August" %}</option>
+                            <option value="9">{% trans "September" %}</option>
+                            <option value="10">{% trans "October" %}</option>
+                            <option value="11">{% trans "November" %}</option>
+                            <option value="12">{% trans "December" %}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="c_uc23year" class="form-control" required="true"></select>
+                    </div>
+                    <button onclick="fetchChart_uc23('{{ request.user.username }}')" class="btn btn-primary" type="button">{% trans " Submit " %}</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="charts02_3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+</script>
