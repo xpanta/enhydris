@@ -8,6 +8,7 @@ from math import isnan
 from itertools import izip
 from datetime import datetime
 from iwidget.models import TSTEP_HOURLY, VAR_PERIOD
+from unexe.classes.Iseries import iseries
 
 
 def calculate_appliance_consumption(request, username):
@@ -40,7 +41,6 @@ def calculate_appliance_consumption(request, username):
 
         total_cons = 0
         household = user.households.all()[0]  # get user household id
-        from unexe.classes.Iseries import iseries
         series = iseries()
         ts_m = household.timeseries \
             .filter(time_step__id=TSTEP_HOURLY,
