@@ -4,8 +4,8 @@
 {% addtoblock "js" %}
     <script>
         function fetchChart_uc21(username){
-            var month = $("#c_uc12month").val();
-            var year = $("#c_uc12year").val();
+            var month = $("#c_uc21month").val();
+            var year = $("#c_uc21year").val();
             $("#charts02_1").load("/uc_02_1/analyse/" + username +"/?month=" + month + "&year=" + year);
         }
     </script>

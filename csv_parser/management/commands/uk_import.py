@@ -8,6 +8,16 @@ import logging
 from _commonlib import process_data
 
 
+def notify_admins():
+    from django.core.mail import EmailMessage
+    subject = "iWIDGET: Missing Data File!"
+    to = ["xpanta@gmail.com", "LDant@waterwise.org.uk"]
+    from_email = 'no-reply@iwidget.up-ltd.co.uk'
+    message = "Missing Data File for UK"
+    msg = EmailMessage(subject, message, to=to, from_email=from_email)
+    msg.send()
+
+
 def create_15_mins(dt, consumption):
     min_dt = dt.replace(hour=0, minute=15)
     min_dt = min_dt - timedelta(days=1)
@@ -159,8 +169,9 @@ class Command(BaseCommand):
                         _prev_file = f_name
                         found = True
                 x += 1
-            _prev_file = "05_11_14_UK.csv"
-            _curr_file = "06_11_2014_UK.csv"
+            _prev_file = "17_11_14_uk.csv"
+            _curr_file = "19_11_14_uk.csv"
+            print "importing %s and %s" % (_prev_file, _curr_file)
             if _curr_user_filename:
                 _curr_file = _curr_user_filename
             if _prev_user_filename:

@@ -3,7 +3,7 @@
 {% load general_tags %}
 
 
-<h2 class="text-center">{% trans "Energy related water consumption" %}</h2>
+<h2 class="text-center">{% trans "Energy related to water" %}</h2>
 <div class="col-md-7">
     <div id="pie_uc21" style="width: 100%; height: 600px;">
 
@@ -23,7 +23,7 @@
                     <strong>{% trans "Energy to heat water" %}</strong>
                 </td>
                 <td>
-                    {{ energy }} {% trans "litres" %}
+                    {{ energy }} kWh
                 </td>
             </tr>
             <tr>
@@ -31,7 +31,7 @@
                     <strong>{% trans "Rest uses" %}</strong>
                 </td>
                 <td>
-                    {{ rest }} {% trans "litres" %}
+                    {{ rest }} kWh
                 </td>
             </tr>
             <tr>
@@ -39,7 +39,7 @@
                     <strong>{% trans "Total" %}</strong>
                 </td>
                 <td>
-                    {{ total }} {% trans "litres" %}
+                    {{ total }} kWh
                 </td>
             </tr>
         </tbody>
@@ -62,7 +62,7 @@
                 label:{
                     show: true,
                     formatter: function (label, series) {
-                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;text-shadow: 2px 2px 2px rgba(150, 150, 150, 0.81);">' + label + '<br/>' + series.data[0][1] + ' lt. </div>';
+                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;text-shadow: 2px 2px 2px rgba(150, 150, 150, 0.81);">' + label + '<br/>' + series.data[0][1] + ' kWh </div>';
 
                     }
                 }

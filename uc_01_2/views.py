@@ -22,7 +22,7 @@ def calculate_appliance_consumption(request, username):
         wc = 1
         shower = 1
         tap = 2
-        washing_machine = 1
+        washing_machine = 0
         dish_washer = 0
         bath = 0
         other = 1

@@ -4,8 +4,8 @@
 {% addtoblock "js" %}
     <script>
         function fetchChart_uc23(username){
-            var month = $("#c_uc12month").val();
-            var year = $("#c_uc12year").val();
+            var month = $("#c_uc23month").val();
+            var year = $("#c_uc23year").val();
             $("#charts02_3").load("/uc_02_3/analyse/" + username +"/?month=" + month + "&year=" + year);
         }
     </script>
@@ -23,7 +23,7 @@
                 <div class="form-inline col-md-6" id="c_uc23_daterange">
                     {% trans "Please, select Month and Year" %}
                     <div class="form-group">
-                        <select id="c_uc21month" class="form-control" required="true">
+                        <select id="c_uc23month" class="form-control" required="true">
                             <option value="1">{% trans "January" %}</option>
                             <option value="2">{% trans "February" %}</option>
                             <option value="3">{% trans "March" %}</option>

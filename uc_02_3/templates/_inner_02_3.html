@@ -24,10 +24,10 @@
                 <strong>{% trans "Energy to heat water" %}</strong>
             </td>
             <td>
-                {{ energy }} {% trans "litres" %}
+                {{ energy }} kWh
             </td>
             <td>
-                {{ energy_carbon }} Kg CO<sub>2</sub>/KWh
+                {{ energy_carbon }} KgCO<sub>2</sub>
             </td>
         </tr>
         <tr>
@@ -35,10 +35,10 @@
                 <strong>{% trans "Rest uses" %}</strong>
             </td>
             <td>
-                {{ rest }} {% trans "litres" %}
+                {{ rest }} kWh
             </td>
             <td>
-                {{ rest_carbon }} Kg CO<sub>2</sub>/KWh
+                {{ rest_carbon }} KgCO<sub>2</sub>
             </td>
         </tr>
         <tr>
@@ -46,10 +46,10 @@
                 <strong>{% trans "Total" %}</strong>
             </td>
             <td>
-                {{ total }} {% trans "litres" %}
+                {{ total }} kWh
             </td>
             <td>
-                {{ total_carbon }} Kg CO<sub>2</sub>/KWh
+                {{ total_carbon }} KgCO<sub>2</sub>
             </td>
         </tr>
         </tbody>
@@ -72,7 +72,7 @@
                 label:{
                     show: true,
                     formatter: function (label, series) {
-                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;text-shadow: 2px 2px 2px rgba(150, 150, 150, 0.81);">' + label + '<br/>' + series.data[0][1] + ' Kg CO<sub>2</sub>/KWh. </div>';
+                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;text-shadow: 2px 2px 2px rgba(150, 150, 150, 0.81);">' + label + '<br/>' + series.data[0][1] + ' KgCO<sub>2</sub>. </div>';
 
                     }
                 }
