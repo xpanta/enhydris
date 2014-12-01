@@ -1388,7 +1388,7 @@ function ChartUtil()
 	    
 	}
 	*/
-	this.uc32barplot1 = function(id, dim, data, currency)
+	this.uc32barplot1 = function(id,dim,data)
 	{
 		//var data = '[{"Units": "273.881880739", "Cost": "273.881880739", "Data": "DMA", "Period": "12"}, {"Units": "9.47616916667", "Cost": "9.47616916667", "Data": "You", "Period": "12"}, {"Units": "115.149275501", "Cost": "115.149275501", "Data": "DMA", "Period": "6"}, {"Units": "10.793005", "Cost": "10.793005", "Data": "You", "Period": "6"}, {"Units": "74.2850266667", "Cost": "74.2850266667", "Data": "DMA", "Period": "4"}, {"Units": "11.161", "Cost": "11.161", "Data": "You", "Period": "4"}]';
 		var margin = {top: 30, right: 80, bottom: 110, left: 60};
@@ -1408,7 +1408,7 @@ function ChartUtil()
 		var y = chart.addMeasureAxis("y", "Cost");
 		y.showGridlines = true;
 		y.tickFormat = ',.2f';
-		y.title = "Cost(" + currency + ")";
+		y.title = "Cost(£)";
 		chart.addLegend(65, 10, 510, 20, "right");
 		var s = chart.addSeries(["Cost", "Data"], dimple.plot.bar);
 		chart.assignColor("DMA", "#C0C0C0");
@@ -1424,7 +1424,7 @@ function ChartUtil()
 	    /*Change tooltip data*/
 	    s.getTooltipText = function (e) {
             return [
-                "Cost: " + currency + " " + e.y,
+                "Cost: £" + e.y,
                 "Period: "+ e.x,
                 "Data: "+ e.aggField[1] 
             ];
@@ -1455,7 +1455,7 @@ function ChartUtil()
 	        .style("opacity", 0.7)
 	
 	        // Format the number
-	        .text(currency + "" + d3.format(",.2f")(d.yValue));
+	        .text("£"+d3.format(",.2f")(d.yValue));
         });			
 	}//--end function
 	
@@ -1650,58 +1650,59 @@ function AppUtil()
         /*This small piece of code create the form dropdown option with values 
          *	from 1 to 100. the return value can then easily to append to any dropdown  
          */
-        var numbers = 100;
-        var option = "<option value=''>Please Select</option>";
-        for (i=0;i<=numbers;i++){
-           option += '<option value="'+ i + '">' + i + '</option>';
-        }//--end for
-        //add the number list to the dropdown with a class name .numddl
-        $('.numddl').append(option);
+        //var numbers = 100;
+        //var option = "<option value=''>Please Select</option>";
+        //for (i=0;i<=numbers;i++){
+        //	option += '<option value="'+ i + '">' + i + '</option>';	
+        //}//--end for
+        ////add the number list to the dropdown with a class name .numddl
+        //$('.numddl').append(option);
         
         /*this list order must not be changed as it is corresponding to loop variable value and database id.
          * This can be read from DB and added to the list of dropdown values to avoid any logical error
          */
-        var list = ["Detached","Semi Detached","Flat","Tenement"];
+        //var list = ["Detached","Semi Detached","Flat","Tenement"];
         //add the number list to the dropdown
-        $('#property_type').append(domutil.getoption(list));
+        //$('#property_type').append(domutil.getoption(list));
 
         /*this list order must not be changed as it is corresponding to loop variable value and database id.
          * This can be read from DB and added to the list of dropdown values to avoid any logical errors 
          */
-        var list = ["Before 1970","1971-1990","1991-2000","After 2001"];
+        //var list = ["Before 1970","1971-1990","1991-2000","After 2001"];
         //add the number list to the dropdown
-        $('#contruction_period').append(domutil.getoption(list));
+        //$('#contruction_period').append(domutil.getoption(list));
 
         /*this list order must not be changed as it is corresponding to loop variable value and database id.
          * This can be read from DB and added to the list of dropdown values to avoid any logical errors 
          */
-        var list = ["Owned","Rented"];
+        //var list = ["Owned","Rented"];
         //add the number list to the dropdown
-        $('#ownership_status').append(domutil.getoption(list));
+        //$('#ownership_status').append(domutil.getoption(list));
 
         /*this list order must not be changed as it is corresponding to loop variable value and database id.
          * This can be read from DB and added to the list of dropdown values to avoid any logical errors 
          */
-        var list = ["Flat rate tariff","Water metering tariff","Rising block tariff","Declining block tariff","Seasonal tariff","Time-of-day tariff","Social tariff"];
+        //var list = ["Flat rate tariff","Water metering tariff","Rising block tariff","Declining block tariff","Seasonal tariff","Time-of-day tariff","Social tariff"];
         //add the number list to the dropdown
-        $('#water_pricing').append(domutil.getoption(list));
+        //$('#water_pricing').append(domutil.getoption(list));
 
         //Added by Chris Pantazis
-        var list = ["<= 50","51 - 100", "101 - 200", "> 200"];
+        //var list = ["<= 50","51 - 100", "101 - 200", "> 200"];
         //add the number list to the dropdown
-        $('#property_area').append(domutil.getoption(list));
+        //$('#property_area').append(domutil.getoption(list));
 
-        var list = ["<= 20","21 - 50", "51 - 100", "> 100"];
+        //var list = ["<= 20","21 - 50", "51 - 100", "> 100"];
         //add the number list to the dropdown
-        $('#garden_area').append(domutil.getoption(list));
+        //$('#garden_area').append(domutil.getoption(list));
 
-        var list = ["<= 20","21 - 50", "51 - 70", "> 70"];
+        //var list = ["<= 20","21 - 50", "51 - 70", "> 70"];
         //add the number list to the dropdown
-        $('#pervious_area').append(domutil.getoption(list));
+        //$('#pervious_area').append(domutil.getoption(list));
 
-        var list = ["<= 50","51 - 100", "101 - 200", "> 200"];
+        //var list = ["<= 50","51 - 100", "101 - 200", "> 200"];
         //add the number list to the dropdown
-        $('#roof_area').append(domutil.getoption(list));
+        //$('#roof_area').append(domutil.getoption(list));
+        
 	}//--end function
 
 	/* This method is for policy.html page and execute when the complete page loaded.
@@ -1770,11 +1771,12 @@ function AppUtil()
 	 */
 	this.sethousehold = function(id)
 	{
-		var dataObj = {};
-		var url = iwidgetutil.baseURL+iwidgetutil.gethousehold;
+		var url = iwidgetutil.baseURL+iwidgetutil.gethousehold;		
 		dataObj.csrfmiddlewaretoken = domutil.getcsrftoken('csrftoken');
 		dataObj.id = id;
 		data = ajaxutil.postAjax(dataObj,url); //send data to server
+		alert(data[0].fields["num_of_occupants"]);
+		alert(data[0].fields["property_type"]);
 		$("#num_of_occupants").val(data[0].fields['num_of_occupants']);
 		$("#property_type").val(data[0].fields['property_type']);
 	}//--end function
@@ -1813,7 +1815,7 @@ function AppUtil()
 	}//--end
 	/* This method submits form to the server using ajax. It validated form, collect data in dictionary 
 	 * and send it to server. Methods also process any error code and data from server
-	 * id: It is the fmrm id (DOM)
+	 * id: It is the form id (DOM)
 	 */
 	this.sendToserver = function(id)
 	{
@@ -2000,7 +2002,8 @@ function AppUtil()
 					//domutil.addCssclass("#c_uc33cont","show");
 					return;
 				}
-				domutil.removeCssclass("#c_uc32cont","hide"); //make chart container visible
+				
+				domutil.removeCssclass("#c_uc32cont","hide"); //make chart container visible 
 				$("#c_uc32chartcont").empty(); //clear previous chart
 				$("#c_uc32donutchart").empty(); //clear previous chart
 				$("#c_uc32title").empty();
@@ -2282,8 +2285,8 @@ function AppUtil()
 					alert("No data is available for analysis");
 					return;
 				}
-
-				domutil.removeCssclass("#c_uc33cont","hide"); //make chart container visible
+				
+				domutil.removeCssclass("#c_uc33cont","hide"); //make chart container visible 
 				$("#c_uc33chartcont").empty(); //clear previous chart
 				$("#c_uc33donutchart").empty(); //clear previous chart
 				$("#c_uc33title").empty();
@@ -2509,14 +2512,3 @@ jQuery.validator.setDefaults({
     }		
 });
 //--------------------------------------------------End overriding methods-----------------------------------------//
-
-
-//added by Chris Pantazis to load the table of events after hiding a user event
-
-function hideEventAndReload(id){
-    $("#user_events").empty().load("{% url 'user_events' user.username %}?f=new&hide=" + id);
-}
-
-function loadFaultHistory(username){
-    $("#cuc36").empty().load("uc_03_6/events/history/" + username +"/");
-}

@@ -10,7 +10,7 @@ import itertools as IT
 from dateutil import parser
 from django.views.generic import View
 from django.views.generic.base import TemplateView
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from django.core.context_processors import csrf
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
@@ -260,10 +260,11 @@ class getuser(TemplateView):
 #this class return serialize json object to be process by client side (browser)
 class gethousehold(TemplateView):
     template_name = "dashboard.html"
-
+    
     def post(self, request):
         if request.user.is_authenticated(): #only update user if authenticated         
             whousehold = ihousehold() #household class object
+            whousehold.getHouseholdData()
             val=None
             val = iutility.getPostValue("id",request)
             if val=="None":
@@ -271,6 +272,8 @@ class gethousehold(TemplateView):
             return HttpResponse(json.dumps(whousehold.gethousehold(request.user,val)),content_type='application/javascript')
         else:   #otherwise return -1 to show unexpected error message
             return HttpResponse(json.dumps(-1),content_type='application/javascript')
+        
+
 
 #this class return serialize json object to be process by client side (browser)
 class updatehousehold(TemplateView):
@@ -280,10 +283,12 @@ class updatehousehold(TemplateView):
         if request.user.is_authenticated(): #only update user if authenticated
             whousehold = ihousehold() #household class object
             qs      = iutility.getPostqs(request)    #get quertystring
-            values  = dict(urlparse.parse_qsl(qs)) #parse qs values into dictonary               
+            values  = dict(urlparse.parse_qsl(qs)) #parse qs values into dictonary      
             return HttpResponse(json.dumps(whousehold.updatehousehold(request.user,values)),content_type='application/javascript')
         else:   #otherwise return -1 to show unexpected error message
+            print "request.user.is_authenticated(): FALSE"
             return HttpResponse(json.dumps(-1),content_type='application/javascript')
+
 
 #Template class for super user profile and password update
 class usersuper(TemplateView):
@@ -474,9 +479,22 @@ class consumer(TemplateView):
                                     
             #data = {"household":household,"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,"tsid":ts_monthly.id,"dmastats":dmasummary,"uc32chart1":json.dumps(list1),"dmastats":dmastats,}    
             # overview_nrg added by Chris Pantazis
+            # various consumer lists and values added by David Walker
             # to show Energy Consumption in Dashboard
-            # This goes to the Dashboard
+            # NO! This goes to the Dashboard! Oh My God. Spaghetti Code Attack!
+            checkboxes, selects = ihousehold.getHouseholdData(household.id)
             data = {
+                "list_100" : range(101),
+                "water_pricing_list" : zip(range(1,8), ["Flat rate tariff", "Water metering tariff", "Rising block tariff", "Declining block tariff", "Seasonal tariff", "Time-of-day tariff", "Social tariff"]),
+                "property_type_list" :  zip(range(1,5), ["Detached", "Semi Detached", "Flat", "Tenement"]),
+                "construction_period_list" : zip(range(1,5), ["Before 1970","1971-1990","1991-2000","After 2001"]),
+                "ownership_status_list" : zip(range(1,3), ["Owned","Rented"]),
+                "property_area_list" : zip(range(1,5), ["<= 50","51 - 100", "101 - 200", "> 200"]),
+                "garden_area_list" : zip(range(1,5), ["<= 20","21 - 50", "51 - 100", "> 100"]),
+                "pervious_area_list" : zip(range(1,5), ["<= 20","21 - 50", "51 - 70", "> 70"]),
+                "roof_area_list" : zip(range(1,5), ["<= 50","51 - 100", "101 - 200", "> 200"]),
+                "checkboxes" : checkboxes,
+                "selects" : selects,
                 "household": household,
                 "overview": values['overview'],
                 "overview_nrg": values['overview_nrg'],
@@ -491,7 +509,7 @@ class consumer(TemplateView):
                 "endate": endate,
                 "c_uc32data": json.dumps(c_uc32data),
                 "c_uc33data": json.dumps(c_uc33data),
-                "c_uc34data": json.dumps(c_uc34data),
+                "c_uc34data": json.dumps(c_uc34data),                
                 "c_uc41data": json.dumps(c_uc41data),
                 "c_uc52data": json.dumps(c_uc52data),
                 "c_uc53data": json.dumps(c_uc53data),

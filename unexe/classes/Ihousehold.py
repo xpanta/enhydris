@@ -21,7 +21,56 @@ class ihousehold():
     def __init__(self):
         self.electric = 18 #percentage of electricity usage from water - according to research/white paper or other resources  - see D222 documentation
         #column of the household class as defined in table
-        self.col = ['num_of_occupants','property_type','contruction_period']
+        self.col = ['id', 'num_of_occupants','property_type','contruction_period', 'property_size', 'ownership_status_id', 'construction_period_id']
+
+
+    @staticmethod
+    def getHouseholdData(hid):
+        """
+        Added to extract the data needed to populate the householder settings form prior to the user editing it.
+        @author David Walker
+        @date 03/11/2014
+        @param hid: The household ID. 
+        @return: Two dictionaries: one of values for checkboxes, the other for select lists.
+        """
+        # Get the household.
+        hh = Household.objects.filter(id=hid)[0]
+        
+        # Will return a dictionary of properties - templates will check for the presence of a key
+        # and tick the appropriate check box if it is found.
+        properties = {}
+        
+        # Water heating sources.
+        for whs in hh.water_heaters.all():
+            properties[whs.descr.lower().replace(" ", "_").replace("/", "_")] = 1
+        
+        # Efficient appliances.
+        for app in hh.efficient_appliances.all():
+            properties[app.descr.lower().replace(" ", "_").replace("/", "_")] = 1
+            
+        # Outdoor facilities.
+        for fac in hh.outdoor_facilities.all():
+            properties[fac.descr.lower().replace(" ", "_")] = 1
+            
+        # Water DMS.
+        for dms in hh.water_dms.all():
+            properties[dms.descr.lower().replace(" ", "_").replace("/", "_")] = 1
+            
+        # Now extract the values for the select lists.
+        selects = {}
+        
+        for item in hh.arithmetic_values_items.all():
+            selects[item.subcategory.form_component] = item.number
+            
+        # Set the values for the ownership and construction - use the IDs, not the string values.
+        selects["ownership_status_id"] = hh.ownership_status_id
+        selects["construction_period_id"] = hh.construction_period_id
+        selects["property_type_id"] = hh.property_type_id
+        selects["water_pricing_id"] = hh.water_pricing_id
+
+        return properties, selects
+        
+        
 
     '''
     This method analyse the data and calculate the bills using different tariff schemes
@@ -939,6 +988,7 @@ class ihousehold():
         
     #logged user: It is the currently logged user
     def gethousehold(self,loggeduser,id=None):
+        #print "gethousehold function"
         try:
             if id is not None:
                 household = Household.objects.filter(pk=id)
@@ -952,14 +1002,79 @@ class ihousehold():
     #logged user: It is the currently logged user
     #values is a dictionary of values. It must be the combination of {database column:database value}
     def updatehousehold(self,loggeduser,values):
-        try:
-            del values['csrfmiddlewaretoken'] #make sure to get rid of any csrfmiddlewaretoken before comitting saving to db 
-        except:
-            pass
+        # Update household values.
+        householdKeys = ["property_size", "construction_period", "num_of_occupants", "ownership_status", "property_type", "water_pricing"]
+        householdValues = {key : values[key] for key in householdKeys}
+        households = Household.objects.filter(user__pk=loggeduser.pk) 
+        households.update(**householdValues) 
+        
+        # Update the water heating sources values.
+        household = households[0]
+        heatingSources = WaterHeater.objects.all()
+        householdHeatingSources = household.water_heaters.all()
+        for whs in heatingSources:
+            key = str(whs.descr).lower().replace(" ", "_")
+            if (not key in values) and whs in householdHeatingSources:
+                household.water_heaters.remove(whs.id)
+            if key in values and (not whs in householdHeatingSources):
+                household.water_heaters.add(whs.id)
+        
+        # Update the efficient appliances values.
+        appliances = EfficientAppliance.objects.all()
+        householdAppliances = household.efficient_appliances.all()
+        for app in appliances:
+            key = str(app.descr).lower().replace(" ", "_").replace("/", "_")
+            if (not key in values) and app in householdAppliances:
+                household.efficient_appliances.remove(app.id)
+            elif key in values and (not app in householdAppliances):
+                print "\tAdding %d" % app.id
+                household.efficient_appliances.add(app.id)
                 
-        try:
-            loggeduser.households.filter(user__pk=loggeduser.pk).update(**values)
-            return True  #household details save successfully
-        except:
-            return -1 #indcates other issues or errors, it needs to be redirected to universal error            
+        # Update the outdoor facilities values.
+        outdoorFacilities = OutdoorFacility.objects.all()
+        householdOutDoorFacilities = household.outdoor_facilities.all()
+        for fac in outdoorFacilities:
+            key = str(fac.descr).lower().replace(" ", "_")
+            if (not key in values) and fac in householdOutDoorFacilities:
+                household.outdoor_facilities.remove(fac.id)
+            elif key in values and (not fac in householdOutDoorFacilities):
+                household.outdoor_facilities.add(fac.id)
+        
+        # Update water demand management facilities.
+        waterDMS = WaterDMS.objects.all()
+        householdWaterDMS = household.water_dms.all()
+        for dms in waterDMS:
+            key = str(dms.descr).lower().replace(" ", "_")
+            if (not key in values) and dms in householdWaterDMS:
+                household.water_dms.remove(dms.id)
+            elif key in values and (not dms in householdWaterDMS):
+                household.water_dms.add(dms.id)
+                
+        # Update the sub category values.
+        for valSC in HouseholdValueSubcategory.objects.all():
+            key = valSC.form_component
+            valItems = ArithmeticValueItem.objects.filter(household_id=household.id, subcategory_id=valSC.id)
+            if key in values and len(valItems) == 0:
+                # It is present but not in the DB - add a new item.
+                household.arithmetic_values_items.add(ArithmeticValueItem(None, valSC.id, household.id, values[key]))
+            elif key in values and len(valItems) > 0:
+                # It is present in the DB but needs updating. Assume
+                valItems[0].number = values[key]
+                valItems[0].save()
+                
+        # Removed by David - code update to complete the form handling.
+        #
+        #try:
+        #    del values['csrfmiddlewaretoken'] #make sure to get rid of any csrfmiddlewaretoken before comitting saving to db 
+        #except:
+        #    pass
+        #
+        #                
+        #try:
+        #    loggeduser.households.filter(user__pk=loggeduser.pk).update(**values)
+        #    return True  #household details save successfully
+        #except:
+        #    print "DJW: An error occurred"
+        #    return -1 #indcates other issues or errors, it needs to be redirected to universal error
+      
             
