@@ -19,6 +19,8 @@ def calc_costs(request, username):
         curr_yr = today.year
         sel_mo = request.GET.get("month", curr_mo)
         sel_yr = request.GET.get("year", curr_yr)
+        #! TODO Get dishwasher from Database / household settings
+        dish_washer = 1
         total_cons = 0
         household = user.households.all()[0]  # get user household id
         series = iseries()
@@ -35,7 +37,10 @@ def calc_costs(request, username):
                     cons = 0
                 total_cons += cons
         total_cons *= 1000
-        energy = round(total_cons * 0.17, 1)
+        perc = 0.13
+        if dish_washer:
+            perc = 0.18
+        energy = round(total_cons * perc, 1)
         data = {
             "energy": energy,
             "total": round(total_cons, 1),
