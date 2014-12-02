@@ -1,0 +1,119 @@
+{% load i18n %}
+{% load sekizai_tags %}
+{% load general_tags %}
+
+
+<h2 class="text-center">{% trans "Per appliance Energy related to water consumption" %}</h2>
+<div class="col-md-7">
+    <div id="pie_uc22" style="width: 100%; height: 600px;">
+
+
+    </div>
+</div>
+<div class="col-md-5">
+    <table class="table table-condensed table-striped table-hover">
+        <thead class="">
+        <tr>
+            <th>{% trans "Appliance" %}</th>
+            <th>{% trans "Consumption" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% if has_water_heater %}
+                <tr>
+                    <td>{% trans "Water Heater" %}</td>
+                    <td>{{ water_heater|floatformat:1 }} kWh</td> </tr>
+                <tr>
+            {% endif %}
+            {% if has_dish_washer %}
+                <tr>
+                    <td>{% trans "Dish Washer" %}</td>
+                    <td>{{ dish_washer|floatformat:1 }} kWh</td> </tr>
+                <tr>
+            {% endif %}
+            {% if has_dryer %}
+                <tr>
+                    <td>{% trans "Dryer" %}</td>
+                    <td>{{ dryer|floatformat:1 }} kWh</td> </tr>
+                <tr>
+            {% endif %}
+            {% if has_cloth_washer %}
+                <tr>
+                    <td>{% trans "Cloth Washer" %}</td>
+                    <td>{{ cloth_washer|floatformat:1 }} kWh</td> </tr>
+                <tr>
+            {% endif %}
+            <tr>
+                <td>{% trans "Heating and Cooling" %}</td>
+                <td>{{ heating_and_cooling|floatformat:1 }} kWh</td> </tr>
+            <tr>
+            <tr>
+                <td>{% trans "Refrigerator" %}</td>
+                <td>{{ refrigerator|floatformat:1 }} kWh</td> </tr>
+            <tr>
+            <tr>
+                <td>{% trans "Lighting" %}</td>
+                <td>{{ lighting|floatformat:1 }} kWh</td> </tr>
+            <tr>
+            <tr>
+                <td>{% trans "Electronics" %}</td>
+                <td>{{ electronics|floatformat:1 }} kWh</td> </tr>
+            <tr>
+            <tr>
+                <td>{% trans "other" %}</td>
+                <td>{{ other|floatformat:1 }} kWh</td> </tr>
+            <tr>
+            <tr>
+                <td>
+                    <strong>{% trans "Total Energy Consumption in kWh" %}</strong>
+                </td>
+                <td>
+                    <strong>{{ total }} {% trans "kWh" %}</strong>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var pie_data = [
+        {% if has_water_heater %}
+            { label: '{% trans "Water Heater" %}', data: {{ water_heater|floatformat:1 }}, color: "#4B5075" },
+        {% endif %}
+        {% if has_dish_washer %}
+            { label: '{% trans "Dish Washer" %}', data: {{ dish_washer|floatformat:1 }}, color: "#976384" },
+        {% endif %}
+        {% if has_dryer %}
+            { label: '{% trans "Dryer" %}', data: {{ dryer|floatformat:1 }}, color: "#7B6D63" },
+        {% endif %}
+        {% if has_cloth_washer %}
+            { label: '{% trans "Cloth Washer" %}', data: {{ cloth_washer|floatformat:1 }}, color: "#B13406" },
+        {% endif %}
+        { label: '{% trans "Heating and Cooling" %}', data: {{ heating_and_cooling|floatformat:1 }} },
+        { label: '{% trans "Refrigerator" %}', data: {{ refrigerator|floatformat:1 }} },
+        { label: '{% trans "Lighting" %}', data: {{ lighting|floatformat:1 }} },
+        { label: '{% trans "Electronics" %}', data: {{ electronics|floatformat:1 }} },
+        { label: '{% trans "Other" %}', data: {{ other|floatformat:1 }} }
+    ];
+
+    var pie_chart = $("#pie_uc22");
+
+    $.plot(pie_chart, pie_data, {
+        series: {
+            pie: {
+                show: true,
+                radius: 6 / 7,
+                label:{
+                    show: true,
+                    formatter: function (label, series) {
+                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;text-shadow: 2px 2px 2px rgba(150, 150, 150, 0.81);">' + label + '<br/>' + series.data[0][1] + ' kWh. </div>';
+
+                    }
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    });
+</script>
