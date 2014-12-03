@@ -1004,7 +1004,10 @@ class ihousehold():
     def updatehousehold(self,loggeduser,values):
         # Update household values.
         householdKeys = ["property_size", "construction_period", "num_of_occupants", "ownership_status", "property_type", "water_pricing"]
-        householdValues = {key : values[key] for key in householdKeys}
+        print values
+        for key in householdKeys:
+            if key in values:
+                householdValues[key] = values[key]
         households = Household.objects.filter(user__pk=loggeduser.pk) 
         households.update(**householdValues) 
         
