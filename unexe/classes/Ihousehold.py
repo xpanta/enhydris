@@ -1004,7 +1004,7 @@ class ihousehold():
     def updatehousehold(self,loggeduser,values):
         # Update household values.
         householdKeys = ["property_size", "construction_period", "num_of_occupants", "ownership_status", "property_type", "water_pricing"]
-        print values
+        householdValues = {}
         for key in householdKeys:
             if key in values:
                 householdValues[key] = values[key]
