@@ -393,7 +393,7 @@
  			  <div class="input-group">
  					<div class="col-md-2">
 				    <label>{%trans "Property area (m<sup>2</sup>, e.g. 92.00)" %}</label>
-				    <input type="text" class="form_control" name="property_size" id="property_size" value="{{ household.property_size }}"/>
+				    <input type="text" class="form_control" name="property_size" id="property_size" value="{% if household.property_size %} {{ household.property_size }} {% else %} 0.0 {% endif %}"/>
 				    </div>
  					<div class="col-md-2">
 				    <label>{% trans "Garden area (m<sup>2</sup>)" %}</label>
