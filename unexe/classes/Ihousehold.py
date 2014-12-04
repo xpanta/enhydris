@@ -1007,7 +1007,8 @@ class ihousehold():
         householdValues = {}
         for key in householdKeys:
             if key in values:
-                householdValues[key] = values[key]
+                if values[key] != 0:
+                    householdValues[key] = values[key]
         households = Household.objects.filter(user__pk=loggeduser.pk) 
         households.update(**householdValues) 
         
@@ -1030,7 +1031,6 @@ class ihousehold():
             if (not key in values) and app in householdAppliances:
                 household.efficient_appliances.remove(app.id)
             elif key in values and (not app in householdAppliances):
-                print "\tAdding %d" % app.id
                 household.efficient_appliances.add(app.id)
                 
         # Update the outdoor facilities values.
@@ -1058,8 +1058,9 @@ class ihousehold():
             key = valSC.form_component
             valItems = ArithmeticValueItem.objects.filter(household_id=household.id, subcategory_id=valSC.id)
             if key in values and len(valItems) == 0:
-                # It is present but not in the DB - add a new item.
-                household.arithmetic_values_items.add(ArithmeticValueItem(None, valSC.id, household.id, values[key]))
+                # It is present but not in the DB - add a new item. First check that the value is not 0.
+                if values[key] != 0:
+                    household.arithmetic_values_items.add(ArithmeticValueItem(None, valSC.id, household.id, values[key]))
             elif key in values and len(valItems) > 0:
                 # It is present in the DB but needs updating. Assume
                 valItems[0].number = values[key]
