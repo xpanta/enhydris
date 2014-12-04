@@ -333,3 +333,8 @@ class UserNotifications(models.Model):
     def __unicode__(self):
         return self.user.username + " > " + self.notification
 
+
+class UsageData(models.Model):
+    user = models.ForeignKey(User, related_name="usage_data")
+    enter_ts = models.DateTimeField(auto_now_add=True)
+    exit_ts = models.DateTimeField(auto_now_add=True)

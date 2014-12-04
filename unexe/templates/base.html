@@ -94,6 +94,7 @@
 
 <script type="text/javascript">
 
+
 function household(href)
 {
 	//href is the menu index of settings tab
@@ -115,6 +116,12 @@ function water()
 	//var chartwidth = document.getElementById("panel").offsetWidth; //get the width of the app container set by responsive bootstrap
 	//alert(chartwidth);	
 }
+
+    $(window).bind('beforeunload', function() {
+        var user = "{{ user.username }}";
+        var url = "{% url 'user_exits' %}";
+        ajaxutil.postAjax({'user': user}, url) ;
+    });
 
 $(window).load(function() {
 	/* initialising function when the page is loaded
@@ -143,7 +150,9 @@ $(window).load(function() {
     $("#user_events").load("{% url 'user_events' user.username %}?f=new");
 
 });
-</script>	
+
+
+</script>
 </head>
 <body>
 <div class="col-md-12 hide" id="overlay"><img id="loading" src="{{STATIC_URL}}/images/spinner.gif"></div>

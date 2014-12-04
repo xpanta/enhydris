@@ -2,9 +2,9 @@
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
     <soap:Body>
         <AddCaller xmlns="https://services.up-ltd.co.uk/adminservice_iwidget/">
-            <name>iWIDGET Householder Application</name>
-            <tag>hhApp</tag>
-            <loginURL>http://iwidget.up-ltd.co.uk/core/sso/auth/</loginURL>
+            <name>iWIDGET Householder Testing Application</name>
+            <tag>devhhApp</tag>
+            <loginURL>http://deviwidget.up-ltd.co.uk/core/sso/auth/</loginURL>
             <serviceUsername>IWidgetService</serviceUsername>
             <servicePassword>1-Widg3t##Crypt0Service</servicePassword>
         </AddCaller>

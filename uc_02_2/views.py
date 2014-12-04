@@ -7,7 +7,8 @@ from django.shortcuts import render_to_response
 from math import isnan
 from itertools import izip
 from datetime import datetime
-from iwidget.models import TSTEP_HOURLY, VAR_PERIOD, VAR_ENERGY_PERIOD
+from iwidget.models import TSTEP_HOURLY, VAR_PERIOD, \
+    VAR_ENERGY_PERIOD, Household, EfficientAppliance
 from unexe.classes.Iseries import iseries
 
 
@@ -35,6 +36,8 @@ def calculate_appliance_energy(request, username):
             "electronics": 7,
             "other": 8,
         }
+
+        apps = user.households.all()[0].efficient_appliances.all()
 
         init_total = float(sum(init.values()))
 

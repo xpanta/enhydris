@@ -8,7 +8,8 @@ from django.contrib.auth import login, authenticate, logout
 #!TODO import ugetext for internationalizing texts
 from django.contrib.auth.models import User
 import logging
-from iwidget.models import UserValidationKey, Household
+from django.views.decorators.csrf import csrf_exempt
+from iwidget.models import UserValidationKey, Household, UsageData
 import requests
 from xml.dom import minidom
 from django.core.mail import EmailMessage
@@ -17,6 +18,7 @@ from django.template import Context
 import os
 import binascii
 from sso.common import encrypt_and_hash_pwd
+from datetime import datetime
 
 
 def sso_redirect(request):
@@ -67,6 +69,7 @@ def sso_redirect(request):
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             #user = authenticate(username=user.username, password=user.password)
             login(request, user)
+            UsageData.objects.create(user=user)
             popup = False
             try:
                 uvk = UserValidationKey.objects.get(user=user)
@@ -83,6 +86,23 @@ def sso_redirect(request):
     else:
         logout(request)
         return HttpResponseRedirect(reverse("login"))
+
+
+@csrf_exempt
+def user_exits(request):
+    if request.method == "POST":
+        username = request.POST.get('user', None)
+        if username:
+            user = User.objects.get(username=username)
+            ud = UsageData.objects.filter(user=user).order_by('-enter_ts')[0]
+            now = datetime.now()
+            ud.exit_ts = now
+            ud.save()
+            return HttpResponse("OK")
+        else:
+            raise Http404("not a valid user")
+    else:
+        raise Http404("not a valid method")
 
 
 def reset_form(request):
