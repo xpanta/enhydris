@@ -1002,69 +1002,76 @@ class ihousehold():
     #logged user: It is the currently logged user
     #values is a dictionary of values. It must be the combination of {database column:database value}
     def updatehousehold(self,loggeduser,values):
-        # Update household values.
-        householdKeys = ["property_size", "construction_period", "num_of_occupants", "ownership_status", "property_type", "water_pricing"]
-        householdValues = {}
-        for key in householdKeys:
-            if key in values:
-                if values[key] != "0":
-                    householdValues[key] = values[key]
-        households = Household.objects.filter(user__pk=loggeduser.pk) 
-        households.update(**householdValues) 
+        try:
+            # Update household values.
+            householdKeys = ["property_size", "construction_period", "num_of_occupants", "ownership_status", "property_type", "water_pricing"]
+            householdValues = {}
+            for key in householdKeys:
+                if key in values:
+                    if values[key] != "0":
+                        householdValues[key] = values[key]
+            households = Household.objects.filter(user__pk=loggeduser.pk) 
+            households.update(**householdValues) 
+            
+            # Update the water heating sources values.
+            household = households[0]
+            heatingSources = WaterHeater.objects.all()
+            householdHeatingSources = household.water_heaters.all()
+            for whs in heatingSources:
+                key = str(whs.descr).lower().replace(" ", "_")
+                if (not key in values) and whs in householdHeatingSources:
+                    household.water_heaters.remove(whs.id)
+                if key in values and (not whs in householdHeatingSources):
+                    household.water_heaters.add(whs.id)
+            
+            # Update the efficient appliances values.
+            appliances = EfficientAppliance.objects.all()
+            householdAppliances = household.efficient_appliances.all()
+            for app in appliances:
+                key = str(app.descr).lower().replace(" ", "_").replace("/", "_")
+                if (not key in values) and app in householdAppliances:
+                    household.efficient_appliances.remove(app.id)
+                elif key in values and (not app in householdAppliances):
+                    household.efficient_appliances.add(app.id)
+                    
+            # Update the outdoor facilities values.
+            outdoorFacilities = OutdoorFacility.objects.all()
+            householdOutDoorFacilities = household.outdoor_facilities.all()
+            for fac in outdoorFacilities:
+                key = str(fac.descr).lower().replace(" ", "_")
+                if (not key in values) and fac in householdOutDoorFacilities:
+                    household.outdoor_facilities.remove(fac.id)
+                elif key in values and (not fac in householdOutDoorFacilities):
+                    household.outdoor_facilities.add(fac.id)
+            
+            # Update water demand management facilities.
+            waterDMS = WaterDMS.objects.all()
+            householdWaterDMS = household.water_dms.all()
+            for dms in waterDMS:
+                key = str(dms.descr).lower().replace(" ", "_")
+                if (not key in values) and dms in householdWaterDMS:
+                    household.water_dms.remove(dms.id)
+                elif key in values and (not dms in householdWaterDMS):
+                    household.water_dms.add(dms.id)
+                    
+            # Update the sub category values.
+            for valSC in HouseholdValueSubcategory.objects.all():
+                key = valSC.form_component
+                valItems = ArithmeticValueItem.objects.filter(household_id=household.id, subcategory_id=valSC.id)
+                if key in values and len(valItems) == 0:
+                    # It is present but not in the DB - add a new item. First check that the value is not 0.
+                    if values[key] != 0:
+                        household.arithmetic_values_items.add(ArithmeticValueItem(None, valSC.id, household.id, values[key]))
+                elif key in values and len(valItems) > 0:
+                    # It is present in the DB but needs updating. Assume
+                    valItems[0].number = values[key]
+                    valItems[0].save()
+                    
+            # Updates were successful, return True.
+            return True
         
-        # Update the water heating sources values.
-        household = households[0]
-        heatingSources = WaterHeater.objects.all()
-        householdHeatingSources = household.water_heaters.all()
-        for whs in heatingSources:
-            key = str(whs.descr).lower().replace(" ", "_")
-            if (not key in values) and whs in householdHeatingSources:
-                household.water_heaters.remove(whs.id)
-            if key in values and (not whs in householdHeatingSources):
-                household.water_heaters.add(whs.id)
-        
-        # Update the efficient appliances values.
-        appliances = EfficientAppliance.objects.all()
-        householdAppliances = household.efficient_appliances.all()
-        for app in appliances:
-            key = str(app.descr).lower().replace(" ", "_").replace("/", "_")
-            if (not key in values) and app in householdAppliances:
-                household.efficient_appliances.remove(app.id)
-            elif key in values and (not app in householdAppliances):
-                household.efficient_appliances.add(app.id)
-                
-        # Update the outdoor facilities values.
-        outdoorFacilities = OutdoorFacility.objects.all()
-        householdOutDoorFacilities = household.outdoor_facilities.all()
-        for fac in outdoorFacilities:
-            key = str(fac.descr).lower().replace(" ", "_")
-            if (not key in values) and fac in householdOutDoorFacilities:
-                household.outdoor_facilities.remove(fac.id)
-            elif key in values and (not fac in householdOutDoorFacilities):
-                household.outdoor_facilities.add(fac.id)
-        
-        # Update water demand management facilities.
-        waterDMS = WaterDMS.objects.all()
-        householdWaterDMS = household.water_dms.all()
-        for dms in waterDMS:
-            key = str(dms.descr).lower().replace(" ", "_")
-            if (not key in values) and dms in householdWaterDMS:
-                household.water_dms.remove(dms.id)
-            elif key in values and (not dms in householdWaterDMS):
-                household.water_dms.add(dms.id)
-                
-        # Update the sub category values.
-        for valSC in HouseholdValueSubcategory.objects.all():
-            key = valSC.form_component
-            valItems = ArithmeticValueItem.objects.filter(household_id=household.id, subcategory_id=valSC.id)
-            if key in values and len(valItems) == 0:
-                # It is present but not in the DB - add a new item. First check that the value is not 0.
-                if values[key] != 0:
-                    household.arithmetic_values_items.add(ArithmeticValueItem(None, valSC.id, household.id, values[key]))
-            elif key in values and len(valItems) > 0:
-                # It is present in the DB but needs updating. Assume
-                valItems[0].number = values[key]
-                valItems[0].save()
+        except:
+            return -1 # Indicates other issues or errors, it needs to be redirected to universal error
                 
         # Removed by David - code update to complete the form handling.
         #
