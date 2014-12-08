@@ -1007,7 +1007,7 @@ class ihousehold():
         householdValues = {}
         for key in householdKeys:
             if key in values:
-                if values[key] != 0:
+                if values[key] != "0":
                     householdValues[key] = values[key]
         households = Household.objects.filter(user__pk=loggeduser.pk) 
         households.update(**householdValues) 
