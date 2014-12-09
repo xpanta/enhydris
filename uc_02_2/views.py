@@ -20,10 +20,28 @@ def calculate_appliance_energy(request, username):
         curr_yr = today.year
         sel_mo = request.GET.get("month", curr_mo)
         sel_yr = request.GET.get("year", curr_yr)
-        water_heater = 1
-        cloth_washer = 0
-        dish_washer = 0
-        dryer = 0
+        from unexe.classes.Ihousehold import ihousehold
+        household = user.households.all()[0]
+        checkboxes, selects = ihousehold.getHouseholdData(household.id)
+        num = selects['appl_boiler']
+        if num > 0:
+            water_heater = 1
+        else:
+            water_heater = 0
+        num = selects['appl_washing']
+        if num > 0:
+            cloth_washer = 1
+        else:
+            cloth_washer = 0
+        num = selects['appl_dishwasher']
+        if num > 0:
+            dish_washer = 1
+        else:
+            dish_washer = 0
+        if 'dryer' in checkboxes.keys():
+            dryer = 1
+        else:
+            dryer = 0
 
         init = {
             "water_heater": water_heater * 13,
@@ -36,8 +54,6 @@ def calculate_appliance_energy(request, username):
             "electronics": 7,
             "other": 8,
         }
-
-        apps = user.households.all()[0].efficient_appliances.all()
 
         init_total = float(sum(init.values()))
 

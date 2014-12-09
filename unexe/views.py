@@ -481,7 +481,7 @@ class consumer(TemplateView):
             # overview_nrg added by Chris Pantazis
             # various consumer lists and values added by David Walker
             # to show Energy Consumption in Dashboard
-            # NO! This goes to the Dashboard! Oh My God. Spaghetti Code Attack!
+            # All those data go to the Dashboard! Oh yes!
             checkboxes, selects = ihousehold.getHouseholdData(household.id)
             data = {
                 "list_100" : range(101),

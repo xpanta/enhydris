@@ -19,14 +19,49 @@ def calculate_appliance_consumption(request, username):
         curr_yr = today.year
         sel_mo = request.GET.get("month", curr_mo)
         sel_yr = request.GET.get("year", curr_yr)
-        wc = 1
-        shower = 1
-        tap = 2
-        washing_machine = 0
-        dish_washer = 0
-        bath = 0
+
+        from unexe.classes.Ihousehold import ihousehold
+        household = user.households.all()[0]
+        checkboxes, selects = ihousehold.getHouseholdData(household.id)
+        num = selects['appl_shower']
+        if num > 0:
+            shower = 1
+        else:
+            shower = 0
+        num = selects['appl_washing']
+        if num > 0:
+            washing_machine = 1
+        else:
+            washing_machine = 0
+        num = selects['appl_dishwasher']
+        if num > 0:
+            dish_washer = 1
+        else:
+            dish_washer = 0
+        num = selects['appl_bath']
+        if num > 0:
+            bath = 1
+        else:
+            bath = 0
+        num = selects['appl_toilet']
+        if num > 0:
+            wc = 1
+        else:
+            wc = 0
+        num = selects['appl_sink']
+        if num > 0:
+            tap = 1
+        else:
+            tap = 0
+        num1 = selects['out_areas_garden']
+        num2 = selects['out_areas_pervious']
+        num3 = selects['out_areas_roof']
+        if num1 > 0 or num2 > 0 or num3 > 0:
+            outdoor = 1
+        else:
+            outdoor = 0
+
         other = 1
-        outdoor = 0
 
         wcs = {
             "wc": 0.3,
