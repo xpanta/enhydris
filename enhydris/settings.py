@@ -231,6 +231,8 @@ EMAIL_HOST_USER = 'xpanta'
 EMAIL_HOST_PASSWORD = 'tre5183'
 DEFAULT_FROM_EMAIL = 'no-reply@iwidget.up-ltd.co.uk'
 
+SSO_APP = 'hhApp'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

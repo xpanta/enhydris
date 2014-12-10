@@ -44,7 +44,7 @@ from iwidget.utils import statistics_on_daily
 from pthelma.timeseries import Timeseries
 from enhydris.hcore.models import ReadTimeStep
 from django.db.models import Avg,Max,Min,Count,Sum
-
+from enhydris.settings import SSO_APP
 #from enhydris.hcore.models import (Lookup as HLookup, Timeseries, Gpoint,
 #        Garea, Instrument)
 # added some comments!
@@ -182,7 +182,7 @@ class logout(TemplateView):
 
     def get(self, request):
         auth_logout(request)
-        return HttpResponseRedirect("https://services.up-ltd.co.uk/iwidget/?c=hhApp")
+        return HttpResponseRedirect("https://services.up-ltd.co.uk/iwidget/?c=%s" % SSO_APP)
 
 #change user password
 class changepassword(TemplateView):

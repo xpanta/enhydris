@@ -8,7 +8,7 @@ from iwidget.views import TimeseriesDetailView
     because it is easier for the user to remember that
 """
 from django.views.generic.base import RedirectView
-
+from enhydris.settings import SSO_APP
 #from enhydris.iwidget.views import (timeseries_detail, index,
 #        household_view, dma_view, household_properties)
 
@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     url(r'^logout$', logout.as_view(), name='logout'),  # logout
     #url(r'^super/$', login.as_view(), name='adminlogin'),  # logout
     url(r'^login/$', RedirectView.as_view(
-        url='https://services.up-ltd.co.uk/iwidget/?c=hhApp', permanent=False),
+        url='https://services.up-ltd.co.uk/iwidget/?c=%s' % SSO_APP, permanent=False),
         name='login'),
     #url(r'^login$', login.as_view(), name='login'),  # logout
     url(r'^changepassword$', login_required(changepassword.as_view()),

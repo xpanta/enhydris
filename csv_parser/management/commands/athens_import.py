@@ -69,6 +69,12 @@ def process_file(_filename, _path, force):
             beg = meter_id.rfind("_") + 1
             end = meter_id.rfind("/")
             serial_no = meter_id[beg:end]
+            # TODO! Find a better way to handle meter swaps
+            """ because meter was swapped, the meter id was changed.
+                we need to append new data to old meter id
+            """
+            if serial_no == "005E4F":
+                serial_no = "006047"
             try:  # find previously inserted value
                 _dict = meter_data[serial_no]
                 _dict[_type].append((dt, consumption))

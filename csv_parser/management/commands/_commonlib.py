@@ -25,6 +25,7 @@ from math import isnan
 from random import randint
 from datetime import datetime, timedelta
 import numpy as np
+from enhydris.settings import SSO_APP
 
 AVERAGE_UNIT_WATER_CONSUMPTION = 100.000
 log = logging.getLogger(__name__)
@@ -135,21 +136,25 @@ def create_user(identifier, m_id):
                                 email=identifier+'@example.com')
         u.set_password('iwidgetuser')
         u.save()
-        u.profile.fname = u.first_name
-        u.profile.lname = u.last_name
-        u.profile.save()
-        # assign random password
-        import os
-        import binascii
-        key = str(binascii.hexlify(os.urandom(4)).upper())
-        key = key.replace('E', 'B')
-        key = key.replace('0', '1')
-        if not key[0].isalpha():
-            key = "A" + key[:-1]
-        UserValidationKey\
-            .objects.get_or_create(user=u, identifier=m_id, key=key)
-        u.set_password(key)
-        u.save()
+        """ in case of the standard householder SSO APP (ie hhApp)
+            we create a more complex password. Otherwise we keep the easy one.
+        """
+        if SSO_APP == "hhApp":
+            u.profile.fname = u.first_name
+            u.profile.lname = u.last_name
+            u.profile.save()
+            # assign random password
+            import os
+            import binascii
+            key = str(binascii.hexlify(os.urandom(4)).upper())
+            key = key.replace('E', 'B')
+            key = key.replace('0', '1')
+            if not key[0].isalpha():
+                key = "A" + key[:-1]
+            UserValidationKey\
+                .objects.get_or_create(user=u, identifier=m_id, key=key)
+            u.set_password(key)
+            u.save()
         return u, True
 
 
