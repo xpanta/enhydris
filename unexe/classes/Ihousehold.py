@@ -1069,9 +1069,8 @@ class ihousehold():
                     
             # Updates were successful, return True.
             return True
-        
         except:
-            return -1 # Indicates other issues or errors, it needs to be redirected to universal error
+           return -1 # Indicates other issues or errors, it needs to be redirected to universal error
                 
         # Removed by David - code update to complete the form handling.
         #

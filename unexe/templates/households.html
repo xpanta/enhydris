@@ -533,8 +533,21 @@
 				    </select>
 				    </div>
 			  </div>	
-			  <div class="input-group col-md-2">
-			  		<div class="col-md-12">
+			  <div class="input-group col-md-12">
+			  		<div class="col-md-2">
+				    <label>{% trans "Dryer" %}</label>
+				    <select class="form-control numddl" name="appl_dryer">
+				    	<option value="0">Please Select</option>
+						{% for i in list_100 %}
+							{% if selects.appl_dryer == i %}
+								<option value="{{ i }}" selected>{{ i }}</option>
+							{% else %}
+								<option value="{{ i }}">{{ i }}</option>
+							{% endif %}
+						{% endfor %}	
+				    </select>
+			   		</div>
+			  		<div class="col-md-2">
 				    <label>{% trans "Sink (Kitchen and WC)" %} 65</label>
 				    <select class="form-control numddl" name="appl_sink">
 				    	<option value="0">Please Select</option>
@@ -569,9 +582,6 @@
 					</label>
 					<label class="checkbox-inline">
 					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="drip_irrigation_or_sprinkler_timers"{% if checkboxes.drip_irrigation_or_sprinkler_timers == 1 %}{%trans " checked" %}{% endif %}> Drip irrigation or Sprinkler timers
-					</label>	
-					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox7" value="option7" name="dryer"{% if checkboxes.dryer == 1 %}{%trans " checked" %}{% endif %}> Dryer
 					</label>																				
 				    </div> 			  
 			  </div>			  			  		    				
