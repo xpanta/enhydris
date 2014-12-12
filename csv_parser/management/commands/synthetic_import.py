@@ -32,7 +32,13 @@ def process_file(_filename, _path, force, zone):
 
     with open(path.join(_path, _filename), 'r') as f:
         rows = []
+        prev_cons = 0
+        x = 0
         for line in f:
+            if x == 0:
+                x += 1  # from first line we take only the consumption
+                prev_cons = float(line.split("|")[2])
+                continue
             rows.append(line)
         usernames = {}
         meter_data = {}
@@ -45,10 +51,13 @@ def process_file(_filename, _path, force, zone):
                 used_meters.append(meter_id)
                 series = initialize_series()  # new meter! Init new series!
             _dt = line[1]
-            consumption = line[2]
-            if not consumption:
-                consumption = 0
-            consumption = float(consumption)
+            cons = line[2]
+            if not cons:
+                cons = 0
+            cons = float(cons)
+            consumption = cons - prev_cons
+            prev_cons = cons  # keep it to subtract it on next iteration
+            consumption /= 1000
             _type = "WaterCold"
             dt = datetime.strptime(_dt, "%d-%m-%Y %H:%M:%S")
             #series[_type].append((dt, consumption))

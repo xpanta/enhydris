@@ -11,7 +11,7 @@ from _commonlib import process_data
 def notify_admins():
     from django.core.mail import EmailMessage
     subject = "iWIDGET: Missing Data File!"
-    to = ["xpanta@gmail.com", "LDant@waterwise.org.uk"]
+    to = ["xpanta@gmail.com"]
     from_email = 'no-reply@iwidget.up-ltd.co.uk'
     message = "Missing Data File for UK"
     msg = EmailMessage(subject, message, to=to, from_email=from_email)

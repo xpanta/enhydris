@@ -134,8 +134,7 @@ def create_user(identifier, m_id):
                                 is_active=True,
                                 is_superuser=False,
                                 email=identifier+'@example.com')
-        u.set_password('iwidgetuser')
-        u.save()
+        pwd = 'iwidgetuser'
         """ in case of the standard householder SSO APP (ie hhApp)
             we create a more complex password. Otherwise we keep the easy one.
         """
@@ -151,10 +150,11 @@ def create_user(identifier, m_id):
             key = key.replace('0', '1')
             if not key[0].isalpha():
                 key = "A" + key[:-1]
-            UserValidationKey\
-                .objects.get_or_create(user=u, identifier=m_id, key=key)
-            u.set_password(key)
-            u.save()
+            pwd = key
+        UserValidationKey\
+            .objects.get_or_create(user=u, identifier=m_id, key=pwd)
+        u.set_password(pwd)
+        u.save()
         return u, True
 
 

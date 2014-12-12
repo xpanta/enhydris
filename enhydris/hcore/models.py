@@ -660,8 +660,8 @@ def ReadTimeStep(id, timeseries_instance = None):
 
 # Class for user profiles
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, unique=True, verbose_name=_('Username'), 
-            related_name='profile')            
+    user = models.OneToOneField(User, unique=True, verbose_name=_('Username'),
+            related_name='profile')
     fname = models.CharField(_('First Name'),null=True,blank=True, max_length=30)
     lname = models.CharField(_('Last Name'),null=True,blank=True, max_length=30)
     address = models.CharField(_('Location'),null=True,blank=True,max_length=100)

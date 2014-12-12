@@ -1043,8 +1043,8 @@ def dashboard_view(request, household_id=None):
             has_energy = False
         else:
             has_energy = True
-    except IndexError:
-        pass
+    except (IndexError, ValueError):
+        has_energy = False
 
     if has_energy:
         ts_hourly_nrg = household.timeseries.filter(
