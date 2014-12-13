@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import logging
 from _commonlib import process_data
 
-_max = 1
+_max = 30
 
 
 def create_15_mins(dt, consumption):

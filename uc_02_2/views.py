@@ -38,7 +38,8 @@ def calculate_appliance_energy(request, username):
             dish_washer = 1
         else:
             dish_washer = 0
-        if 'dryer' in checkboxes.keys():
+        num = selects['appl_dryer']
+        if num > 0:
             dryer = 1
         else:
             dryer = 0
