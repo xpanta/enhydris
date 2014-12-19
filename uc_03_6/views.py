@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from unexe.classes.Iseries import iseries
 from itertools import izip
 from uc_03_1.lib.common import day_start, day_end
+import numpy as np
 #!TODO import ugetext for internationalizing texts
 
 
@@ -32,15 +33,17 @@ def event_history(request, username):
         day_cons = 0
         today = dates[-1]
         yesterday = today - timedelta(days=1)
-
+        # clear units array from nan values by using '0' instead
+        units1 = np.array(units)
+        units1[np.isnan(units1)] = 0
         for i in range(len(dates)):
             d = dates[i].date()
             t = dates[i].time()
             if d == yesterday.date():
                 if day_start <= t.hour <= day_end:  # day
-                    day_cons += units[i]
+                    day_cons += units1[i]
                 else:  # night
-                    night_cons += units[i]
+                    night_cons += units1[i]
         data = {
             'yesterday': yesterday,
             "events": events,
