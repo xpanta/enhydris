@@ -99,5 +99,6 @@ urlpatterns += patterns(
     url(r'^uc_02_1/',include('uc_02_1.urls')),
     url(r'^uc_02_2/',include('uc_02_2.urls')),
     url(r'^uc_02_3/',include('uc_02_3.urls')),
+    url(r'^uc_06_1/',include('uc_06_1.urls')),
     url(r'^core/',include('core.urls')),
 )

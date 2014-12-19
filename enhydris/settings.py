@@ -157,6 +157,7 @@ INSTALLED_APPS = (
     'enhydris.permissions',
     'tl',
     'uc_03_1',
+    'uc_06_1',
     'uc_03_6',
     'uc_01_2',
     'uc_02_1',

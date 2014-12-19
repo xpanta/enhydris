@@ -484,6 +484,7 @@ class consumer(TemplateView):
             # All those data go to the Dashboard! Oh yes!
             checkboxes, selects = ihousehold.getHouseholdData(household.id)
             data = {
+                "allowed_plegma_users": ["GR006047"],
                 "list_100" : range(101),
                 "water_pricing_list" : zip(range(1,8), ["Flat rate tariff", "Water metering tariff", "Rising block tariff", "Declining block tariff", "Seasonal tariff", "Time-of-day tariff", "Social tariff"]),
                 "property_type_list" :  zip(range(1,5), ["Detached", "Semi Detached", "Flat", "Tenement"]),

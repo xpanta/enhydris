@@ -1,0 +1,53 @@
+{% load sekizai_tags %}
+{% load i18n %}
+
+{% if user.username in allowed_plegma_users %}
+    {% addtoblock "js" %}
+        <script>
+        </script>
+    {% endaddtoblock %}
+        <div class="row">
+            <div class="pull-right col-md-1">
+                <img src="{{STATIC_URL}}/images/pdf.png" alt="Export to PDF" title="Export to PDF" /><img src="{{STATIC_URL}}/images/save.png" alt="Save Raw Data" title="Save Raw Data" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                    <h4 class="text-center">{% trans "Please, select the device type you want to update" %}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <button type="button" id="fetch_button" class="btn btn-lg btn-primary" onClick="fetchDeviceList('sockets', '{{ user.username }}');">
+                    <span class="glyphicon glyphicon-tint"></span> {% trans "Water Sockets" %}
+                </button>
+            </div>
+        </div>
+        <div class="row" id="_devices" style="border-top: 100px; padding-top: 50px;">
+        </div>
+    <script>
+        function fetchDeviceList(type, username){
+            $("#fetch_button").prop("disabled", true);
+            $("#_devices").load('{% url "uc_06_1_get" request.user.username %}?t=' + type);
+        }
+
+    </script>
+{% else %}
+    <div class="panel panel-default">
+        <!-- chart menu/toolbar -->
+        <div class="panel-heading clearfix" id="">
+            <div class="row">
+                <div class="pull-right col-md-1">
+                    <img src="{{STATIC_URL}}/images/pdf.png" alt="Export to PDF" title="Export to PDF" /><img src="{{STATIC_URL}}/images/save.png" alt="Save Raw Data" title="Save Raw Data" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="center-block">
+                        <p>{% trans "You do not have any devices registered with iWIDGET." %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
