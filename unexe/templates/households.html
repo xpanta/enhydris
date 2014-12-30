@@ -18,7 +18,7 @@
 			  		<div class="col-md-6">
 				    <label>{% trans "Number of Occupants" %} *</label>
 				    <select class="form-control numddl" name="num_of_occupants" id="num_of_occupants" required="true">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if household.num_of_occupants == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -32,7 +32,7 @@
 			  		<div class="col-md-6">
 				    <label>{% trans "Water pricing scheme" %}</label>
 				    <select class="form-control" id="water_pricing" name="water_pricing">
-						<option value="0">Please Select</option>
+						<option value="0">{% trans "Please Select" %}</option>
 				    	{% for L in water_pricing_list %}
 				    		{% if L.0 == selects.water_pricing_id %}
 				    			<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -50,7 +50,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Under" %} 16</label>
 				    <select class="form-control numddl" name="fcba_lt15">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.fcba_lt15 == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -63,7 +63,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Between" %} 16 - 25</label>
 				    <select class="form-control numddl" name="fcba_16_25">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.fcba_16_25 == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -76,7 +76,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Between" %} 26-35</label>
 				    <select class="form-control numddl" name="fcba_26_35">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.fcba_26_35 == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -89,7 +89,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Between" %} 36 - 45</label>
 				    <select class="form-control numddl" name="fcba_36_45">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.fcba_36_45 == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -102,7 +102,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Between" %} 46 - 55</label>
 				    <select class="form-control numddl" name="fcba_46_55">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.fcba_46_55 == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -115,7 +115,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Between" %} 56 - 65</label>
 				    <select class="form-control numddl" name="fcba_56_65">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.fcba_56_65 == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -130,7 +130,7 @@
 			  		<div class="col-md-12">
 				    <label>{% trans "Over" %} 65</label>
 				    <select class="form-control numddl" name="fcba_gt66">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.fcba_gt66 == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -147,7 +147,7 @@
  					<div class="col-md-6">
 				    <label>{%trans "Male" %}</label>
 				    <select class="form-control numddl" name="gender_male">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.gender_male == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -160,7 +160,7 @@
  					<div class="col-md-6">
 				    <label>{% trans "Female" %}</label>
 				    <select class="form-control numddl" name="gender_female">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.gender_female == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -177,7 +177,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Working Full Time" %}</label>
 				    <select class="form-control numddl" name="prof_full_time">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.prof_full_time == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -190,7 +190,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Working Part Time" %}</label>
 				    <select class="form-control numddl" name="prof_part_time">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.prof_part_time == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -203,7 +203,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Retired" %}</label>
 				    <select class="form-control numddl" name="prof_retired">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.prof_retired == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -216,7 +216,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Studying" %}</label>
 				    <select class="form-control numddl" name="prof_studying">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.prof_studying == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -229,7 +229,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Unemployed" %}</label>
 				    <select class="form-control numddl" name="prof_unemployed">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.prof_unemployed == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -242,7 +242,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Without Professional activity (e.g: housewives)" %}</label>
 				    <select class="form-control numddl" name="prof_without">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.prof_without == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -259,7 +259,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Primary School" %}</label>
 				    <select class="form-control numddl" name="edu_level_primary">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.edu_level_primary == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -272,7 +272,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Junior High School" %}</label>
 				    <select class="form-control numddl" name="edu_level_junior">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.edu_level_junior == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -285,7 +285,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "High School" %}</label>
 				    <select class="form-control numddl" name="edu_level_highschool">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.edu_level_highschool == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -298,7 +298,7 @@
  					<div class="col-md-3">
 				    <label>{% trans "Graduation (Bachelor Degree)" %}</label>
 				    <select class="form-control numddl" name="edu_level_grad">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.edu_level_grad == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -311,7 +311,7 @@
  					<div class="col-md-3">
 				    <label>{%trans "Post-Graduation (Masters and PhD)" %}</label>
 				    <select class="form-control numddl" name="edu_level_postgrad">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.edu_level_postgrad == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -328,7 +328,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Property Type" %}</label>
 				    <select class="form-control" name="property_type" id="property_type">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 				    	{% for L in property_type_list %}
 				    		{% if L.0 == selects.property_type_id %}
 				    			<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -341,7 +341,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Period of Construction" %}</label>
 				    <select class="form-control" id="contruction_period" name="construction_period">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 				    	{% for L in construction_period_list %}
 				    		{% if L.0 == selects.construction_period_id %}
 				    			<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -354,7 +354,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Ownership Status" %}</label>
 				    <select class="form-control" id="ownership_status" name="ownership_status">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 				    	{% for L in ownership_status_list %}
 				    		{% if L.0 == selects.ownership_status_id %}
 				    			<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -398,7 +398,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Garden area (m<sup>2</sup>)" %}</label>
 				    <select class="form-control" name="out_areas_garden" id="garden_area">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 				    	{% for L in garden_area_list %}
 							{% if selects.out_areas_garden == L.0 %}
 								<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -411,7 +411,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Pervious area (m<sup>2</sup>)" %}</label>
 				    <select class="form-control" name="out_areas_pervious" id="pervious_area">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 				    	{% for L in pervious_area_list %}
 							{% if selects.out_areas_pervious == L.0 %}
 								<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -424,7 +424,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Roof area (m<sup>2</sup>)" %}</label>
 				    <select class="form-control" name="out_areas_roof" id="roof_area">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 				    	{% for L in roof_area_list %}
 							{% if selects.out_areas_roof == L.0 %}
 								<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -457,7 +457,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Washing Machine" %}</label>
 				    <select class="form-control numddl" name="appl_washing">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.appl_washing == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -470,7 +470,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Dishwasher" %}</label>
 				    <select class="form-control numddl" name="appl_dishwasher">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.appl_dishwasher == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -483,7 +483,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Bath" %}</label>
 				    <select class="form-control numddl" name="appl_bath">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.appl_bath == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -496,7 +496,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Shower" %}</label>
 				    <select class="form-control numddl" name="appl_shower">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.appl_shower == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -509,7 +509,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Toilet" %}</label>
 				    <select class="form-control numddl" name="appl_toilet">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.appl_toilet == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -522,7 +522,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Boiler" %}</label>
 				    <select class="form-control numddl" name="appl_boiler">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.appl_boiler == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -537,7 +537,7 @@
 			  		<div class="col-md-2">
 				    <label>{% trans "Dryer" %}</label>
 				    <select class="form-control numddl" name="appl_dryer">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.appl_dryer == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -550,7 +550,7 @@
 			  		<div class="col-md-2">
 				    <label>{% trans "Sink (Kitchen and WC)" %} 65</label>
 				    <select class="form-control numddl" name="appl_sink">
-				    	<option value="0">Please Select</option>
+				    	<option value="0">{% trans "Please Select" %}</option>
 						{% for i in list_100 %}
 							{% if selects.appl_sink == i %}
 								<option value="{{ i }}" selected>{{ i }}</option>
@@ -566,22 +566,22 @@
  			  <div class="input-group">
  					<div class="col-md-12">
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox1" value="option1" name="dual_flush_toilets"{% if "dual_flush_toilets" in checkboxes %}{%trans " checked" %}{% endif %}> Dual flush toilets
+					  <input type="checkbox" id="inlineCheckbox1" value="option1" name="dual_flush_toilets"{% if "dual_flush_toilets" in checkboxes %}{%trans " checked" %}{% endif %}>{% trans "Dual flush toilets" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="low_flow_taps"{% if checkboxes.low_flow_taps == 1 %}{%trans " checked" %}{% endif %}> Low flow taps
+					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="low_flow_taps"{% if checkboxes.low_flow_taps == 1 %}{%trans " checked" %}{% endif %}>{% trans "Low flow taps" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="efficient_showerheads"{% if checkboxes.efficient_showerheads == 1 %}{%trans " checked" %}{% endif %}> Efficient showerheads
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="efficient_showerheads"{% if checkboxes.efficient_showerheads == 1 %}{%trans " checked" %}{% endif %}>{% trans "Efficient showerheads" %}
 					</label>				    
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="water_energy_efficient_washing_machine"{% if checkboxes.water_energy_efficient_washing_machine == 1 %}{%trans " checked" %}{% endif %}> Water/Energy efficient washing machine
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="water_energy_efficient_washing_machine"{% if checkboxes.water_energy_efficient_washing_machine == 1 %}{%trans " checked" %}{% endif %}>{% trans "Water/Energy efficient washing machine" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="water_energy_efficient_dishwasher"{% if checkboxes.water_energy_efficient_dishwasher == 1 %}{%trans " checked" %}{% endif %}> {{ household.appl_dishwasher }} Water/Energy efficient dishwasher
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="water_energy_efficient_dishwasher"{% if checkboxes.water_energy_efficient_dishwasher == 1 %}{%trans " checked" %}{% endif %}>{{ household.appl_dishwasher }} {% trans "Water/Energy efficient dishwasher" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="drip_irrigation_or_sprinkler_timers"{% if checkboxes.drip_irrigation_or_sprinkler_timers == 1 %}{%trans " checked" %}{% endif %}> Drip irrigation or Sprinkler timers
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="drip_irrigation_or_sprinkler_timers"{% if checkboxes.drip_irrigation_or_sprinkler_timers == 1 %}{%trans " checked" %}{% endif %}>{% trans "Drip irrigation or Sprinkler timers" %}
 					</label>																				
 				    </div> 			  
 			  </div>			  			  		    				
@@ -590,13 +590,13 @@
  			  <div class="input-group">
  					<div class="col-md-12">
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox1" value="option1" name="rainwater_harvesting_system"{% if checkboxes.rainwater_harvesting_system == 1 %}{%trans " checked" %}{% endif %}> Rainwater Harvesting System
+					  <input type="checkbox" id="inlineCheckbox1" value="option1" name="rainwater_harvesting_system"{% if checkboxes.rainwater_harvesting_system == 1 %}{%trans " checked" %}{% endif %}>{% trans "Rainwater Harvesting System" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="greywater_treatment_system"{% if checkboxes.greywater_treatment_system == 1 %}{%trans " checked" %}{% endif %}> Greywater Treatment System
+					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="greywater_treatment_system"{% if checkboxes.greywater_treatment_system == 1 %}{%trans " checked" %}{% endif %}>{% trans "Greywater Treatment System" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="combination_of_rhs_and_gts"{% if checkboxes.combination_of_rhs_and_gts == 1 %}{%trans " checked" %}{% endif %}> Combination of RHS and GTS
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="combination_of_rhs_and_gts"{% if checkboxes.combination_of_rhs_and_gts == 1 %}{%trans " checked" %}{% endif %}>{% trans "Combination of RHS and GTS" %}
 					</label>				    																			
 				    </div> 			  
 			  </div>

@@ -147,7 +147,7 @@ $(window).load(function() {
 	{% endif %}
 
     //Added by Chris Pantazis to load the events table.
-    $("#user_events").load("{% url 'user_events' user.username %}?f=new");
+    $("#user_events").load("{% url 'user_events' request.user.username %}?f=new");
 
 });
 

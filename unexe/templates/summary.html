@@ -2,8 +2,8 @@
 {% block summary %}
     {% if user.is_staff or user.is_superuser %}
         <ol class="breadcrumb">
-            <li><a href="/">Home</a></li>
-            <li class="active">Household</li>
+            <li><a href="/">{% trans "Home" %}</a></li>
+            <li class="active">{% trans "Household" %}</li>
             <p class="pull-right text-center bg-primary"><strong>{% trans "Administrator View - Household id" %}: {{ household.user }}</strong></p>
         </ol>
     {% endif %}
@@ -14,7 +14,7 @@
                 <div class="col-md-12">
                     <div class="panel panel-primary">
                         <div class="panel-heading clickable">
-                            <span class="glyphicon glyphicon-info-sign"></span> <strong>Be Smart with Water in the House</strong>
+                            <span class="glyphicon glyphicon-info-sign"></span> <strong>{% trans "Be Smart with Water in the House" %}</strong>
                             <span class="pull-right clickable"><i class="glyphicon glyphicon-minus"></i></span>
                         </div>
                         <div class="panel-body" id="fold">
@@ -118,8 +118,8 @@
                     </p>
                     <table>
                         <tr>
-                            <th>Consumption Level</th>
-                            <th>Smiles Awarded</th>
+                            <th>{% trans "Consumption Level" %}</th>
+                            <th>{% trans "Smiles Awarded" %}</th>
                         </tr>
                         <tr>
                             <td>&le; 80 l/p/d</td>
@@ -146,7 +146,7 @@
                             <td><img src="{{ STATIC_URL }}icon/sad.png" /></td>
                         </tr>
                     </table>
-                <strong><em>If you miss a target, the target consumption is adjusted to the next one. The more smilies you gather, the more water efficient is your household.</em></strong>
+                <strong><em>{% trans "If you miss a target, the target consumption is adjusted to the next one. The more smilies you gather, the more water efficient is your household." %}</em></strong>
                 </div>
                 <div class="col-md-6">
                     <p class="text-center bg-primary"><strong>{% trans "WATER COST" %}</strong></p>
