@@ -9,7 +9,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 import logging
 from django.views.decorators.csrf import csrf_exempt
-from iwidget.models import UserValidationKey, Household, UsageData
+from iwidget.models import (UserValidationKey, Household,
+                            UsageData, UserPageView)
 import requests
 from xml.dom import minidom
 from django.core.mail import EmailMessage
@@ -373,4 +374,22 @@ def signup(request):
         variables = RequestContext(request, data)
         return render_to_response("validate.html", variables)
 
+
+@csrf_exempt
+def add_page_view(request):
+    if request.method == "POST":
+        username = request.POST.get('user', None)
+        page_title = request.POST.get('page', None)
+        if username:
+            user = User.objects.get(username=username)
+            ud = UserPageView.objects.create(
+                user=user,
+                page=page_title
+            )
+            ud.save()
+            return HttpResponse("OK")
+        else:
+            raise Http404("not a valid user")
+    else:
+        raise Http404("not a valid method")
 

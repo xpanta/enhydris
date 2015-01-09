@@ -594,7 +594,7 @@ function AjaxUtil()
 	 * return: This can be anything from status code to full json reply
 	 */
     this.postAjax = function(dataObj,url)
-    {	
+    {
     	var data = {};
 		$.ajax({
 		url: url,
@@ -622,7 +622,7 @@ function AjaxUtil()
 	 * return: This can be anything from status code to full json reply
 	 */
     this.getAjax = function(dataObj,url)
-    {	
+    {
     	var data = {};
 		$.ajax({
 		url: url,
@@ -646,15 +646,14 @@ function AjaxUtil()
     
     this.ajaxEffect = function()
     {
-      
 	  $(document).ajaxStart(function(){
 		  $("#overlay").height($("body").height());
 		  domutil.removeCssclass("#overlay","hide");
 	  });
-	  
+
 	  $(document).ajaxComplete(function(){
 		  domutil.setCssclass("#overlay","hide");
-	  });    	
+	  });
     }
 }//--end class
 //---------------------------------------------------End class-------------------------------------------------//
@@ -2521,4 +2520,8 @@ function hideEventAndReload(id){
 
 function loadFaultHistory(username){
     $("#cuc36").empty().load("uc_03_6/events/history/" + username +"/");
+}
+
+function addUserPageView(username, page_title, url){
+	ajaxutil.postAjax({'user': username, 'page': page_title}, url) ;
 }

@@ -82,36 +82,38 @@ $(window).load(function() {
 	    
 	});	
 });
+
+var page_view_url = "{% url "user_page_view" %}";
 </script>
 <div class="col-md-9">
 
 	<!-- tab based navigation -->
 	<ul class="tabs nav nav-tabs" id="controltab">
- 		<li class="active"><a href="#summary" data-toggle="tab"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
+ 		<li class="active"><a href="#summary" onclick="addUserPageView('{{ user.username }}', 'Dashboard', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Water Analysis" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="waterusecase">
-				<li><a href="#water" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1 (Monitoring of Water Consumption)" %}</a></li>
+				<li><a href="#water" onclick="addUserPageView('{{ user.username }}', 'C_UC01.1', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1 (Monitoring of Water Consumption)" %}</a></li>
 				{% if not user.is_staff and not user.is_superuser %}
-                    <li><a href="#cuc12" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.2 (Obtain per appliance water consumption)" %}</a></li>
-                    <li><a href="#cuc31" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.1 (Compare Current and Historical Water Consumption)" %}</a></li>
-					<li><a href="#cuc32" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.2 (Compare Water Consumption with other Consumers)" %}</a></li>
-					<li><a href="#cuc33" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.3 (Compare water consumption with standard profiles)" %}</a></li>
-					<li><a href="#cuc34" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.4 (Compare household water consumption with most efficient users)" %}</a></li>
-                    <li><a href="#cuc36" onclick="loadFaultHistory('{{ user.username }}');" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.6 (Receive warnings about faults (leakages, bursts) and unusual water consumptions)" %}</a></li>
-					<li><a href="#cuc52" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.2 (Receive information on specific and alternatives pricing schemes)" %}</a></li>
-                    <li><a href="#cuc53" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.3 (Forecast Water Bill)" %}</a></li>
+                    <li><a href="#cuc12" onclick="addUserPageView('{{ user.username }}', 'C_UC01.2', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.2 (Obtain per appliance water consumption)" %}</a></li>
+                    <li><a href="#cuc31" onclick="addUserPageView('{{ user.username }}', 'C_UC03.1', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.1 (Compare Current and Historical Water Consumption)" %}</a></li>
+					<li><a href="#cuc32" onclick="addUserPageView('{{ user.username }}', 'C_UC03.2', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.2 (Compare Water Consumption with other Consumers)" %}</a></li>
+					<li><a href="#cuc33" onclick="addUserPageView('{{ user.username }}', 'C_UC03.3', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.3 (Compare water consumption with standard profiles)" %}</a></li>
+					<li><a href="#cuc34" onclick="addUserPageView('{{ user.username }}', 'C_UC03.4', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.4 (Compare household water consumption with most efficient users)" %}</a></li>
+                    <li><a href="#cuc36" onclick="loadFaultHistory('{{ user.username }}');addUserPageView('{{ user.username }}', 'C_UC03.6', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.6 (Receive warnings about faults (leakages, bursts) and unusual water consumptions)" %}</a></li>
+					<li><a href="#cuc52" onclick="addUserPageView('{{ user.username }}', 'C_UC05.2', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.2 (Receive information on specific and alternatives pricing schemes)" %}</a></li>
+                    <li><a href="#cuc53" onclick="addUserPageView('{{ user.username }}', 'C_UC05.3', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.3 (Forecast Water Bill)" %}</a></li>
 				{% endif %}
 			</ul>
 		</li>
         {% if has_energy %}
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Energy Analysis" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="energyusecase">
-                <li><a href="#energy1-1" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1: Monitoring of Energy Consumption" %}</a></li>
+                <li><a href="#energy1-1" onclick="addUserPageView('{{ user.username }}', 'C_UC01.1e', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC1.1: Monitoring of Energy Consumption" %}</a></li>
                 {% if not user.is_staff and not user.is_superuser %}
-                    <li><a href="#cuc21" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.1: Energy consumption related to water" %}</a></li>
-                    <li><a href="#cuc22" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.2: Per appliance energy consumption related to water" %}</a></li>
-                    <li><a href="#cuc23" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.3: Carbon emmisions related to water" %}</a></li>
-                    <li><a href="#cuc41" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC4.1 & Use Case C_UC5.4 (Compare energy pattern & Forecast the component of energy bill)" %}</a></li>
+                    <li><a href="#cuc21" onclick="addUserPageView('{{ user.username }}', 'C_UC02.1', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.1: Energy consumption related to water" %}</a></li>
+                    <li><a href="#cuc22" onclick="addUserPageView('{{ user.username }}', 'C_UC02.2', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.2: Per appliance energy consumption related to water" %}</a></li>
+                    <li><a href="#cuc23" onclick="addUserPageView('{{ user.username }}', 'C_UC02.3', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC2.3: Carbon emmisions related to water" %}</a></li>
+                    <li><a href="#cuc41" onclick="addUserPageView('{{ user.username }}', 'C_UC04.1', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC4.1 & Use Case C_UC5.4 (Compare energy pattern & Forecast the component of energy bill)" %}</a></li>
                     <!-- <li><a href="#cuc54" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.4 (Forecast the component of next energy bill associated with water consumption)" %}</a></li> -->
                 {% endif %}
 			</ul>
@@ -120,17 +122,17 @@ $(window).load(function() {
         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Device Controls" %} <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu" id="waterusecase">
                 {% if not user.is_staff and not user.is_superuser %}
-                    <li><a href="#cuc61" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC6.1 (Direct Control of Water Consumption)" %}</a></li>
+                    <li><a href="#cuc61" onclick="addUserPageView('{{ user.username }}', 'C_UC06.1', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC6.1 (Direct Control of Water Consumption)" %}</a></li>
                 {% endif %}
             </ul>
         </li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> {% trans "Settings" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="settings">
 				<!-- 2 in the javascript method is the index of the menu tab -->
-				<li><a href="#Hsettings" data-toggle="tab" onclick="household(2); return false;"><span class="glyphicon glyphicon-edit"></span>{% trans " Household Settings" %}</a></li>
+				<li><a href="#Hsettings" data-toggle="tab" onclick="addUserPageView('{{ user.username }}', 'Household Settings', page_view_url);household(2); return false;"><span class="glyphicon glyphicon-edit"></span>{% trans " Household Settings" %}</a></li>
 				<!-- 3 in the javascript method is the index of the menu tab -->
 				{% if not user.is_staff and not user.is_superuser %}
-					<li><a href="#Usettings" data-toggle="tab" onclick="user(3); return false;"><span class="glyphicon glyphicon-user"></span>{% trans " User Settings" %}</a></li>
+					<li><a href="#Usettings" data-toggle="tab" onclick="addUserPageView('{{ user.username }}', 'User Settings', page_view_url);user(3); return false;"><span class="glyphicon glyphicon-user"></span>{% trans " User Settings" %}</a></li>
 				{% endif %} 
 			</ul>
 		</li>

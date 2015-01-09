@@ -338,3 +338,9 @@ class UsageData(models.Model):
     user = models.ForeignKey(User, related_name="usage_data")
     enter_ts = models.DateTimeField(auto_now_add=True)
     exit_ts = models.DateTimeField(auto_now_add=True)
+
+
+class UserPageView(models.Model):
+    user = models.ForeignKey(User, related_name="page_views")
+    page = models.CharField(max_length=64)  # Use case or page name
+    added = models.DateTimeField(auto_now_add=True)
