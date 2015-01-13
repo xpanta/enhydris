@@ -23,6 +23,9 @@ def calculate_appliance_consumption(request, username):
         from unexe.classes.Ihousehold import ihousehold
         household = user.households.all()[0]
         checkboxes, selects = ihousehold.getHouseholdData(household.id)
+        if len(selects) < 5:
+            variables = RequestContext(request, {"error": True})
+            return render_to_response("error_message_hhupd.html", variables)
         num = selects['appl_shower']
         if num > 0:
             shower = 1

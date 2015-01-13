@@ -54,6 +54,8 @@ def sso_redirect(request):
         #http://localhost:8000/core/sso/auth/?t=B4-3D-FE-6F-AC-E0-65-66-7A-57-74-3B-A3-6E-10-19-28-9B-A0-2D-53-93-71-65-C3-FA-BE-1E-53-9E-A7-5E-00-B4-56-78-C7-06-25-81-83-72-D8-75-7B-3F-D2-71-25-0A-60-4F-00-48-CA-49-32-E3-51-33-39-88-57-47
         #dev
         #http://localhost:8000/core/sso/auth/?t=82-66-CA-F3-1A-38-D6-F7-35-6B-11-05-47-B1-7B-4C-CF-F0-80-DD-D8-69-E3-0B-63-9F-B3-9F-ED-0F-17-15-91-81-59-E1-11-C0-3B-2D-82-34-06-0F-1A-BB-05-FE-E2-61-23-32-F0-7F-1F-E6-80-8F-8B-3D-1C-84-20-45
+        #GR059E34
+        #http://localhost:8000/core/sso/auth/?t=C6-F6-3C-1F-21-1B-E3-50-55-50-86-F3-71-E1-FB-25-E9-48-8C-3C-1A-B4-E2-1D-D8-82-87-EF-F0-18-15-C1-60-FE-F3-2B-4A-AC-99-8A-23-15-73-9E-3A-EE-8C-04-34-38-BD-BC-4A-BC-80-17-BA-DA-F8-1D-20-13-EB-D4
         xml = xml.strip()
         xml = xml.replace("##TOKEN##", token)
         url = "https://services.up-ltd.co.uk/cryptoservice_iwidget/service.asmx"

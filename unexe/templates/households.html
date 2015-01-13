@@ -367,25 +367,25 @@
  					<div class="col-md-6">
 				    <label>{% trans "Water heating sources" %}</label><br/>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox1" name="electricity" value="1"{% if checkboxes.electricity == 1 %}{%trans " checked" %}{% endif %}> Electricity
+					  <input type="checkbox" id="inlineCheckbox1" name="electricity" value="1"{% if checkboxes.electricity == 1 %} checked="checked" {% endif %}> {% trans "Electricity" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox2" name="gas" value="2"{% if checkboxes.gas == 1 %}{%trans " checked" %}{% endif %}> Gas
+					  <input type="checkbox" id="inlineCheckbox2" name="gas" value="2"{% if checkboxes.gas == 1 %} checked="checked" {% endif %}> {% trans "Gas" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" name="solid_fuel" value="3"{% if checkboxes.solid_fuel == 1 %}{%trans " checked" %}{% endif %}> Solid Fuel
+					  <input type="checkbox" id="inlineCheckbox3" name="solid_fuel" value="3"{% if checkboxes.solid_fuel == 1 %} checked="checked" {% endif %}> {% trans "Solid Fuel" %}
 					</label>				    
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" name="biomass" value="4"{% if checkboxes.biomass == 1 %}{%trans " checked" %}{% endif %}> Biomass
+					  <input type="checkbox" id="inlineCheckbox3" name="biomass" value="4"{% if checkboxes.biomass == 1 %} checked="checked" {% endif %}> {% trans "Biomass" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" name="lpg" value="5"{% if checkboxes.lpg == 1 %}{%trans " checked" %}{% endif %}> LPG
+					  <input type="checkbox" id="inlineCheckbox3" name="lpg" value="5"{% if checkboxes.lpg == 1 %} checked="checked" {% endif %}> {% trans "LPG" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" name="solar" value="6"{% if checkboxes.solar == 1 %}{%trans " checked" %}{% endif %}> Solar
+					  <input type="checkbox" id="inlineCheckbox3" name="solar" value="6"{% if checkboxes.solar == 1 %} checked="checked" {% endif %}> {% trans "Solar" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" name="oil" value="7"{% if checkboxes.oil == 1 %}{%trans " checked" %}{% endif %}> Oil
+					  <input type="checkbox" id="inlineCheckbox3" name="oil" value="7"{% if checkboxes.oil == 1 %} checked="checked" {% endif %}> {% trans "Oil" %}
 					</label>																				
 				    </div>
 			  </div>
@@ -398,7 +398,7 @@
  					<div class="col-md-2">
 				    <label>{% trans "Garden area (m<sup>2</sup>)" %}</label>
 				    <select class="form-control" name="out_areas_garden" id="garden_area">
-				    	<option value="0">{% trans "Please Select" %}</option>
+				    	<option value="0">{% trans "Not Applicable" %}</option>
 				    	{% for L in garden_area_list %}
 							{% if selects.out_areas_garden == L.0 %}
 								<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -411,7 +411,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Pervious area (m<sup>2</sup>)" %}</label>
 				    <select class="form-control" name="out_areas_pervious" id="pervious_area">
-				    	<option value="0">{% trans "Please Select" %}</option>
+				    	<option value="0">{% trans "Not Applicable" %}</option>
 				    	{% for L in pervious_area_list %}
 							{% if selects.out_areas_pervious == L.0 %}
 								<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -424,7 +424,7 @@
  					<div class="col-md-2">
 				    <label>{%trans "Roof area (m<sup>2</sup>)" %}</label>
 				    <select class="form-control" name="out_areas_roof" id="roof_area">
-				    	<option value="0">{% trans "Please Select" %}</option>
+				    	<option value="0">{% trans "Not Applicable" %}</option>
 				    	{% for L in roof_area_list %}
 							{% if selects.out_areas_roof == L.0 %}
 								<option value="{{ L.0 }}" selected>{{ L.1 }}</option>
@@ -437,16 +437,10 @@
  					<div class="col-md-4">
 				    <label>{% trans "Outdoor facilities" %}</label><br/>
 					<label class="checkbox-inline">
-					  	<input type="checkbox" id="inlineCheckbox1" value="option1" name="garden"{% if checkboxes.garden == 1 %}{%trans " checked" %}{% endif %}> Garden
+					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="pool"{% if checkboxes.pool == 1 %} checked="checked" {% endif %}> {% trans "Pool" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="pool"{% if checkboxes.pool == 1 %}{%trans " checked" %}{% endif %}> Pool
-					</label>
-					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="roof"{% if checkboxes.roof == 1 %}{%trans " checked" %}{% endif %}> Roof
-					</label>				    
-					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="car_washing"{% if checkboxes.car_washing == 1 %}{%trans " checked" %}{% endif %}> Car washing
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="car_washing"{% if checkboxes.car_washing == 1 %} checked="checked" {% endif %}> {% trans "Car washing" %}
 					</label>																				
 				    </div>				    				    
 			  </div>  	
@@ -566,22 +560,22 @@
  			  <div class="input-group">
  					<div class="col-md-12">
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox1" value="option1" name="dual_flush_toilets"{% if "dual_flush_toilets" in checkboxes %}{%trans " checked" %}{% endif %}>{% trans "Dual flush toilets" %}
+					  <input type="checkbox" id="inlineCheckbox1" value="option1" name="dual_flush_toilets"{% if "dual_flush_toilets" in checkboxes %} checked=hecked" {% endif %}>{% trans "Dual flush toilets" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="low_flow_taps"{% if checkboxes.low_flow_taps == 1 %}{%trans " checked" %}{% endif %}>{% trans "Low flow taps" %}
+					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="low_flow_taps"{% if checkboxes.low_flow_taps == 1 %} checked=hecked" {% endif %}>{% trans "Low flow taps" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="efficient_showerheads"{% if checkboxes.efficient_showerheads == 1 %}{%trans " checked" %}{% endif %}>{% trans "Efficient showerheads" %}
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="efficient_showerheads"{% if checkboxes.efficient_showerheads == 1 %} checked=hecked" {% endif %}>{% trans "Efficient showerheads" %}
 					</label>				    
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="water_energy_efficient_washing_machine"{% if checkboxes.water_energy_efficient_washing_machine == 1 %}{%trans " checked" %}{% endif %}>{% trans "Water/Energy efficient washing machine" %}
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="water_energy_efficient_washing_machine"{% if checkboxes.water_energy_efficient_washing_machine == 1 %} checked="checked" {% endif %}>{% trans "Water/Energy efficient washing machine" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="water_energy_efficient_dishwasher"{% if checkboxes.water_energy_efficient_dishwasher == 1 %}{%trans " checked" %}{% endif %}>{{ household.appl_dishwasher }} {% trans "Water/Energy efficient dishwasher" %}
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="water_energy_efficient_dishwasher"{% if checkboxes.water_energy_efficient_dishwasher == 1 %} checked="checked" {% endif %}>{{ household.appl_dishwasher }} {% trans "Water/Energy efficient dishwasher" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="drip_irrigation_or_sprinkler_timers"{% if checkboxes.drip_irrigation_or_sprinkler_timers == 1 %}{%trans " checked" %}{% endif %}>{% trans "Drip irrigation or Sprinkler timers" %}
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="drip_irrigation_or_sprinkler_timers"{% if checkboxes.drip_irrigation_or_sprinkler_timers == 1 %} checked="checked" {% endif %}>{% trans "Drip irrigation or Sprinkler timers" %}
 					</label>																				
 				    </div> 			  
 			  </div>			  			  		    				
@@ -590,13 +584,13 @@
  			  <div class="input-group">
  					<div class="col-md-12">
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox1" value="option1" name="rainwater_harvesting_system"{% if checkboxes.rainwater_harvesting_system == 1 %}{%trans " checked" %}{% endif %}>{% trans "Rainwater Harvesting System" %}
+					  <input type="checkbox" id="inlineCheckbox1" value="option1" name="rainwater_harvesting_system"{% if checkboxes.rainwater_harvesting_system == 1 %} checked="checked" {% endif %}>{% trans "Rainwater Harvesting System" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="greywater_treatment_system"{% if checkboxes.greywater_treatment_system == 1 %}{%trans " checked" %}{% endif %}>{% trans "Greywater Treatment System" %}
+					  <input type="checkbox" id="inlineCheckbox2" value="option2" name="greywater_treatment_system"{% if checkboxes.greywater_treatment_system == 1 %} checked="checked" {% endif %}>{% trans "Greywater Treatment System" %}
 					</label>
 					<label class="checkbox-inline">
-					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="combination_of_rhs_and_gts"{% if checkboxes.combination_of_rhs_and_gts == 1 %}{%trans " checked" %}{% endif %}>{% trans "Combination of RHS and GTS" %}
+					  <input type="checkbox" id="inlineCheckbox3" value="option3" name="combination_of_rhs_and_gts"{% if checkboxes.combination_of_rhs_and_gts == 1 %} checked="checked" {% endif %}>{% trans "Combination of RHS and GTS" %}
 					</label>				    																			
 				    </div> 			  
 			  </div>

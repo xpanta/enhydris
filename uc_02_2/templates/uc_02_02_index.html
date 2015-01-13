@@ -3,7 +3,7 @@
 
 {% addtoblock "js" %}
     <script>
-        function fetchChart_uc21(username){
+        function fetchChart_uc22(username){
             var month = $("#c_uc22month").val();
             var year = $("#c_uc22year").val();
             $("#charts02_2").load("/uc_02_2/analyse/" + username +"/?month=" + month + "&year=" + year);
@@ -41,7 +41,7 @@
                     <div class="form-group">
                         <select id="c_uc22year" class="form-control" required="true"></select>
                     </div>
-                    <button onclick="fetchChart_uc21('{{ request.user.username }}')" class="btn btn-primary" type="button">{% trans " Submit " %}</button>
+                    <button onclick="fetchChart_uc22('{{ request.user.username }}')" class="btn btn-primary" type="button">{% trans " Submit " %}</button>
                 </div>
             </div>
         </div>

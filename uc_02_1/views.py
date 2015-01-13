@@ -9,6 +9,7 @@ from itertools import izip
 from datetime import datetime
 from iwidget.models import TSTEP_HOURLY, VAR_PERIOD
 from unexe.classes.Iseries import iseries
+from unexe.classes.Ihousehold import ihousehold
 
 
 def calc_costs(request, username):
@@ -20,10 +21,18 @@ def calc_costs(request, username):
         sel_mo = request.GET.get("month", curr_mo)
         sel_yr = request.GET.get("year", curr_yr)
         #! TODO Get dishwasher from Database / household settings
-        dish_washer = 1
         total_cons = 0
         household = user.households.all()[0]  # get user household id
+        checkboxes, selects = ihousehold.getHouseholdData(household.id)
+        if len(selects) < 5:
+            variables = RequestContext(request, {"error": True})
+            return render_to_response("error_message_hhupd.html", variables)
         series = iseries()
+        num = selects['appl_dishwasher']
+        if num > 0:
+            dish_washer = 1
+        else:
+            dish_washer = 0
         ts_m = household.timeseries \
             .filter(time_step__id=TSTEP_HOURLY,
                     variable__id=VAR_PERIOD)[0]

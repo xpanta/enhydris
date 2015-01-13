@@ -1,0 +1,14 @@
+<!-- INFORMS THE USER THAT HE/SHE NEEDS TO UPDATE THE HOUSEHOLD SETTINGS FIRST -->
+{% load i18n %}
+<script>
+    var page_view_url = "{% url "user_page_view" %}";
+</script>
+<h3 class="text-center">{% trans "Incomplete Household Settings!" %}</h3>
+<div class="col-md-12">
+    <div>
+
+        <p class="text-center">{% trans "Please, update your household settings, first!" %}</p>
+
+
+    </div>
+</div>
