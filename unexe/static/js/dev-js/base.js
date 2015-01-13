@@ -43,6 +43,7 @@ function IwidgetUtil()
 	this.passwordmsg  = "#password-msg";
 	this.profilemsg   = "#profile-msg";
 	this.householdmsg = "#household-msg";
+	this.householdmsg2 = "#household-msg-bottom";
 	this.forecastmsg  = "#forecast-msg";
 	this.compareuc32msg  = "#compareuc32-msg";
 	this.c_uc52msg    = "#c_uc52-msg";
@@ -1864,11 +1865,14 @@ function AppUtil()
 			else if(id==iwidgetutil.householdform) //if matched household form id
 			{
 				var status = ajaxutil.postAjax(this.createjson(id),formutil.getAction(id)); //send data to server
-				if(status==true)
-					this.showmessage(iwidgetutil.householdmsg,successclass,"Your household profile has updated successfully");
-					
-				else
-					this.showmessage(iwidgetutil.householdmsg,dangerclass,iwidgetutil.unexpectederror);					
+				if(status==true) {
+					this.showmessage(iwidgetutil.householdmsg, successclass, "Your household profile has updated successfully");
+					this.showmessage(iwidgetutil.householdmsg2, successclass, "Your household profile has updated successfully");
+				}
+				else {
+					this.showmessage(iwidgetutil.householdmsg, dangerclass, iwidgetutil.unexpectederror);
+					this.showmessage(iwidgetutil.householdmsg2, dangerclass, iwidgetutil.unexpectederror);
+				}
 			}//--end household-form
 			else if(id==iwidgetutil.c_uc53form) //if matched forecast form id
 			{
