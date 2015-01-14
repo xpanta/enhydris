@@ -8,14 +8,14 @@
             {% for socket in sockets %}
                 <div class="row">
                     <div class="col-md-6">
-                        <h3 style="color: #444; font-style: bold;">{{ socket.text }}</h3>
+                        <h3 style="color: #444; font-style: bold;">{{ socket.label }}</h3>
                     </div>
                     <div class="col-md-2">
                         <h3 style="color: #444">{{ socket.consumption }} kWh</h3>
                     </div>
                     <div class="col-md-4">
-                        <button type="button" id="id_{{ socket.did }}" class="btn btn-lg btn-primary device-buttons" onClick="toggleAndFetchDeviceList('sockets', '{{ username }}', '{{ socket.label }}', '{{ socket.state }}');">
-                            <span class="glyphicon glyphicon-signal"></span> {% trans "Switch " %} {{ socket.state }}
+                        <button type="button" id="id_{{ socket.name }}" class="btn btn-lg btn-primary device-buttons" onClick="toggleAndFetchDeviceList('sockets', '{{ username }}', '{{ socket.name }}', '{{ socket.state }}');">
+                            <span class="glyphicon glyphicon-signal"></span> {% trans "Switch " %} {{ socket.next }}
                         </button>
                     </div>
                 </div>
@@ -27,11 +27,11 @@
 
 <script>
 
-    function toggleAndFetchDeviceList(type, username, did, next){
+    function toggleAndFetchDeviceList(type, username, name, next){
         // did = device id
         // next = next state
-        $("#id_" + did).prop("disabled", true);
-        $("#_devices").load('{% url "uc_06_1_get" request.user.username %}?d=' + did +'&n=' + next + '&t=' + type);
+        $("#id_" + name).prop("disabled", true);
+        $("#_devices").load('{% url "uc_06_1_get" request.user.username %}?d=' + name +'&n=' + next + '&t=' + type);
     }
 
     $("#fetch_button").prop("disabled", false);

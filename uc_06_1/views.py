@@ -34,42 +34,49 @@ def get_plegma_devices(request, username):
         if sock_url:
             res = requests.get('%s?type=json' % sock_url, auth=('demo', 'demo'))
             _json = loads(res.text)
-            _arr = _json.get("widget")
-            socket1 = {"text": "Plug1"}
-            socket2 = {"text": "Plug2"}
-            for a in _arr:
-                item = a.get("item", "")
-                try:
-                    s_type = item.get("type")
-                    if item:
+            widgets = _json.get("widget")
+            try:
+                # Create the sockets.
+                for widget in widgets:
+                    try:
+                        item = widget.get("item", "")
+                        _type = item.get("type")
+                    except (AttributeError, ValueError, KeyError):
+                        continue
+                    if _type == "SwitchItem":
+                        label = widget.get("label")
+                        label = label[0:label.find("status")-1]
+                        state = item.get("state")
                         name = item.get("name")
-                        if name == "Zwave2" and s_type == "SwitchItem":
-                            state = item.get("state")
-                            socket1["label"] = "Zwave2"
-                            if state == "ON":
-                                # Warning this is opposite for UI reasons
-                                socket1["state"] = "OFF"
-                            else:
-                                socket1["state"] = "ON"
-                        if name == "Zwave3" and s_type == "SwitchItem":
-                            state = item.get("state")
-                            socket2["label"] = "Zwave3"
-                            if state == "ON":
-                                socket2["state"] = "OFF"
-                            else:
-                                socket2["state"] = "ON"
-                        if name == "Zwave2b" and s_type == "NumberItem":
-                            state = item.get("state")
-                            socket1["consumption"] = state
-                        if name == "Zwave3b" and s_type == "NumberItem":
-                            state = item.get("state")
-                            socket2["consumption"] = state
-                except Exception as e:
-                    import logging
-                    log = logging.getLogger(__name__)
-                    log.debug("Error in getting Plegma Devices %s" % repr(e))
-            sockets.append(socket1)
-            sockets.append(socket2)
+                        if state == "ON":
+                            _next = "OFF"
+                        elif state == 'OFF':
+                            _next = "ON"
+                        socket = {
+                            "label": label,
+                            "state": state,
+                            "next": _next,
+                            "name": name,
+                        }
+                        sockets.append(socket)
+                # add consumptions
+                for widget in widgets:
+                    try:
+                        item = widget.get("item", "")
+                        _type = item.get("type")
+                    except (AttributeError, ValueError, KeyError):
+                        continue
+                    label = widget.get("label")
+                    if "Total Energy" in label and _type == "NumberItem":
+                        consumption = item.get("state")
+                        label = label[0:label.find("Total Energy")-1]
+                        for socket in sockets:
+                            if socket.get("label") == label:
+                                socket["consumption"] = consumption
+            except Exception as e:
+                import logging
+                log = logging.getLogger(__name__)
+                log.debug("Error in getting Plegma Devices %s" % repr(e))
         data = {
             "sockets": sockets,
             "username": username,
