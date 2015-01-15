@@ -3,7 +3,7 @@
 {% load general_tags %}
 
 
-<h2 class="text-center">{% trans "Energy related water consumption" %}</h2>
+<h2 class="text-center">{% trans "Carbon emissions related to water and energy consumption" %}</h2>
 <div class="col-md-7">
     <div id="pie_uc23" style="width: 100%; height: 600px;">
 
@@ -58,8 +58,8 @@
 
 <script>
     var pie_data = [
-        { label: '{% trans "Energy Related Carbon Emissions" %}', data: {{ energy_carbon }}, color: "#4B966C" },
-        { label: '{% trans "Rest Uses Carbon Emissions" %}', data: {{ rest_carbon }}, color: "#893C4E" }
+        { label: '{% trans "Water-Energy related carbon emissions" %}', data: {{ energy_carbon }}, color: "#4B966C" },
+        { label: '{% trans "Pure energy related carbon emissions" %}', data: {{ rest_carbon }}, color: "#893C4E" }
     ];
 
     var pie_chart = $("#pie_uc23");
