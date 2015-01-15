@@ -209,17 +209,17 @@ def household_view(request, household_id=None):
             'has_pie': 2,
             'span_options': [],
         },
-        # {
-        #     'id': 8,
-        #     'name': u'Water cost per month, up to a year period (€)',
-        #     'display_min': True, 'display_max': True, 'display_avg': True,
-        #     'display_sum': True, 'time_span': 'year', 'is_vector': False,
-        #     'has_stats': True, 'can_zoom': True, 'has_info_box': True,
-        #     'display_lastvalue': True,
-        #     'initial_display': False,
-        #     'main_timeseries_id': ts_cost.id, 'occupancy': nocc,
-        #     'span_options': [],
-        # },
+        {
+            'id': 8,
+             # 'name': u'Water cost per month, up to a year period (€)',
+             # 'display_min': True, 'display_max': True, 'display_avg': True,
+             # 'display_sum': True, 'time_span': 'year', 'is_vector': False,
+             # 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+             # 'display_lastvalue': True,
+             # 'initial_display': False,
+             # 'main_timeseries_id': ts_cost.id, 'occupancy': nocc,
+             # 'span_options': [],
+        },
         {
             'id': 5,
             'name': 'Water consumption per month, per capita, '
@@ -309,31 +309,31 @@ def household_view(request, household_id=None):
                 'span_options': [],
             }
 
-        # index = charts.index('Monthly energy cost placeholder')
-        # charts[index] =\
-        #     {
-        #         'id': 14,
-        #         'name': u'Energy cost per month, up to a year period (€)',
-        #         'display_min': True, 'display_max': True, 'display_avg': True,
-        #         'display_sum': True, 'time_span': 'year', 'is_vector': False,
-        #         'has_stats': True, 'can_zoom': True, 'has_info_box': True,
-        #         'display_lastvalue': True,
-        #         'initial_display': False,
-        #         'main_timeseries_id': ts_energy_cost.id, 'occupancy': nocc,
-        #         'span_options': [],
-        #     }
+        index = charts.index('Monthly energy cost placeholder')
+        charts[index] =\
+            {
+                'id': 14,
+                # 'name': u'Energy cost per month, up to a year period (€)',
+                # 'display_min': True, 'display_max': True, 'display_avg': True,
+                # 'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                # 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                # 'display_lastvalue': True,
+                # 'initial_display': False,
+                # 'main_timeseries_id': ts_energy_cost.id, 'occupancy': nocc,
+                # 'span_options': [],
+            }
 
         index = charts.index('Monthly energy per capita placeholder')
         charts[index] =\
             {
                 'id': 15,
-                'name': 'Montlhly energy consumption per capita (kWh)',
-                'display_min': True, 'display_max': True, 'display_avg': True,
-                'display_sum': True, 'time_span': 'year', 'is_vector': False,
-                'has_stats': True, 'can_zoom': True, 'has_info_box': True,
-                'display_lastvalue': True,
-                'initial_display': False, 
-                'span_options': [],
+                # 'name': 'Montlhly energy consumption per capita (kWh)',
+                # 'display_min': True, 'display_max': True, 'display_avg': True,
+                # 'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                # 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                # 'display_lastvalue': True,
+                # 'initial_display': False,
+                # 'span_options': [],
             }
     else:
         for placeholder in (
@@ -1064,7 +1064,6 @@ def dashboard_view(request, household_id=None):
         # else:
         #     # Fallback
         #     ts_cost = ts_monthly_nrg
-    # TODO: Remove this after full migration to rest api
     # if len(ts_cost):
     #     ts_cost = ts_cost[0]
     # else:
@@ -1187,17 +1186,17 @@ def dashboard_view(request, household_id=None):
                 'main_timeseries_id': ts_daily_nrg.id,
                 'span_options': ['month', 'week', 'day'],
             },
-            # {
-            #     'id': 12,
-            #     'name': 'Energy Cost per Month (€)',
-            #     'display_min': False, 'display_max': True, 'display_avg': False,
-            #     'display_sum': True, 'time_span': 'day', 'is_vector': False,
-            #     'has_stats': True, 'can_zoom': True, 'has_info_box': True,
-            #     'display_lastvalue': True,
-            #     'initial_display': True,
-            #     'main_timeseries_id': ts_cost_nrg.id,
-            #     'span_options': ['month', 'week', 'day'],
-            # },
+            {
+                'id': 12,
+                # 'name': 'Energy Cost per Month (€)',
+                # 'display_min': False, 'display_max': True, 'display_avg': False,
+                # 'display_sum': True, 'time_span': 'day', 'is_vector': False,
+                # 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                # 'display_lastvalue': True,
+                # 'initial_display': True,
+                # 'main_timeseries_id': ts_cost_nrg.id,
+                # 'span_options': ['month', 'week', 'day'],
+            },
             {
                 'id': 13,
                 'name': 'Hourly energy consumption (Wh)',
@@ -1231,17 +1230,17 @@ def dashboard_view(request, household_id=None):
                 'initial_display': False,
                 'span_options': ['year', 'month', 'week'],
             },
-            # {
-            #     'id': 16,
-            #     'name': u'Energy cost per month, up to a year period (€)',
-            #     'display_min': True, 'display_max': True, 'display_avg': True,
-            #     'display_sum': True, 'time_span': 'year', 'is_vector': False,
-            #     'has_stats': True, 'can_zoom': True, 'has_info_box': True,
-            #     'display_lastvalue': True,
-            #     'initial_display': True,
-            #     'main_timeseries_id': ts_cost_nrg.id, 'occupancy': nocc,
-            #     'span_options': [],
-            # },
+            {
+                'id': 16,
+                # 'name': u'Energy cost per month, up to a year period (€)',
+                # 'display_min': True, 'display_max': True, 'display_avg': True,
+                # 'display_sum': True, 'time_span': 'year', 'is_vector': False,
+                # 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+                # 'display_lastvalue': True,
+                # 'initial_display': True,
+                # 'main_timeseries_id': ts_cost_nrg.id, 'occupancy': nocc,
+                # 'span_options': [],
+            },
             {
                 'id': 17,
                 'name': 'Energy consumption per month, per capita, up to a year period (Wh)',
@@ -1395,12 +1394,12 @@ def dashboard_view(request, household_id=None):
                 'is_bar': True, 'bar_width': 11*60*60*1000,
                 'factor': 1000.000,
             },
-            # {
-            #     'id': 13, 'chart_id': 12, 'name': 'energy',
-            #     'timeseries_id': ts_cost_nrg.id,
-            #     'is_bar': True, 'bar_width': 14*24*60*60*1000,
-            #     'factor': 1,
-            # },
+            {
+                'id': 13, 'chart_id': 12, 'name': 'energy',
+                # 'timeseries_id': ts_cost_nrg.id,
+                # 'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                # 'factor': 1,
+            },
             {
                 'id': 14, 'chart_id': 13, 'name': 'energy',
                 'timeseries_id': ts_hourly_nrg.id,
@@ -1413,12 +1412,12 @@ def dashboard_view(request, household_id=None):
                 'is_bar': True, 'bar_width': 11*60*60*1000,
                 'factor': 1000.000/nocc,
             },
-            # {
-            #     'id': 16, 'chart_id': 16, 'name': 'energy',
-            #     'timeseries_id': ts_cost_nrg.id,
-            #     'is_bar': True, 'bar_width': 14*24*60*60*1000,
-            #     'factor': 1,
-            # },
+            {
+                'id': 16, 'chart_id': 16, 'name': 'energy',
+                # 'timeseries_id': ts_cost_nrg.id,
+                # 'is_bar': True, 'bar_width': 14*24*60*60*1000,
+                # 'factor': 1,
+            },
             {
                 'id': 17, 'chart_id': 17, 'name': 'energy',
                 'timeseries_id': ts_monthly_nrg.id,
