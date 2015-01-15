@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <p class="text-center bg-primary"><strong>{% trans "WATER CONSUMPTION" %} as of {{ overview.weekday }} {{ overview.today_timestamp|date:"j/m/o" }}</strong></p>
                     <div class="table-responsive">
                         <table class="table table-condensed table-striped table-hover">
@@ -107,71 +107,38 @@
                         </table>
                     </div>
                     <p>
-                        <strong><em>(*)  m&#179; {% trans " is 1000 litres" %}</em></strong>
+                        <em>(*)  m&#179; {% trans " is 1000 litres" %}</em>
                     </p>
                     <p>
-                        <strong><em>(**) {%  trans "The presented information corresponds to previous period of the same length, e.g. previous day, week, month, year" %}</em></strong>
+                        <em>(**) {%  trans "The presented information corresponds to previous period of the same length, e.g. previous day, week, month, year" %}</em>
                     </p>
 
                     <p>
-                        <strong><em>(***) {% trans "Target consumption is a value calculated by target water use (in litres per person per day) multiplied by the number of occupants of your house. There are 6 target levels:" %} .</em></strong>
+                        <em>(***) {% trans "Target consumption is a value calculated by target water use (in litres per person per day) multiplied by the number of occupants of your house. There are 6 target levels:" %} .</em>
                     </p>
-                    <table>
-                        <tr>
-                            <th>{% trans "Consumption Level" %}</th>
-                            <th>{% trans "Smiles Awarded" %}</th>
-                        </tr>
-                        <tr>
-                            <td>&le; 80 l/p/d</td>
-                            <td><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /></td>
-                        </tr>
-                        <tr>
-                            <td>&le; 90 l/p/d</td>
-                            <td><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /></td>
-                        </tr>
-                        <tr>
-                            <td>&le; 105 l/p/d</td>
-                            <td><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /></td>
-                        </tr>
-                        <tr>
-                            <td>&le; 110 l/p/d</td>
-                            <td><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /></td>
-                        </tr>
-                        <tr>
-                            <td>&le; 120 l/p/d</td>
-                            <td><img src="{{ STATIC_URL }}icon/smile.png" /></td>
-                        </tr>
-                        <tr>
-                            <td>&gt; 120 l/p/d</td>
-                            <td><img src="{{ STATIC_URL }}icon/sad.png" /></td>
-                        </tr>
+                    <table class="table table_container">
+                        <thead>
+                            <tr>
+                                <td><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /></td>
+                                <td><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /></td>
+                                <td><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /></td>
+                                <td><img src="{{ STATIC_URL }}icon/smile.png" /><img src="{{ STATIC_URL }}icon/smile.png" /></td>
+                                <td><img src="{{ STATIC_URL }}icon/smile.png" /></td>
+                                <td><img src="{{ STATIC_URL }}icon/sad.png" /></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>&le; 80 ltr/person/day</td>
+                                <td>&le; 90 l/p/d</td>
+                                <td>&le; 105 l/p/d</td>
+                                <td>&le; 110 l/p/d</td>
+                                <td>&le; 120 l/p/d</td>
+                                <td>&gt; 120 l/p/d</td>
+                            </tr>
+                        </tbody>
                     </table>
-                <strong><em>{% trans "If you miss a target, the target consumption is adjusted to the next one. The more smilies you gather, the more water efficient is your household." %}</em></strong>
-                </div>
-                <div class="col-md-6">
-                    <p class="text-center bg-primary"><strong>{% trans "WATER COST" %}</strong></p>
-                    <div class="table-responsive">
-                        <table class="table table-condensed table-striped table-hover">
-                            <thead class="bg-primary"><tr><th>{% trans "Accounting period" %}</th><th>{% trans "Current Year" %}({{ overview.today_timestamp.year }})</th><th>{% trans "Previous Year" %} ({{ overview.today_timestamp.year|add:"-1" }})</th></tr></thead>
-                            <tbody>
-                            <tr>
-                                <td>{% trans "Last Seven Day" %} ({{ overview.last_7_days_timestamp|date:"j/m" }} - {{ overview.today_timestamp|date:"j/m" }})</td>
-                                <td><strong>{{ overview.last_7_days_cost|floatformat:2 }} &euro;</strong></td>
-                                <td>{{ overview.last_7_days_last_year_cost|floatformat:2 }} &euro;</td>
-                            </tr>
-                            <tr>
-                                <td>{% trans "Current month" %} ({{overview.today_timestamp|date:"F"}})</td>
-                                <td><strong>{{ overview.current_month_cost|floatformat:2 }} &euro;</strong></td>
-                                <td>{{ overview.current_month_last_year_cost|floatformat:2 }} &euro;</td>
-                            </tr>
-                            <tr>
-                                <td>{% trans "Current year" %} ({{overview.today_timestamp|date:"o"}})</td>
-                                <td><strong>{{ overview.current_year_cost|floatformat:2 }} &euro;</strong></td>
-                                <td>{{ overview.last_year_cost|floatformat:2 }} &euro;</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <em>{% trans "If you miss a target, the target consumption is adjusted to the next one. The more smilies you gather, the more water efficient is your household." %}</em>
                 </div>
             </div> <!--row -->
         </div>
@@ -182,7 +149,7 @@
         <div class="panel-heading"><div class="panel-title">{% trans "ELECTRICITY" %}</div></div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <p class="text-center bg-primary"><strong>{% trans "ENERGY CONSUMPTION" %} as of {{ overview.weekday }} {{ overview.today_timestamp|date:"j/m/o" }}</strong></p>
                     <div class="table-responsive">
                         <table class="table table-condensed table-striped table-hover">
@@ -226,31 +193,6 @@
                                 <td>
                                     {{ overview_nrg.current_target_year }} Wh
                                 </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <p class="text-center bg-primary"><strong>{% trans "ENERGY COST" %}</strong></p>
-                    <div class="table-responsive">
-                        <table class="table table-condensed table-striped table-hover">
-                            <thead class="bg-primary"><tr><th>{% trans "Accounting period" %}</th><th>{% trans "Current Year" %}({{ overview.today_timestamp.year }})</th><th>{% trans "Previous Year" %} ({{ overview.today_timestamp.year|add:"-1" }})</th></tr></thead>
-                            <tbody>
-                            <tr>
-                                <td>{% trans "Last Seven Day" %} ({{ overview_nrg.last_7_days_timestamp|date:"j/m" }} - {{ overview_nrg.today_timestamp|date:"j/m" }})</td>
-                                <td><strong>{{ overview_nrg.last_7_days_cost|floatformat:2 }} &euro;</strong></td>
-                                <td>{{ overview_nrg.last_7_days_last_year_cost|floatformat:2 }} &euro;</td>
-                            </tr>
-                            <tr>
-                                <td>{% trans "Current month" %} ({{overview_nrg.today_timestamp|date:"F"}})</td>
-                                <td><strong>{{ overview_nrg.current_month_cost|floatformat:2 }} &euro;</strong></td>
-                                <td>{{ overview_nrg.current_month_last_year_cost|floatformat:2 }} &euro;</td>
-                            </tr>
-                            <tr>
-                                <td>{% trans "Current year" %} ({{overview_nrg.today_timestamp|date:"o"}})</td>
-                                <td><strong>{{ overview_nrg.current_year_cost|floatformat:2 }} &euro;</strong></td>
-                                <td>{{ overview_nrg.last_year_cost|floatformat:2 }} &euro;</td>
                             </tr>
                             </tbody>
                         </table>

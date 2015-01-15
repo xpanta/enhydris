@@ -57,8 +57,6 @@ def calculate_appliance_consumption(request, username):
         else:
             tap = 0
         num1 = selects['out_areas_garden']
-        num2 = selects['out_areas_pervious']
-        num3 = selects['out_areas_roof']
         try:
             num4 = checkboxes['pool']
         except KeyError:
@@ -67,7 +65,7 @@ def calculate_appliance_consumption(request, username):
             num5 = checkboxes['car_washing']
         except KeyError:
             num5 = 0
-        if num1 > 0 or num2 > 0 or num3 > 0 or num4 or num5:
+        if num1 or num4 or num5:
             outdoor = 1
         else:
             outdoor = 0
