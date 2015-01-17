@@ -301,7 +301,12 @@ def create_objects(data, usernames, force, z_names, z_dict):
             exists = False
             s, e = timeseries_bounding_dates_from_db(db.connection,
                                                      db_series[variable].id)
-            latest_ts = e
+            if not force:  # force = replace old with new data
+                latest_ts = e
+            else:
+                # to bypass the following "if". Otherwise only dates after
+                # latest_ts will be inserted
+                latest_ts = None
             ts_id = db_series[variable].id
             # checking to see if timeseries records already exist in order
             # to append
@@ -311,7 +316,8 @@ def create_objects(data, usernames, force, z_names, z_dict):
                 exists = True
                 timeseries = TSeries(ts_id)
                 tail = read_timeseries_tail_from_db(db.connection, ts_id)
-                total = float(tail[1])  # keep up from last value
+                if not force:
+                    total = float(tail[1])  # keep up from last value
             else:
                 timeseries = TSeries()
                 timeseries.id = ts_id
@@ -322,13 +328,9 @@ def create_objects(data, usernames, force, z_names, z_dict):
             # we are trying to enter is not less the the last latest
             # timestamp of the previous import. But how?
             name = household.user.username
-            if name == "GR059E35":
+            if name == "GR006047":
                 pass
             for timestamp, value in series:
-                d = datetime.today()
-                d = d.replace(month=11).replace(day=5)
-                if timestamp.date() == d.date():
-                    pass
                 if (latest_ts and latest_ts < timestamp) or (not latest_ts):
                     if not isnan(value):
                         total += value
@@ -336,7 +338,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
                     else:
                         timeseries[timestamp] = float('NaN')
             timeseries_data[variable] = timeseries
-            if not exists:
+            if not exists or force:
                 timeseries.write_to_db(db=db.connection,
                                        transaction=transaction,
                                        commit=True)

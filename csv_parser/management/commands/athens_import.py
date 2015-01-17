@@ -100,8 +100,17 @@ class Command(BaseCommand):
         except IndexError:
             user_filename = ""
         try:
+            force = args[1]
+            if force == "replace":
+                force = True
+            else:
+                force = False
+        except IndexError:
+            force = False
+        try:
             timer1 = datetime.now()
-            log.debug("starting athens import. Setting timer at %s" % timer1)
+            log.debug("starting athens import. Setting timer at {x} force={y}".
+                      format(x=timer1, y=force))
             _filenames = []
             _path = "data/athens/"
             all_files = sorted(listdir(_path))
@@ -112,15 +121,14 @@ class Command(BaseCommand):
             for f_name in all_files:
                 if fnmatch(f_name, _pattern):
                     _filenames.append(f_name)
+            if user_filename:
+                _filenames = [user_filename]
             if not _filenames:
                 log.info(" *** did not find file with pattern %s" % _pattern)
                 notify_admins()
-            if user_filename:
-                _filenames = [user_filename]
             for _filename in sorted(_filenames):
                 log.info("parsing file %s" % _filename)
-                print("parsing file %s" % _filename)
-                force = False  # True = Rewrite
+                print("parsing file {x} ({y})".format(x=_filename, y=force))
                 process_file(_filename, _path, force)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60
