@@ -35,6 +35,7 @@ from iwidget.models import (IWTimeseries, Household, DMA,
                             VAR_ENERGY_PERIOD, VAR_ENERGY_COST)
 from iwidget.forms import HouseholdForm
 from iwidget.utils import (statistics_on_daily, energy_statistics_on_daily)
+from django.utils.translation import ugettext as _
 
 
 class TimeseriesDetailView(TDV):
@@ -129,7 +130,6 @@ def household_view(request, household_id=None):
     ts_dma_monthly_energy_pc = ts_dma_monthly_energy_pc[0] if \
         ts_dma_monthly_energy_pc else None
 
-    # TODO: Remove this after full migration to rest api
     # if len(ts_cost):
     #     ts_cost = ts_cost[0]
     # else:
@@ -139,18 +139,18 @@ def household_view(request, household_id=None):
     charts = [
         {
             'id': 1,
-            'name': 'Fifteen minutes water consumption (litres)',
+            'name': _('Fifteen minutes water consumption (litres)'),
             'display_min': False, 'display_max': True, 'display_avg': False,
             'display_sum': True, 'time_span': 'day', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'initial_display': False,
             'main_timeseries_id': ts_fifteen.id,
-            'span_options': ['month', 'week', 'day'],
+            'span_options': [_('month'), _('week'), _('day')],
         },
         {
             'id': 7,
-            'name': 'Hourly water consumption (litres)',
+            'name': _('Hourly water consumption (litres)'),
             'display_min': False, 'display_max': True, 'display_avg': False,
             'display_sum': True, 'time_span': 'week', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -158,48 +158,47 @@ def household_view(request, household_id=None):
             'initial_display': True,
             'main_timeseries_id': ts_hourly.id,
             'has_pie': 1,
-            'span_options': ['year', 'month', 'week', 'day'],
+            'span_options': [_('year'), _('month'), _('week'), _('day')],
         },
         {
             'id': 6,
-            'name': 'Cumulative consumption - raw measurements (m<sup>3</sup>)',
+            'name': _('Cumulative consumption - raw measurements (m<sup>3</sup>)'),
             'display_min': False, 'display_max': False, 'display_avg': False,
             'display_sum': False, 'time_span': 'week', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'initial_display': False,
             'main_timeseries_id': ts_raw.id,
-            'span_options': ['month', 'week', 'day'],
+            'span_options': [_('month'), _('week'), _('day')],
         },
         'Fifteen energy placeholder',
         'Hourly energy placeholder',
         {
             'id': 2,
-            'name': 'Daily water consumption (litres)',
+            'name': _('Daily water consumption (litres)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'month', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'initial_display': True,
             'main_timeseries_id': ts_daily.id, 'occupancy': nocc,
-            'span_options': ['year', 'month', 'week'],
+            'span_options': [_('year'), _('month'), _('week')],
         },
         {
             'id': 3,
-            'name': 'Daily water consumption per capita (litres)',
+            'name': _('Daily water consumption per capita (litres)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'month', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'initial_display': False,
-            'span_options': ['year', 'month', 'week'],
+            'span_options': [_('year'), _('month'), _('week')],
         },
         'Daily energy placeholder',
         'Daily energy per capita placeholder',
         {
             'id': 4,
-            'name': 'Water consumption per month, up to a year '
-                    'period (m<sup>3</sup>)',
+            'name': _('Water consumption per month, up to a year period (m<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -222,8 +221,7 @@ def household_view(request, household_id=None):
         },
         {
             'id': 5,
-            'name': 'Water consumption per month, per capita, '
-                    'up to a year period (m<sup>3</sup>)',
+            'name': _('Water consumption per month, per capita, up to a year period (m<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -241,35 +239,35 @@ def household_view(request, household_id=None):
         charts[index] = \
             {
                 'id': 9,
-                'name': 'Daily energy consumption (kWh)',
+                'name': _('Daily energy consumption (kWh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'month', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': False,
                 'main_timeseries_id': ts_daily_energy.id, 'occupancy': nocc,
-                'span_options': ['year', 'month', 'week'],
+                'span_options': [_('year'), _('month'), _('week')],
             }
 
         index = charts.index('Fifteen energy placeholder')
         charts[index] = \
             {
                 'id': 10,
-                'name': 'Fifteen minutes energy consumption (kWh)',
+                'name': _('Fifteen minutes energy consumption (kWh)'),
                 'display_min': False, 'display_max': True, 'display_avg': False,
                 'display_sum': True, 'time_span': 'day', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': False,
                 'main_timeseries_id': ts_fifteen_energy.id,
-                'span_options': ['month', 'week', 'day'],
+                'span_options': [_('month'), _('week'), _('day')],
             }
 
         index = charts.index('Hourly energy placeholder')
         charts[index] = \
             {
                 'id': 11,
-                'name': 'Hourly energy consumption (kWh)',
+                'name': _('Hourly energy consumption (kWh)'),
                 'display_min': False,
                 'display_max': True, 'display_avg': False,
                 'display_sum': True, 'time_span': 'week', 'is_vector': False,
@@ -278,27 +276,27 @@ def household_view(request, household_id=None):
                 'initial_display': False,
                 'main_timeseries_id': ts_hourly_energy.id,
                 'has_pie': 3,
-                'span_options': ['year', 'month', 'week', 'day'],
+                'span_options': [_('year'), _('month'), _('week'), _('day')],
             }
 
         index = charts.index('Daily energy per capita placeholder')
         charts[index] = \
             {
                 'id': 12,
-                'name': 'Daily energy consumption per capita (kWh)',
+                'name': _('Daily energy consumption per capita (kWh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'month', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': False,
-                'span_options': ['year', 'month', 'week'],
+                'span_options': [_('year'), _('month'), _('week')],
             }
 
         index = charts.index('Monthly energy placeholder')
         charts[index] = \
             {
                 'id': 13,
-                'name': 'Monthly energy consumption (kWh)',
+                'name': _('Monthly energy consumption (kWh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'year', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -356,26 +354,23 @@ def household_view(request, household_id=None):
     #        default: default item from selections
     chart_selectors = {
             1: {
-                'selections': [(1, 'Fifteen minutes water '
-                                   'consumption'),
-                               (7, 'Hourly water consumption'),
-                               (6, 'Raw measurements'), ],
-                'title': 'High resolution data',
+                'selections': [(1, _('Fifteen minutes water consumption')),
+                               (7, _('Hourly water consumption')),
+                               (6, _('Raw measurements')), ],
+                'title': _('High resolution data'),
                 'default': 7
             },
             2: {
-                'selections': [(2, 'Daily water consumption'),
-                               (3, 'Daily water consumption '
-                                   'per capita'), ],
-                'title': 'Daily data',
+                'selections': [(2, _('Daily water consumption')),
+                               (3, _('Daily water consumption per capita')), ],
+                'title': _('Daily data'),
                 'default': 2
             },
             4: {
-                'selections': [(4, 'Monthly water consumption'),
+                'selections': [(4, _('Monthly water consumption')),
                                # (8, 'Monthly water cost'),
-                               (5, 'Monthly water consumption '
-                                   'per capita'), ],
-                'title': 'Monthly data',
+                               (5, _('Monthly water consumption per capita')), ],
+                'title': _('Monthly data'),
                 'default': 4
             },
     }
@@ -383,15 +378,15 @@ def household_view(request, household_id=None):
     if ts_daily_energy:
         # There are energy time series, add them to selectors
         chart_selectors[1]['selections'] += [
-            (10, 'Fifteen minutes energy consumption'),
-            (11, 'Hourly energy consumption'), ]
+            (10, _('Fifteen minutes energy consumption')),
+            (11, _('Hourly energy consumption')), ]
         chart_selectors[2]['selections'] += [
-            (9, 'Daily energy consumption'),
-            (12, 'Daily energy consumption per capita'), ]
+            (9, _('Daily energy consumption')),
+            (12, _('Daily energy consumption per capita')), ]
         chart_selectors[4]['selections'] += [
-            (13, 'Monthly energy consumption'),
+            (13, _('Monthly energy consumption')),
             # (14, 'Monthly energy cost'),
-            (15, 'Monthly energy consumption per capita'), ]
+            (15, _('Monthly energy consumption per capita')), ]
 
     variables = [
         {
@@ -603,18 +598,18 @@ def dma_view(request, dma_id):
     charts = [
         {
             'id': 1,
-            'name': 'Daily water consumption (m<sup>3</sup>)',
+            'name': _('Daily water consumption (m<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'week', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'main_timeseries_id': ts_daily.id,
-            'span_options': ['year', 'month', 'week'],
+            'span_options': [_('year'), _('month'), _('week')],
             'initial_display': True,
         },
         {
             'id': 2,
-            'name': 'Water consumption per month, up to a year period (m<sup>3</sup>)',
+            'name': _('Water consumption per month, up to a year period (m<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -625,18 +620,18 @@ def dma_view(request, dma_id):
         },
         {
             'id': 3,
-            'name': 'Daily water consumption per capita (litres)',
+            'name': _('Daily water consumption per capita (litres)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'week', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'main_timeseries_id': ts_daily_pc.id,
-            'span_options': ['year', 'month', 'week'],
+            'span_options': [_('year'), _('month'), _('week')],
             'initial_display': True,
         },
         {
             'id': 4,
-            'name': 'Water consumption per month, up to a year period, per capita (<sup>3</sup>)',
+            'name': _('Water consumption per month, up to a year period, per capita (<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -650,18 +645,18 @@ def dma_view(request, dma_id):
         charts += [
             {
                 'id': 5,
-                'name': 'Daily energy consumption (kWh)',
+                'name': _('Daily energy consumption (kWh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'week', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'main_timeseries_id': ts_daily_energy.id,
-                'span_options': ['year', 'month', 'week'],
+                'span_options': [_('year'), _('month'), _('week')],
                 'initial_display': True,
             },
             {
                 'id': 6,
-                'name': 'Energy consumption per month, up to a year period (MWh)',
+                'name': _('Energy consumption per month, up to a year period (MWh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'year', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -672,18 +667,18 @@ def dma_view(request, dma_id):
             },
             {
                 'id': 7,
-                'name': 'Daily energy consumption per capita (kWh)',
+                'name': _('Daily energy consumption per capita (kWh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'week', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'main_timeseries_id': ts_daily_energy_pc.id,
-                'span_options': ['year', 'month', 'week'],
+                'span_options': [_('year'), _('month'), _('week')],
                 'initial_display': True,
             },
             {
                 'id': 8,
-                'name': 'Energy consumption per month, up to a year period, per capita (kWh)',
+                'name': _('Energy consumption per month, up to a year period, per capita (kWh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'year', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -786,7 +781,7 @@ def household_properties(request):
         form = HouseholdForm(request.POST, request.FILES, instance=household)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Changes saved successfully')
+            messages.success(request, _('Changes saved successfully'))
             return HttpResponseRedirect(household.get_absolute_url() +
                                         '#characteristicstab')
     else:
@@ -998,7 +993,7 @@ def dashboard_view(request, household_id=None):
             raise Http404
     if not (user.is_staff or user.is_superuser) and \
             (household.user.id != user.id):
-        request.notifications.error("Permission denied")
+        request.notifications.error(_("Permission denied"))
         return HttpResponseRedirect(reverse('index'))
 
     dma = household.dma
@@ -1073,18 +1068,18 @@ def dashboard_view(request, household_id=None):
     charts = [
         {
             'id': 1,
-            'name': 'Fifteen minutes water consumption (litres)',
+            'name': _('Fifteen minutes water consumption (litres)'),
             'display_min': False, 'display_max': True, 'display_avg': False,
             'display_sum': True, 'time_span': 'day', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'initial_display': True,
             'main_timeseries_id': ts_fifteen.id,
-            'span_options': ['month', 'week', 'day'],
+            'span_options': [_('month'), _('week'), _('day')],
         },
         {
             'id': 7,
-            'name': 'Hourly water consumption (litres)',
+            'name': _('Hourly water consumption (litres)'),
             'display_min': False, 'display_max': True, 'display_avg': False,
             'display_sum': True, 'time_span': 'week', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -1092,43 +1087,43 @@ def dashboard_view(request, household_id=None):
             'initial_display': False,
             'main_timeseries_id': ts_hourly.id,
             'has_pie': 1,
-            'span_options': ['year', 'month', 'week', 'day'],
+            'span_options': [_('year'), _('month'), _('week'), _('day')],
         },
         {
             'id': 6,
-            'name': 'Cumulative consumption - raw measurements (m<sup>3</sup>)',
+            'name': _('Cumulative consumption - raw measurements (m<sup>3</sup>)'),
             'display_min': False, 'display_max': False, 'display_avg': False,
             'display_sum': False, 'time_span': 'week', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'initial_display': False,
             'main_timeseries_id': ts_raw.id,
-            'span_options': ['month', 'week', 'day'],
+            'span_options': [_('month'), _('week'), _('day')],
         },
         {
             'id': 2,
-            'name': 'Daily water consumption (litres)',
+            'name': _('Daily water consumption (litres)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'month', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'initial_display': True,
             'main_timeseries_id': ts_daily.id, 'occupancy': nocc,
-            'span_options': ['year', 'month', 'week'],
+            'span_options': [_('year'), _('month'), _('week')],
         },
         {
             'id': 3,
-            'name': 'Daily water consumption per capita (litres)',
+            'name': _('Daily water consumption per capita (litres)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'month', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'initial_display': False,
-            'span_options': ['year', 'month', 'week'],
+            'span_options': [_('year'), _('month'), _('week')],
         },
         {
             'id': 4,
-            'name': 'Water consumption per month, up to a year period (m<sup>3</sup>)',
+            'name': _('Water consumption per month, up to a year period (m<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -1151,7 +1146,7 @@ def dashboard_view(request, household_id=None):
         # },
         {
             'id': 5,
-            'name': 'Water consumption per month, per capita, up to a year period (m<sup>3</sup>)',
+            'name': _('Water consumption per month, per capita, up to a year period (m<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -1166,25 +1161,25 @@ def dashboard_view(request, household_id=None):
         charts_nrg = [
             {
                 'id': 10,
-                'name': 'Fifteen minutes energy consumption (Wh)',
+                'name': _('Fifteen minutes energy consumption (Wh)'),
                 'display_min': False, 'display_max': True, 'display_avg': False,
                 'display_sum': True, 'time_span': 'day', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': True,
                 'main_timeseries_id': ts_fifteen_nrg.id,
-                'span_options': ['month', 'week', 'day'],
+                'span_options': [_('month'), _('week'), _('day')],
             },
             {
                 'id': 11,
-                'name': 'Daily energy consumption (Wh)',
+                'name': _('Daily energy consumption (Wh)'),
                 'display_min': False, 'display_max': True, 'display_avg': False,
                 'display_sum': True, 'time_span': 'day', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': True,
                 'main_timeseries_id': ts_daily_nrg.id,
-                'span_options': ['month', 'week', 'day'],
+                'span_options': [_('month'), _('week'), _('day')],
             },
             {
                 'id': 12,
@@ -1199,7 +1194,7 @@ def dashboard_view(request, household_id=None):
             },
             {
                 'id': 13,
-                'name': 'Hourly energy consumption (Wh)',
+                'name': _('Hourly energy consumption (Wh)'),
                 'display_min': False, 'display_max': True, 'display_avg': False,
                 'display_sum': True, 'time_span': 'week', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -1207,28 +1202,28 @@ def dashboard_view(request, household_id=None):
                 'initial_display': False,
                 'main_timeseries_id': ts_hourly_nrg.id,
                 'has_pie': 3,
-                'span_options': ['year', 'month', 'week', 'day'],
+                'span_options': [_('year'), _('month'), _('week'), _('day')],
             },
             {
                 'id': 14,
-                'name': 'Cumulative consumption - raw measurements (KWh)',
+                'name': _('Cumulative consumption - raw measurements (KWh)'),
                 'display_min': False, 'display_max': False, 'display_avg': False,
                 'display_sum': False, 'time_span': 'week', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': False,
                 'main_timeseries_id': ts_raw.id,
-                'span_options': ['month', 'week', 'day'],
+                'span_options': [_('month'), _('week'), _('day')],
             },
             {
                 'id': 15,
-                'name': 'Daily energy consumption per capita (Wh)',
+                'name': _('Daily energy consumption per capita (Wh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'month', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
                 'display_lastvalue': True,
                 'initial_display': False,
-                'span_options': ['year', 'month', 'week'],
+                'span_options': [_('year'), _('month'), _('week')],
             },
             {
                 'id': 16,
@@ -1243,7 +1238,7 @@ def dashboard_view(request, household_id=None):
             },
             {
                 'id': 17,
-                'name': 'Energy consumption per month, per capita, up to a year period (Wh)',
+                'name': _('Energy consumption per month, per capita, up to a year period (Wh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'year', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -1253,7 +1248,7 @@ def dashboard_view(request, household_id=None):
             },
             {
                 'id': 18,
-                'name': 'Energy consumption per month, up to a year period (Wh)',
+                'name': _('Energy consumption per month, up to a year period (Wh)'),
                 'display_min': True, 'display_max': True, 'display_avg': True,
                 'display_sum': True, 'time_span': 'year', 'is_vector': False,
                 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -1272,48 +1267,42 @@ def dashboard_view(request, household_id=None):
     #        default: default item from selections
     chart_selectors = {
         1: {
-            'selections': [(1, 'Fifteen minutes water '
-                               'consumption'),
-                           (7, 'Hourly water consumption'),
-                           (6, 'Raw measurements'),],
-            'title': 'High resolution data',
+            'selections': [(1, _('Fifteen minutes water consumption')),
+                           (7, _('Hourly water consumption')),
+                           (6, _('Raw measurements')),],
+            'title': _('High resolution data'),
             'default': 1
         },
         2: {
-            'selections': [(2, 'Daily water consumption'),
-                           (3, 'Daily water consumption '
-                               'per capita'),],
-            'title': 'Daily data',
+            'selections': [(2, _('Daily water consumption')),
+                           (3, _('Daily water consumption per capita')),],
+            'title': _('Daily data'),
             'default': 2
         },
         4: {
-            'selections': [(4, 'Monthly water consumption'),
+            'selections': [(4, _('Monthly water consumption')),
                            # (8, 'Monthly water cost'),
-                           (5, 'Monthly water consumption '
-                               'per capita'),],
-            'title': 'Monthly data',
+                           (5, _('Monthly water consumption per capita')),],
+            'title': _('Monthly data'),
             'default': 8
         },
         10: {
-            'selections': [(10, 'Fifteen minutes energy '
-                                'consumption'),
-                           (13, 'Hourly energy consumption')],
-            'title': 'High resolution data',
+            'selections': [(10, _('Fifteen minutes energy consumption')),
+                           (13, _('Hourly energy consumption'))],
+            'title': _('High resolution data'),
             'default': 10
         },
         11: {
-            'selections': [(11, 'Daily energy consumption'),
-                           (15, 'Daily energy consumption '
-                                'per capita')],
-            'title': 'Daily data',
+            'selections': [(11, _('Daily energy consumption')),
+                           (15, _('Daily energy consumption per capita'))],
+            'title': _('Daily data'),
             'default': 11
         },
         12: {
-            'selections': [(12, 'Monthly energy consumption'),
+            'selections': [(12, _('Monthly energy consumption')),
                            # (16, 'Monthly energy cost'),
-                           (17, 'Monthly energy consumption '
-                                'per capita')],
-            'title': 'Monthly data',
+                           (17, _('Monthly energy consumption per capita'))],
+            'title': _('Monthly data'),
             'default': 12
         },
     }
@@ -1502,7 +1491,7 @@ Following methods is the copy of def dma_view(request, dma_id) except this metho
 def dmas_view(request, dma_id):
     user = request.user
     if not (user.is_staff or user.is_superuser):
-        request.notifications.error("Permission denied")
+        request.notifications.error(_("Permission denied"))
         return HttpResponseRedirect(reverse('index'))
     try:
         dma = DMA.objects.get(pk=dma_id)
@@ -1520,18 +1509,18 @@ def dmas_view(request, dma_id):
     charts = [
         {
             'id': 1,
-            'name': 'Daily water consumption (m<sup>3</sup>)',
+            'name': _('Daily water consumption (m<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'week', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'main_timeseries_id': ts_daily.id,
-            'span_options': ['year', 'month', 'week'],
+            'span_options': [_('year'), _('month'), _('week')],
             'initial_display': True,
         },
         {
             'id': 2,
-            'name': 'Water consumption per month, up to a year period (m<sup>3</sup>)',
+            'name': _('Water consumption per month, up to a year period (m<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
@@ -1542,18 +1531,18 @@ def dmas_view(request, dma_id):
         },
         {
             'id': 3,
-            'name': 'Daily water consumption per capita (litres)',
+            'name': _('Daily water consumption per capita (litres)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'week', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
             'main_timeseries_id': ts_daily_pc.id,
-            'span_options': ['year', 'month', 'week'],
+            'span_options': [_('year'), _('month'), _('week')],
             'initial_display': True,
         },
         {
             'id': 4,
-            'name': 'Water consumption per month, up to a year period, per capita (<sup>3</sup>)',
+            'name': _('Water consumption per month, up to a year period, per capita (<sup>3</sup>)'),
             'display_min': True, 'display_max': True, 'display_avg': True,
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,

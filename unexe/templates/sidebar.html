@@ -4,9 +4,9 @@
 {% block sidebar %}
     <div class="col-md-3 leftcol">
         <div class="panel panel-default">
-            <div class="panel-heading"><small><a href="3" onclick="user($(this).attr('href')); return false;" class="pull-right">Update</a></small> <div class="panel-title">{% trans "USER" %}</div></div>
+            <div class="panel-heading"><small><a href="3" onclick="user($(this).attr('href')); return false;" class="pull-right">{% trans "Update" %}</a></small> <div class="panel-title">{% trans "USER" %}</div></div>
             <div class="panel-body">
-                Username: {{user}}<br/>Last Login: {{user.last_login}}<br/>Password: ******* <small><a href="3" onclick="user($(this).attr('href')); return false;">[Change]</a></small>
+                {% trans "Username" %}: {{user}}<br/>{% trans "Last Login" %}: {{user.last_login}}<br/>{% trans "Password" %}: ******* <small><a href="3" onclick="user($(this).attr('href')); return false;">[{% trans "Change" %}]</a></small>
             </div>
         </div>
         <div class="panel panel-default">
@@ -20,7 +20,17 @@
                         </select>
                         </form><br/>
                          -->
-                {% trans "Number of Occupants" %}: {{household.num_of_occupants}} | {% trans "Property type" %}: {{household.property_type}}
+                {% trans "Number of Occupants" %}: {{household.num_of_occupants}}
+                | {% trans "Property type" %}:
+                {%  if household.property_type == "Detached " %}
+                    {% trans "Detached" %}
+                {% elif household.property_type == "Semi Detached" %}
+                    {% trans "Semi Detached" %}
+                {% elif household.property_type == "Flat" %}
+                    {% trans "Flat" %}
+                {% elif household.property_type == "Tenament" %}
+                    {% trans "Tenament" %}
+                {% endif %}
                 <hr/>
                 <div id="map"></div>
             </div>
@@ -29,7 +39,7 @@
             <div class="panel-heading"><div class="panel-title">{% trans "SUBSCRIPTION" %}</div></div>
             <div class="panel-body">
                 {% trans "Water Tariff: Tariff1" %}<br/>{% trans "Rate: Fixed rate with Volumetric charge" %}<hr/>
-                Energy Tariff: Night Saver<br/>Rate: 3.25/Unit
+                {% trans "Energy Tariff: Night Saver Rate: 3.25/Unit" %}
             </div>
         </div>
         <div class="panel panel-default">
@@ -46,11 +56,11 @@
     <div class="col-md-3 leftcol">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <small><a href="{% url 'usersuper' %}" class="pull-right">Update</a></small>
+                <small><a href="{% url 'usersuper' %}" class="pull-right">{% trans "Update" %}</a></small>
                 <div class="panel-title">{% trans "ADMINISTRATOR" %}</div>
             </div>
             <div class="panel-body">
-                Username: {{user}}<br/>Last Login: {{user.last_login}}<br/>Password: ******* <small><a href="{% url 'usersuper' %}">[Change]</a></small>
+                {% trans "Username" %}: {{user}}<br/>{% trans "Last Login" %}: {{user.last_login}}<br/>{% trans "Password" %}: ******* <small><a href="{% url 'usersuper' %}">[{% trans "Change" %}]</a></small>
             </div>
         </div>
         <div class="panel panel-default">

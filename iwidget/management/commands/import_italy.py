@@ -368,7 +368,7 @@ class Command(BaseCommand):
             raise CommandError('File: %s does not exist'%filename)
         options['handle'] = self
         force_overwrite = options['force_overwrite']
-        # TODO: maybe improve transaction control, is this has a
+        # maybe improve transaction control, is this has a
         # meaning, as this command is only for demonstration - concept
         # edition of the iWidget
         with transaction.commit_manually():

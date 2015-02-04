@@ -325,8 +325,8 @@
 
     {% if view == "day_night" %}
         var pie_data = [
-            { label: "Night Consumption",  data: {{ night_total }}, color: "#7580cc" },
-            { label: "Day Consumption",  data: {{ day_total }}, color: "#cc823d"}
+            { label: "{% trans 'Night Consumption' %}",  data: {{ night_total }}, color: "#7580cc" },
+            { label: "{% trans 'Day Consumption' %}",  data: {{ day_total }}, color: "#cc823d"}
         ];
 
         var pie_chart = $("#pie");
@@ -343,8 +343,8 @@
         });
         {% if day_total2 and night_total2 %}
             var pie_data2 = [
-                { label: "Night Consumption",  data: {{ night_total2 }}, color: "#7580cc" },
-                { label: "Day Consumption",  data: {{ day_total2 }}, color: "#cc823d"}
+                { label: "{% trans 'Night Consumption' %}",  data: {{ night_total2 }}, color: "#7580cc" },
+                { label: "{% trans 'Day Consumption' %}",  data: {{ day_total2 }}, color: "#cc823d"}
             ];
 
             var pie_chart2 = $("#pie2");

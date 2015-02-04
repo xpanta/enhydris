@@ -20,28 +20,28 @@
         </thead>
         <tbody>
             {% if wc %}
-                <tr> <td>{% trans "WC (toilet flushing)" %}</td><td>{{ consumptions.wc|floatformat:1 }} litres</td> </tr>
+                <tr> <td>{% trans "WC (toilet flushing)" %}</td><td>{{ consumptions.wc|floatformat:1 }} {% trans "litres" %}</td> </tr>
             {% endif %}
             {% if shower %}
-                <tr> <td>{% trans "Showers" %}</td><td>{{ consumptions.shower|floatformat:1 }} litres</td> </tr>
+                <tr> <td>{% trans "Showers" %}</td><td>{{ consumptions.shower|floatformat:1 }} {% trans "litres" %}</td> </tr>
             {% endif %}
             {% if tap %}
-                <tr> <td>{% trans "Taps (Kitchen / Bathroom)" %}</td><td>{{ consumptions.tap|floatformat:1 }} litres</td> </tr>
+                <tr> <td>{% trans "Taps (Kitchen / Bathroom)" %}</td><td>{{ consumptions.tap|floatformat:1 }} {% trans "litres" %}</td> </tr>
             {% endif %}
             {% if washing_machine %}
-                <tr> <td>{% trans "Washing Maching" %}</td><td>{{ consumptions.washing_machine|floatformat:1 }} litres</td> </tr>
+                <tr> <td>{% trans "Washing Maching" %}</td><td>{{ consumptions.washing_machine|floatformat:1 }} {% trans "litres" %}</td> </tr>
             {% endif %}
             {% if dish_washer %}
-                <tr> <td>{% trans "Dish Washer" %}</td><td>{{ consumptions.dish_washer|floatformat:1 }} litres</td> </tr>
+                <tr> <td>{% trans "Dish Washer" %}</td><td>{{ consumptions.dish_washer|floatformat:1 }} {% trans "litres" %}</td> </tr>
             {% endif %}
             {% if bath %}
-                <tr> <td>{% trans "Baths" %}</td><td>{{ consumptions.bath|floatformat:1 }} litres</td> </tr>
+                <tr> <td>{% trans "Baths" %}</td><td>{{ consumptions.bath|floatformat:1 }} {% trans "litres" %}</td> </tr>
             {% endif %}
             {% if other %}
-                <tr> <td>{% trans "Other" %}</td><td>{{ consumptions.other|floatformat:1 }} litres</td> </tr>
+                <tr> <td>{% trans "Other" %}</td><td>{{ consumptions.other|floatformat:1 }} {% trans "litres" %}</td> </tr>
             {% endif %}
             {% if outdoor %}
-                <tr> <td>{% trans "Outdoor" %}</td><td>{{ consumptions.outdoor|floatformat:1 }} litres</td> </tr>
+                <tr> <td>{% trans "Outdoor" %}</td><td>{{ consumptions.outdoor|floatformat:1 }} {% trans "litres" %}</td> </tr>
             {% endif %}
             <tr>
                 <td>

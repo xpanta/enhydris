@@ -30,7 +30,6 @@ class PoliticalDivisionAdmin(GareaAdmin):
     list_display_links = [f.name for f in PoliticalDivision._meta.fields]
 
 class WaterDivisionAdmin(GareaAdmin):
-    # TODO: Fill it when the model is ready
     pass
 
 class WaterBasinAdmin(GareaAdmin):

@@ -11,7 +11,6 @@ from unexe.classes.Iseries import iseries
 from itertools import izip
 from uc_03_1.lib.common import day_start, day_end
 import numpy as np
-#!TODO import ugetext for internationalizing texts
 
 
 @login_required

@@ -30,7 +30,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <p class="text-center bg-primary"><strong>{% trans "WATER CONSUMPTION" %} as of {{ overview.weekday }} {{ overview.today_timestamp|date:"j/m/o" }}</strong></p>
+                    <p class="text-center bg-primary"><strong>{% trans "WATER CONSUMPTION" %}: {{ overview.weekday }} {{ overview.today_timestamp|date:"j/m/o" }}</strong></p>
                     <div class="table-responsive">
                         <table class="table table-condensed table-striped table-hover">
                             <thead class="bg-primary">
@@ -129,12 +129,12 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>&le; 80 ltr/person/day</td>
-                                <td>&le; 90 l/p/d</td>
-                                <td>&le; 105 l/p/d</td>
-                                <td>&le; 110 l/p/d</td>
-                                <td>&le; 120 l/p/d</td>
-                                <td>&gt; 120 l/p/d</td>
+                                <td>&le; 80 {% trans "ltr/person/day" %}</td>
+                                <td>&le; 90 {% trans "l/p/d" %}</td>
+                                <td>&le; 105 {% trans "l/p/d" %}</td>
+                                <td>&le; 110 {% trans "l/p/d" %}</td>
+                                <td>&le; 120 {% trans "l/p/d" %}</td>
+                                <td>&gt; 120 {% trans "l/p/d" %}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -150,7 +150,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
-                    <p class="text-center bg-primary"><strong>{% trans "ENERGY CONSUMPTION" %} as of {{ overview.weekday }} {{ overview.today_timestamp|date:"j/m/o" }}</strong></p>
+                    <p class="text-center bg-primary"><strong>{% trans "ENERGY CONSUMPTION as of" %} {{ overview.weekday }} {{ overview.today_timestamp|date:"j/m/o" }}</strong></p>
                     <div class="table-responsive">
                         <table class="table table-condensed table-striped table-hover">
                             <thead class="bg-primary">

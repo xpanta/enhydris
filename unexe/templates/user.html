@@ -8,14 +8,14 @@
 				<p class="text-warning">{% trans "Required" %} (*)</p>
  				<div class="form-group">
 					<label class="col-md-2 control-label">{% trans "Old Password" %}: *</label>
-				    <div class="col-md-10"><input class="form-control" placeholder="Old Password" name="oldpasswd" id="oldpasswd" type="password" required="true"></div>
+				    <div class="col-md-10"><input class="form-control" placeholder="{% trans 'Old Password' %}" name="oldpasswd" id="oldpasswd" type="password" required="true"></div>
 				</div>
  
 				<div class="form-group">
 					<label class="col-md-2 control-label">{% trans "New Password" %}: *</label>
-				    <div class="col-md-4"><input class="form-control" placeholder="New Password" name="newpasswd" id="newpasswd" type="password" required="true"></div>
+				    <div class="col-md-4"><input class="form-control" placeholder="{% trans 'New Password' %}" name="newpasswd" id="newpasswd" type="password" required="true"></div>
 					<label class="col-md-2 control-label">{% trans "Confirm New Password" %}: *</label>
-				    <div class="col-md-4"><input class="form-control" placeholder="Confirm New Password" name="newpasswdagain" id="newpasswdagain" type="password" required="true" equalTo="#newpasswd"></div>				    
+				    <div class="col-md-4"><input class="form-control" placeholder="{% trans 'Confirm New Password' %}" name="newpasswdagain" id="newpasswdagain" type="password" required="true" equalTo="#newpasswd"></div>
 				</div>
 			    <div class="form-group">
 			    <div class="col-md-offset-4 col-md-12">
@@ -34,9 +34,9 @@
 				<p class="text-warning">{% trans "Required" %} (*)</p>
  				<div class="form-group">
 					<label class="col-md-2 control-label">{% trans "First Name" %}: *</label>
-				    <div class="col-md-4"><input class="form-control" placeholder="First Name" name="first_name" id="first_name" type="text" value="{{user.first_name}}" required="true"></div>
+				    <div class="col-md-4"><input class="form-control" placeholder="{% trans 'First Name' %}" name="first_name" id="first_name" type="text" value="{{user.first_name}}" required="true"></div>
 					<label class="col-md-2 control-label">{% trans "Last Name" %}: *</label>
-				    <div class="col-md-4"><input class="form-control" placeholder="Last Name" name="last_name" id="last_name" type="text" value="{{user.last_name}}" required="true"></div>
+				    <div class="col-md-4"><input class="form-control" placeholder="{% trans 'Last Name' %}" name="last_name" id="last_name" type="text" value="{{user.last_name}}" required="true"></div>
 				</div>
 				<div class="form-group">
 					<label class="col-md-2 control-label">{% trans "Email" %}: *</label>

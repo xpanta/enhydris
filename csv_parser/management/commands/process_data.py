@@ -287,7 +287,7 @@ class Command(BaseCommand):
                  'monthly_start': MAX_DATE, 'monthly_end': MIN_DATE}}
         for household in Household.objects.all():
             # We "commit" to database each household, if everything
-            # went ok. TODO Write some action on failures and
+            # went ok. (Write some action on failures and)
             # exceptions, maybe the whole process should be under one
             # big transaction, or oposite solution: on exception
             # ignore and continue to other households, log the error.

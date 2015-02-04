@@ -178,19 +178,19 @@ function c_uc32disabled()
 		</select>
 		 -->
 		<label class="radio inline c_uc32period">
-			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="season" onchange="c_uc32toggle();" /> Select Season
+			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="season" onchange="c_uc32toggle();" /> {% trans "Select Season" %}
 		</label>		
 		<label class="radio inline c_uc32period">
-			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="days"  onchange="c_uc32toggle();" /> Specify Period
+			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="days"  onchange="c_uc32toggle();" /> {% trans "Specify Period" %}
 		</label>
 		<label class="radio inline c_uc32period">
-			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="3" onclick="c_uc32toggle();"/> Last 3 Months
+			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="3" onclick="c_uc32toggle();"/> {% trans "Last 3 Months" %}
 		</label>
 		<label class="radio inline c_uc32period">
-			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="6" onclick="c_uc32toggle();"/> Last 6 Months
+			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="6" onclick="c_uc32toggle();"/> {% trans "Last 6 Months" %}
 		</label>		
 		<label class="radio inline c_uc32period">
-			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="12" onclick="c_uc32toggle();"/> Last 12 Months
+			<input type="radio" name="c_uc32_per" id="c_uc32_per" value="12" onclick="c_uc32toggle();"/> {% trans "Last 12 Months" %}
 		</label>	
 		<button type="button" class="btn btn-primary" onClick="apputil.sendToserver('#c_uc32-form');">{% trans "Compare" %}</button>
 		</form>     

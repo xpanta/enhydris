@@ -66,8 +66,8 @@
     </div>
     <script>
         var pie_data = [
-            { label: "Night", data: {{ night_cons }}, color: "#7580cc" },
-            { label: "Day", data: {{ day_cons }}, color: "#cc823d"}
+            { label: "{% trans 'Night' %}", data: {{ night_cons }}, color: "#7580cc" },
+            { label: "{% trans 'Day' %}", data: {{ day_cons }}, color: "#cc823d"}
         ];
 
         var pie_chart = $("#pie_uc36");

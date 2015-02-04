@@ -242,7 +242,7 @@ class Command(BaseCommand):
         file_list = [ f for f in listdir(args[0]) if os.path.isfile(
                 os.path.join(args[0], f)) and
                 f.split('.')[-1].lower()=='csv']
-        # TODO: maybe improve transaction control, is this has a
+        # maybe improve transaction control, is this has a
         # meaning, as this command is only for demonstration - concept
         # edition of the iWidget
         with transaction.commit_manually():

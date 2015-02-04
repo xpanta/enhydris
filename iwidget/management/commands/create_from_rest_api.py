@@ -242,7 +242,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         options['handle'] = self
-        # TODO: maybe improve transaction control, is this has a
+        # maybe improve transaction control, is this has a
         # meaning, as this command is only for demonstration - concept
         # edition of the iWidget
         with transaction.commit_manually():

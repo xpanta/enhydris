@@ -50,6 +50,7 @@ from enhydris.settings import SSO_APP
 # added some comments!
 
 #from django.views.decorators.cache import cache_page
+from django.utils.translation import ugettext as _
 
 '''
 This method return the webpage of UK Case study registration page
@@ -486,10 +487,16 @@ class consumer(TemplateView):
             data = {
                 "allowed_plegma_users": ["GR006047"],
                 "list_100" : range(101),
-                "water_pricing_list" : zip(range(1,8), ["Flat rate tariff", "Water metering tariff", "Rising block tariff", "Declining block tariff", "Seasonal tariff", "Time-of-day tariff", "Social tariff"]),
-                "property_type_list" :  zip(range(1,5), ["Detached", "Semi Detached", "Flat", "Tenement"]),
-                "construction_period_list" : zip(range(1,5), ["Before 1970","1971-1990","1991-2000","After 2001"]),
-                "ownership_status_list" : zip(range(1,3), ["Owned","Rented"]),
+                "water_pricing_list": zip(range(1, 8), [_("Flat rate tariff"),
+                                                        _("Water metering tariff"),
+                                                        _("Rising block tariff"),
+                                                        _("Declining block tariff"),
+                                                        _("Seasonal tariff"),
+                                                        _("Time-of-day tariff"),
+                                                        _("Social tariff")]),
+                "property_type_list" :  zip(range(1,5), [_("Detached"), _("Semi Detached"), _("Flat"), _("Tenement")]),
+                "construction_period_list" : zip(range(1,5), [_("Before 1970"), "1971-1990", "1991-2000", _("After 2001")]),
+                "ownership_status_list" : zip(range(1,3), [_("Owned"),_("Rented")]),
                 "property_area_list" : zip(range(1,5), ["<= 50","51 - 100", "101 - 200", "> 200"]),
                 "garden_area_list" : zip(range(1,5), ["<= 20","21 - 50", "51 - 100", "> 100"]),
                 "pervious_area_list" : zip(range(1,5), ["<= 20","21 - 50", "51 - 70", "> 70"]),

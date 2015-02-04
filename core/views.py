@@ -5,7 +5,6 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-#!TODO import ugetext for internationalizing texts
 from django.contrib.auth.models import User
 import logging
 from django.views.decorators.csrf import csrf_exempt

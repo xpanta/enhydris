@@ -138,7 +138,7 @@ def create_user(identifier, m_id):
         """ in case of the standard householder SSO APP (ie hhApp)
             we create a more complex password. Otherwise we keep the easy one.
         """
-        if SSO_APP == "hhApp":
+        if SSO_APP == "hhApp" and identifier != "GRIWDEMO":
             u.profile.fname = u.first_name
             u.profile.lname = u.last_name
             u.profile.save()
@@ -301,12 +301,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
             exists = False
             s, e = timeseries_bounding_dates_from_db(db.connection,
                                                      db_series[variable].id)
-            if not force:  # force = replace old with new data
-                latest_ts = e
-            else:
-                # to bypass the following "if". Otherwise only dates after
-                # latest_ts will be inserted
-                latest_ts = None
+            latest_ts = e
             ts_id = db_series[variable].id
             # checking to see if timeseries records already exist in order
             # to append
@@ -315,6 +310,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
             if s or e:
                 exists = True
                 timeseries = TSeries(ts_id)
+                timeseries.read_from_db(db.connection)
                 tail = read_timeseries_tail_from_db(db.connection, ts_id)
                 if not force:
                     total = float(tail[1])  # keep up from last value
@@ -330,6 +326,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
             name = household.user.username
             if name == "GR006047":
                 pass
+            part_total = 0
             for timestamp, value in series:
                 if (latest_ts and latest_ts < timestamp) or (not latest_ts):
                     if not isnan(value):
@@ -337,6 +334,25 @@ def create_objects(data, usernames, force, z_names, z_dict):
                         timeseries[timestamp] = total
                     else:
                         timeseries[timestamp] = float('NaN')
+                elif latest_ts and timestamp <= latest_ts:  # insert
+                    # find total consumption till timestamp
+                    dates = sorted(timeseries.keys())
+                    if not part_total:  # find it
+                        for _date in dates:
+                            if _date < timestamp:
+                                part_total = timeseries[_date]
+                            else:
+                                break
+                    if not isnan(value):
+                        part_total += value
+                        timeseries[timestamp] = part_total
+                    else:
+                        timeseries[timestamp] = float('NaN')
+                    # in case of next dates are after latest_ts then we
+                    # need the new total. (we always suppose that dates are
+                    # increasing.
+                    total = part_total
+
             timeseries_data[variable] = timeseries
             if not exists or force:
                 timeseries.write_to_db(db=db.connection,
@@ -353,7 +369,6 @@ def create_objects(data, usernames, force, z_names, z_dict):
 
 def has_burst(household):
     name = household.user.username
-    #! TODO: Use a field for country and minimum given step in the future
     if not name.startswith('GR'):
         return 0, 0
     timeseries = household \
@@ -397,7 +412,6 @@ def has_leakage(household):
     name = household.user.username
     if name == "GR059E35":
         pass
-    #! TODO: Use a field for country and minimum given step in the future
     if name.startswith('GB'):  # not UK because they send daily data
         return 0
     timeseries = household \

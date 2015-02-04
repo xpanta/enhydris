@@ -221,7 +221,6 @@ class PoliticalDivision(Garea):
         return result
 
 class WaterDivision(Garea):
-    # TODO: Fill in the model
     f_dependencies = ['Garea']
     def __unicode__(self):
         return self.name or str(self.id)

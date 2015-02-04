@@ -16,7 +16,7 @@ LANGUAGES = (
 )
 
 LOCALE_PATHS = (
-    os.path.join(PROJECT_DIR, "locale/"),
+    os.path.join(PROJECT_DIR, "../locale/"),
 )
 
 LANGUAGE = 'en'

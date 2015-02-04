@@ -20,7 +20,6 @@ def calc_costs(request, username):
         curr_yr = today.year
         sel_mo = request.GET.get("month", curr_mo)
         sel_yr = request.GET.get("year", curr_yr)
-        #! TODO Get dishwasher from Database / household settings
         total_cons = 0
         household = user.households.all()[0]  # get user household id
         checkboxes, selects = ihousehold.getHouseholdData(household.id)

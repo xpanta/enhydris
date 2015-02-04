@@ -4,6 +4,7 @@
 # This software is provided with the AGPL license
 # Copyright (c) 2013-2014 National Techincal University of Athens
 
+from django.utils.translation import ugettext as _
 from datetime import datetime, timedelta
 import math
 # ADDED By Chris Pantazis to find month's maximum target value
@@ -212,7 +213,7 @@ def statistics_on_daily(ts_daily, occupancy = 1):
 
 
     # for display purpose only. Show current day
-    days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fir', 'Sat', 'Sun']
+    days = [_('Mon'), _('Tue'), _('Wed'), _('Thu'), _('Fir'), _('Sat'), _('Sun')]
     result['weekday'] = days[today.weekday()]
     """
         CHRIS PANTAZIS CODE ENDS HERE
