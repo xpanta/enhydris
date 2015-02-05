@@ -226,14 +226,21 @@ def compare(request, username):
                 key_dates2 = key_dates2[-80:]
         for dt in key_dates:
             val = float(total_dict[dt])
+            if step != "monthly":
+                val *= 1000
             total_data.append([x, val])
             if val > max_val:
                 max_val = val
             if view == 'day_night':
-                night_data.append([x, night_dict[dt]])
-                day_data.append([x, day_dict[dt]])
-                night_total += night_dict[dt]
-                day_total += day_dict[dt]
+                nv = night_dict[dt]
+                dv = day_dict[dt]
+                if step != "monthly":
+                    nv *= 1000
+                    dv *= 1000
+                night_data.append([x, nv])
+                day_data.append([x, dv])
+                night_total += nv
+                day_total += dv
             elif view == 'summer_winter':
                 summer_data.append([x, summer_dict[dt]])
                 winter_data.append([x, winter_dict[dt]])
@@ -269,14 +276,16 @@ def compare(request, username):
                                      str(d_time.year))
                 arr = [txt, val]
                 if view == 'day_night':
-                    arr.append(night_dict[dt])
-                    arr.append(day_dict[dt])
+                    arr.append(night_dict[dt] * 1000)
+                    arr.append(day_dict[dt] * 1000)
                 cons_table_data.append(arr)
         x = 0
         # Only if the user needs to combine two charts
         if key_dates2:
             for dt in key_dates2:
                 val = float(total_dict2[dt])
+                if step != "monthly":
+                    val *= 1000
                 total_data2.append([x, val])
                 if val > max_val2:
                     max_val2 = val
@@ -320,8 +329,8 @@ def compare(request, username):
                                          str(d_time.year))
                     arr = [txt, val]
                     if view == 'day_night':
-                        arr.append(night_dict2[dt])
-                        arr.append(day_dict2[dt])
+                        arr.append(night_dict2[dt] * 1000)
+                        arr.append(day_dict2[dt] * 1000)
                     cons_table_data2.append(arr)
     # if view is for summer / winter then max_val should be
     # something else.
@@ -329,7 +338,13 @@ def compare(request, username):
         max_val = max(summer_total, winter_total)
         if summer_total2 and winter_total2:
             max_val2 = max(summer_total2, winter_total2)
+    # last minute transformation. All data apart from monthly should be in ltr
+    if step != "monthly":
+        unit = "lt"
+    else:
+        unit = "m&#179;"
     data = {
+        'unit': unit,
         'username': username,
         # 'timeseries1': timeseries1,
         'timeseries2': timeseries2,

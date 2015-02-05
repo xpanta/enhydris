@@ -84,20 +84,20 @@ def get_chart_data(household, dates, units, step, view, start, end):
                 total_dict[key] = consumption
             # add day / night values if asked
             if view == 'day_night':
-                if day_start <= hour <= day_end:
-                    try:
-                        day_dict[key] += consumption
-                        night_dict[key] += 0
-                    except KeyError:  # if not there, put it!
-                        day_dict[key] = consumption
-                        night_dict[key] = 0  # i do this 4 consistency
-                else:
+                if night_start <= hour <= night_end:
                     try:
                         night_dict[key] += consumption
                         day_dict[key] += 0
                     except KeyError:  # if not there, put it!
                         night_dict[key] = consumption
-                        day_dict[key] = 0
+                        day_dict[key] = 0  # i do this 4 consistency
+                else:
+                    try:
+                        day_dict[key] += consumption
+                        night_dict[key] += 0
+                    except KeyError:  # if not there, put it!
+                        day_dict[key] = consumption
+                        night_dict[key] = 0
             elif view == 'summer_winter':
                 if month in winter:
                     try:
