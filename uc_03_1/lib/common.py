@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import ugettext as _
 
-day_start = 4
-day_end = 24
+day_start = 5
+day_end = 2
 night_start = 3
 night_end = 5
 

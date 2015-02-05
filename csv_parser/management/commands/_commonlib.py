@@ -428,7 +428,7 @@ def has_leakage(household):
         _d = ts.date()
         _t = ts.time()
         val = series[ts]
-        if 1 <= _t.hour <= 4:
+        if 3 <= _t.hour <= 5:
             try:
                 night_dict[_d] += val
             except KeyError:

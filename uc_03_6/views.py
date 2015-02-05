@@ -9,7 +9,7 @@ from pthelma.timeseries import Timeseries as TSeries
 from datetime import datetime, timedelta
 from unexe.classes.Iseries import iseries
 from itertools import izip
-from uc_03_1.lib.common import day_start, day_end
+from uc_03_1.lib.common import day_start, day_end, night_end, night_start
 import numpy as np
 
 
@@ -39,10 +39,10 @@ def event_history(request, username):
             d = dates[i].date()
             t = dates[i].time()
             if d == yesterday.date():
-                if day_start <= t.hour <= day_end:  # day
-                    day_cons += units1[i]
-                else:  # night
+                if night_start <= t.hour <= night_end:  # day
                     night_cons += units1[i]
+                else:  # day
+                    day_cons += units1[i]
         data = {
             'yesterday': yesterday,
             "events": events,
