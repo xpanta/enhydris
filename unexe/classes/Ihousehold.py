@@ -12,6 +12,7 @@ import json, datetime
 import pandas as pd
 import itertools as IT
 import numpy as np
+from django.utils.translation import ugettext as _
 
 '''
 This is household class where methods related to gather household statistics is defined. 
@@ -784,7 +785,7 @@ class ihousehold():
                 #convert date from to easily read at client side (eg. December 2009
                 stdate = iutility.convertdate(str(stdate),'%Y-%m-%d','%B-%Y')
                 endate = iutility.convertdate(str(endate),'%Y-%m-%d','%B-%Y')
-                data["title"]   = "TARIFF COMPARISON FOR "+season.upper()+" ("+stdate+" TO "+endate+")"
+                data["title"]   = _("TARIFF COMPARISON FOR ")+season.upper()+" ("+stdate+ _(" TO ") +endate+")"
         else:
             data = None              
         

@@ -2,11 +2,12 @@ __author__ = 'chris'
 
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from django.utils.translation import ugettext as _
 
 day_start = 4
 day_end = 24
-night_start = 1
-night_end = 4
+night_start = 3
+night_end = 5
 
 def get_year_start_end(when, end):
     """
@@ -52,7 +53,8 @@ def get_chart_data(household, dates, units, step, view, start, end):
     winter_dict = {}
     winter = [1, 2, 3, 4, 9, 10, 11, 12]
     summer = [5, 6, 7, 8]
-    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    days = [_("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"),
+            _("Sat"), _("Sun")]
     total_dict = {}
     day_dict = {}
     night_dict = {}
