@@ -114,7 +114,7 @@
                     $("#tooltip").remove();
 
                     var x = item.datapoint[0];
-                    var y = item.datapoint[1];
+                    var y = parseFloat(item.datapoint[1]).toFixed(3);
 
                     showTooltip(item.pageX, item.pageY,
                                     "Water Consumption was: <br/><strong>" + y + "</strong> (" + item.series.label + ")");
@@ -146,8 +146,8 @@
 
     {% if view == 'summer_winter' %}
         $.plot("#placeholder", [
-                { label: " - Summer Consumption in m&#179;", data: [ [1, {{ summer_total|floatformat:2 }}] ] },
-                { label: " - Winter Consumption in m&#179;", data: [ [2, {{ winter_total|floatformat:2 }}] ] }
+                { label: "{% trans ' - Summer Consumption in' %} m&#179;", data: [ [1, {{ summer_total|floatformat:2 }}] ] },
+                { label: " {% trans ' - Winter Consumption in' %} m&#179;", data: [ [2, {{ winter_total|floatformat:2 }}] ] }
             ],
             {
                 series: {
@@ -162,7 +162,7 @@
                     min: 0,
                     max: 5,
                     ticks: [
-                        [1, "Summer" ], [ 2, "Winter" ]
+                        [1, "{% trans 'Summer' %}" ], [ 2, "{% trans 'Winter' %}" ]
                      ],
                     tickDecimals: 0
                 },
@@ -186,8 +186,8 @@
             });
         {% if summer_total2 and winter_total2 %}
             $.plot("#placeholder2", [
-                        { label: " - Summer Consumption in m&#179;", data: [ [1, {{ summer_total2|floatformat:2 }}] ] },
-                        { label: " - Winter Consumption in m&#179;", data: [ [2, {{ winter_total2|floatformat:2 }}] ] }
+                        { label: "{% trans ' - Summer Consumption in' %} m&#179;", data: [ [1, {{ summer_total2|floatformat:2 }}] ] },
+                        { label: "{% trans '- Winter Consumption in' %} m&#179;", data: [ [2, {{ winter_total2|floatformat:2 }}] ] }
                     ],
                     {
                         series: {
@@ -202,7 +202,7 @@
                             min: 0,
                             max: 5,
                             ticks: [
-                                [1, "Summer" ], [ 2, "Winter" ]
+                                [1, "{% trans 'Summer' %}" ], [ 2, "{% trans 'Winter' %}" ]
                             ],
                             tickDecimals: 0
                         },

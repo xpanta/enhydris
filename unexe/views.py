@@ -731,7 +731,11 @@ class c_uc32(TemplateView):
         else:
             #data["donutchart"] = donutchart
             data["comparechart"] = comparechart
-        
+            data["title1"] = _("Total Units Consumed for household")
+            data["title2"] = _("Units consumed per occupant")
+            data["title3"] = _("Total Units Consumed for household")
+            data["title4"] = _("Units consumed per occupant")
+
         #print data["comparechart"]            
         return HttpResponse(json.dumps(data),content_type='application/javascript')
     
@@ -743,7 +747,7 @@ class c_uc33(TemplateView):
 
     #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
-        donutchart=[{"label":"You", "value":"", "color":"#80B1D3"},{"label":"Area" , "value":"", "color":"#C0C0C0"}]
+        donutchart=[{"label":_("You"), "value":"", "color":"#80B1D3"},{"label":_("Area") , "value":"", "color":"#C0C0C0"}]
         comparechart=[{"Units":"","Data":"Area"},{"Units":"","Data":"You"}]
         compare = iutility.getPostValue("compare",request)
         year    = iutility.getPostValue("year",request)
@@ -958,7 +962,7 @@ class c_uc52(TemplateView):
                     #convert date from to easily read at client side (eg. December 2009
                     stdate = iutility.convertdate(str(stdate),'%Y-%m-%d','%B-%Y')
                     endate = iutility.convertdate(str(endate),'%Y-%m-%d','%B-%Y')
-                    data["title"]   = "TARIFF COMPARISON FROM "+stdate+" TO "+endate
+                    data["title"]   = _("TARIFF COMPARISON FROM ")+stdate+ _(" TO ") +endate
             else:
                 data = None
         else:    
@@ -1010,7 +1014,7 @@ class c_uc52(TemplateView):
                 '''
                 add title to be displayed on top of graph
                 '''
-                data["title"]   = "TARIFF COMPARISON FOR THE LAST "+str(period)+" MONTHS"                 
+                data["title"]   = _("TARIFF COMPARISON FOR THE LAST ") +str(period)+ _(" MONTHS")
             else:
                 data = None
   
@@ -1083,7 +1087,7 @@ class getcompare(TemplateView):
                 data.append(obj)
                 obj = {}  
                                 
-            obj["title"] = "Your last 12 Months bill comparison vs highest consumers"
+            obj["title"] = _("Your last 12 Months bill comparison vs highest consumers")
             data.append(obj)                
             
         ##getting DMA status for lowest consumer
@@ -1112,7 +1116,7 @@ class getcompare(TemplateView):
                 data.append(obj)
                 obj = {}  
                                 
-            obj["title"] = "Your last 12 Months bill comparison vs lowest consumers"
+            obj["title"] = _("Your last 12 Months bill comparison vs lowest consumers")
             data.append(obj)
             
         elif comp=="avg" and dmastats:
@@ -1141,7 +1145,7 @@ class getcompare(TemplateView):
                 data.append(obj)
                 obj = {}                
                                 
-            obj["title"] = "Your last 12 Months bill comparison vs other consumers"
+            obj["title"] = _("Your last 12 Months bill comparison vs other consumers")
             data.append(obj)
                 
         return HttpResponse(json.dumps(data),content_type='application/javascript')

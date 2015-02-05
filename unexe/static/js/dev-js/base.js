@@ -1959,8 +1959,8 @@ function AppUtil()
 					
 					dataObj.stdate = $("#c_uc32styear").val()+"-"+$("#c_uc32stmonth").val()+"-01";
 					dataObj.endate = $("#c_uc32endyear").val()+"-"+$("#c_uc32endmonth").val()+"-01"; //at the server side get the last day of the month (Python)
-					var s = dateutil.strtodate(dataObj.stdate)
-					var e = dateutil.strtodate(dataObj.endate)
+					var s = dateutil.strtodate(dataObj.stdate);
+					var e = dateutil.strtodate(dataObj.endate);
 					if(s > e)
 					{
 						this.showmessage(iwidgetutil.c_uc32msg,dangerclass,"Date One should not be greater than Date Two");
@@ -2005,8 +2005,11 @@ function AppUtil()
 					//domutil.addCssclass("#c_uc33cont","show");
 					return;
 				}
-				
-				domutil.removeCssclass("#c_uc32cont","hide"); //make chart container visible 
+				var tr_title1 = data["title1"]; //translated title from unexe/views.py:734 (Chris Pantazis)
+				var tr_title2 = data["title2"]; //translated title from unexe/views.py:734 (Chris Pantazis)
+				var tr_title3 = data["title3"]; //translated title from unexe/views.py:734 (Chris Pantazis)
+				var tr_title4 = data["title4"]; //translated title from unexe/views.py:734 (Chris Pantazis)
+				domutil.removeCssclass("#c_uc32cont","hide"); //make chart container visible
 				$("#c_uc32chartcont").empty(); //clear previous chart
 				$("#c_uc32donutchart").empty(); //clear previous chart
 				$("#c_uc32title").empty();
@@ -2016,17 +2019,17 @@ function AppUtil()
 				var dim = {"width":w,"height":450}; //width and height of chart container
 				
 				var household = data["area"]["areadata"]["household"];
-				$("#c_uc32household").html("<div class='text-muted'>Total Units Consumed for household: "+household+" m<sup>3</sup></div>");
+				$("#c_uc32household").html("<div class='text-muted'>" + tr_title1 +": "+household+" m<sup>3</sup></div>");
 				
 				var occupant = data["area"]["areadata"]["occupant"];
-				$("#c_uc32occupant").html("<div class='text-muted'>Units consumed per occupant: "+occupant+" m<sup>3</sup></div>");				
+				$("#c_uc32occupant").html("<div class='text-muted'>" + tr_title2 + ": "+occupant+" m<sup>3</sup></div>");
 				
 				//household
 				household = data["you"]["yourdata"]["household"];
-				$("#c_uc32hhold").html("<div class='text-primary'>Total Units Consumed for household: "+household+" m<sup>3</sup></div>");
+				$("#c_uc32hhold").html("<div class='text-primary'> " + tr_title3 + ": "+household+" m<sup>3</sup></div>");
 
 				occupant = data["you"]["yourdata"]["occupant"];
-				$("#c_uc32occup").html("<div class='text-primary'>Units consumed per occupant: "+occupant+" m<sup>3</sup></div>");
+				$("#c_uc32occup").html("<div class='text-primary'>" + tr_title4 +": "+occupant+" m<sup>3</sup></div>");
 				
 				
 				//if(dataObj.period=="season")
@@ -2429,8 +2432,7 @@ function AppUtil()
 					alert("No data is available for analysis");
 					return;
 				}
-
-				domutil.removeCssclass("#c_uc34cont","hide"); //make chart container visible 
+				domutil.removeCssclass("#c_uc34cont","hide"); //make chart container visible
 				$("#c_uc34chartcont").empty(); //clear previous chart
 				$("#c_uc34donutchart").empty(); //clear previous chart
 				$("#c_uc34title").empty();

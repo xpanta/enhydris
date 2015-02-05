@@ -26,32 +26,32 @@ function uc41Chart(data)
 	var values= data["electdata"]["half"];
 	household = values["sum_units"];
 	occupant  = values["unit_person"];
-	$("#c_uc41half").html("<strong>Over 6 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");	
+	$("#c_uc41half").html("<strong>{% trans "Over 6 Months Period" %}:</strong><br/><div class='text-primary'>{% trans "Units consumed for household" %}: "+household+" (m<sup>3</sup>), {% trans "Units consumed per occupant" %}: "+occupant+" (m<sup>3</sup>)</div>");
 
 	var values= data["electdata"]["year"];
 	household = values["sum_units"];
 	occupant  = values["unit_person"];
-	$("#c_uc41yearly").html("<strong>Over 12 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");	
+	$("#c_uc41yearly").html("<strong>{% trans "Over 12 Months Period" %}:</strong><br/><div class='text-primary'>{% trans "Units consumed for household" %}: "+household+" (m<sup>3</sup>), {% trans "Units consumed per occupant" %}: "+occupant+" (m<sup>3</sup>)</div>");
 
 	var values= data["waterdata"]["month"];
 	household = values["sum_units"];
 	occupant  = values["unit_person"];
-	$("#c_uc41Month").html("<strong>Over 1 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");
+	$("#c_uc41Month").html("<strong>{% trans "Over 1 Months Period" %}:</strong><br/><div class='text-primary'>{% trans "Units consumed for household" %}: "+household+" (m<sup>3</sup>), {% trans "Units consumed per occupant" %}: "+occupant+" (m<sup>3</sup>)</div>");
 
 	var values= data["waterdata"]["quarter"];
 	household = values["sum_units"];
 	occupant  = values["unit_person"];
-	$("#c_uc41Quarter").html("<strong>Over 3 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");	
+	$("#c_uc41Quarter").html("<strong>{% trans "Over 3 Months Period" %}:</strong><br/><div class='text-primary'>{% trans "Units consumed for household" %}: "+household+" (m<sup>3</sup>), {% trans "Units consumed per occupant" %}: "+occupant+" (m<sup>3</sup>)</div>");
 
 	var values= data["waterdata"]["half"];
 	household = values["sum_units"];
 	occupant  = values["unit_person"];
-	$("#c_uc41Half").html("<strong>Over 6 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");	
+	$("#c_uc41Half").html("<strong>{% trans "Over 6 Months Period" %}:</strong><br/><div class='text-primary'>{% trans "Units consumed for household" %}: "+household+" (m<sup>3</sup>), {% trans "Units consumed per occupant" %}: "+occupant+" (m<sup>3</sup>)</div>");
 
 	var values= data["waterdata"]["year"];
 	household = values["sum_units"];
 	occupant  = values["unit_person"];
-	$("#c_uc41Yearly").html("<strong>Over 12 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");	
+	$("#c_uc41Yearly").html("<strong>{% trans "Over 12 Months Period" %}:</strong><br/><div class='text-primary'>{% trans "Units consumed for household" %}: "+household+" (m<sup>3</sup>), {% trans "Units consumed per occupant" %}: "+occupant+" (m<sup>3</sup>)</div>");
 	
 }
 
@@ -140,7 +140,7 @@ $(window).load(function() {
 		</div>
 			
 		<div class="row hide" id="c_uc41container">
-			<div id="c_uc41title"><p class="bg-primary text-center"><strong>Your last 12 months Water bill comparison with Electric bill associated with water use</strong></p></div>	
+			<div id="c_uc41title"><p class="bg-primary text-center"><strong>{% trans "Your last 12 months Water bill comparison with Electric bill associated with water use" %}</strong></p></div>
 			<div class="col-md-7" id="c_uc41chart"></div>
 			<div class="col-md-5" id="c_uc41summary">
 			    <div class="panel panel-primary">
