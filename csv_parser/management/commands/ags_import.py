@@ -119,51 +119,57 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         log = logging.getLogger(__name__)
+        error = False
+        try:
+            user_filename = args[0]
+            new_files = [user_filename]  # files to be imported in this session
+        except IndexError:
+            user_filename = ""
+            new_files = []  # files to be imported in this session
         try:
             timer1 = datetime.now()
             log.debug("starting AGS Portugal import. Setting timer at %s" % timer1)
             _path = "data/ags/"
-            new_files = []  # files to be imported in this session
-            # I used %02d to format two digits from the datetime object
-            # Telemetria filename: TM141002_120015.txt
-            ## CONNECT TO FTP SERVER AND RETRIEVE FILE LIST
-            error = False
-            name = ""
-            z_dict = {}
-            connection = None
-            try:
-                connection = FTP("82.154.251.158")
-                connection.login("IWIDGET01", "oycJSJwc")
-                connection.cwd("telemetria")
-                filenames = connection.nlst()
-                filenames = sorted(filenames)
-                for name in filenames:
-                    exists = path.isfile(path.join(_path, name))
-                    if not exists:  # fetch it!!
-                        new_files.append(name)  # add it to import list
-                        localfile = open(path.join(_path, name), 'wb')
-                        connection.set_pasv(False)
-                        connection.retrbinary("RETR " + name,
-                                              localfile.write, 1024)
-                        print "fetched: %s" % name
-                    if len(new_files) == _max:
-                        break
-            except all_errors as e:
-                log.error("Cannot connect to FTP Server because %s" % repr(e))
-                error = True
-                if connection:
-                    connection.close()
-                if name:
-                    f = path.join(_path, name)
-                    import os
-                    os.remove(f)
+            if not user_filename:
+                # I used %02d to format two digits from the datetime object
+                # Telemetria filename: TM141002_120015.txt
+                ## CONNECT TO FTP SERVER AND RETRIEVE FILE LIST
+                name = ""
+                z_dict = {}
+                connection = None
+                try:
+                    connection = FTP("82.154.251.158")
+                    connection.login("IWIDGET01", "oycJSJwc")
+                    connection.cwd("telemetria")
+                    filenames = connection.nlst()
+                    filenames = sorted(filenames)
+                    for name in filenames:
+                        exists = path.isfile(path.join(_path, name))
+                        if not exists:  # fetch it!!
+                            new_files.append(name)  # add it to import list
+                            localfile = open(path.join(_path, name), 'wb')
+                            connection.set_pasv(False)
+                            connection.retrbinary("RETR " + name,
+                                                  localfile.write, 1024)
+                            print "fetched: %s" % name
+                        if len(new_files) == _max:
+                            break
+                except all_errors as e:
+                    log.error("Cannot connect to FTP Server because %s" % repr(e))
+                    error = True
+                    if connection:
+                        connection.close()
+                    if name:
+                        f = path.join(_path, name)
+                        import os
+                        os.remove(f)
 
-            connection.close()
+                connection.close()
             if not error:
                 raw_data = []
                 force = False
                 for _filename in new_files:
-                    print "reading {x}".format(x=_filename)
+                    #print "reading {x}".format(x=_filename)
                     # First make on big file concatenating all new downloaded
                     # files.
                     ## "U" for universal-newline mode.

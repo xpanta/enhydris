@@ -16,9 +16,12 @@ class Command(BaseCommand):
         try:
             prefix = args[0]
         except IndexError:
-            prefix = None
+            prefix = ""
         try:
-            users = User.objects.filter(username__icontains=prefix)
+            if prefix:
+                users = User.objects.filter(username__icontains=prefix)
+            else:
+                users = User.objects.all()
             out = []
             for user in users:
                 household = Household.objects.get(user=user)
@@ -54,7 +57,7 @@ class Command(BaseCommand):
                     continue
             import time
             ts = int(time.time())
-            _outfile = "last_imported_dates_%s.csv" % ts
+            _outfile = "%s_last_imported_dates_%s.csv" % (prefix, ts)
             _path = "data/"
             with open(path.join(_path, _outfile), 'w') as of:
                 a = csv.writer(of, delimiter=',',
