@@ -120,6 +120,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         log = logging.getLogger(__name__)
         error = False
+        z_dict = {}
         try:
             user_filename = args[0]
             new_files = [user_filename]  # files to be imported in this session
@@ -135,7 +136,6 @@ class Command(BaseCommand):
                 # Telemetria filename: TM141002_120015.txt
                 ## CONNECT TO FTP SERVER AND RETRIEVE FILE LIST
                 name = ""
-                z_dict = {}
                 connection = None
                 try:
                     connection = FTP("82.154.251.158")
@@ -169,7 +169,8 @@ class Command(BaseCommand):
                 raw_data = []
                 force = False
                 for _filename in new_files:
-                    #print "reading {x}".format(x=_filename)
+                    print "reading {x}".format(x=_filename)
+                    log.debug("reading {x}".format(x=_filename))
                     # First make on big file concatenating all new downloaded
                     # files.
                     ## "U" for universal-newline mode.

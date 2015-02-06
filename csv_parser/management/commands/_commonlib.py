@@ -354,14 +354,22 @@ def create_objects(data, usernames, force, z_names, z_dict):
                     total = part_total
 
             timeseries_data[variable] = timeseries
-            if not exists or force:
-                timeseries.write_to_db(db=db.connection,
-                                       transaction=transaction,
-                                       commit=True)
-            else:
-                timeseries.append_to_db(db=db.connection,
-                                        transaction=transaction,
-                                        commit=True)
+            try:
+                if not exists or force:
+                    if s and e:
+                        log.debug("*** ADDING SERIES FROM %s TO %s FOR "
+                                  "USERNAME %s" % (s, e, username))
+                    timeseries.write_to_db(db=db.connection,
+                                           transaction=transaction,
+                                           commit=True)
+                else:
+                    log.debug("*** APPENDING SERIES FROM %s TO %s FOR "
+                              "USERNAME %s" % (s, e, username))
+                    timeseries.append_to_db(db=db.connection,
+                                            transaction=transaction,
+                                            commit=True)
+            except ValueError:
+                continue
         if 'WaterCold' in timeseries_data and not found:  # only for new HH
             calc_occupancy(timeseries_data['WaterCold'], household)
     return households
@@ -593,8 +601,9 @@ def regularize(raw_series_db, proc_series_db, rs, re):
     # Usually the three following sums are consistent by equality. If
     # not equality is satisfied then there is a likelyhood of algorith
     # error
-    log.info("%s = %s = %s ?" % (raw_series.sum(),
-                                 proc_series.sum(), test_value))
+    # log.info("%s = %s = %s ?" % (raw_series.sum(),
+    # proc_series.sum(), test_value))
+
     proc_series.write_to_db(db=db.connection, commit=True)
     #return the full timeseries
     return proc_series

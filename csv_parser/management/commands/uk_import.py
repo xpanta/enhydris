@@ -95,6 +95,8 @@ def process_file(_filename, _path, old_cons):
                 if not consumption:
                     consumption = 0
                 consumption = float(consumption)
+                if consumption > 99999999:
+                    continue  # probably false reading
                 try:
                     cons = old_cons[meter_id]
                     consumption -= float(cons)
@@ -169,13 +171,13 @@ class Command(BaseCommand):
                         _prev_file = f_name
                         found = True
                 x += 1
-            _prev_file = "17_11_14_uk.csv"
-            _curr_file = "19_11_14_uk.csv"
-            print "importing %s and %s" % (_prev_file, _curr_file)
+            #_prev_file = "17_11_14_uk.csv"
+            #_curr_file = "19_11_14_uk.csv"
             if _curr_user_filename:
                 _curr_file = _curr_user_filename
             if _prev_user_filename:
                 _prev_file = _prev_user_filename
+            print "importing %s -> %s" % (_prev_file, _curr_file)
             if _curr_file and _prev_file:
                 log.info("parsing file %s" % _curr_file)
                 force = False  # True = Rewrite
