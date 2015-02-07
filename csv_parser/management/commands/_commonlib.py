@@ -273,10 +273,12 @@ def create_objects(data, usernames, force, z_names, z_dict):
     """
     households = []
     # Create user (household owner), household, database series placeholders
-    hh_ids = data.keys()
+    hh_ids = sorted(data.keys())
     found = False
     for hh_id in hh_ids:
         username = usernames[hh_id]
+        if username == "GB8176360" or username == "GB8245048":
+            pass
         try:
             zone_name = z_dict[username]
         except KeyError:
@@ -327,7 +329,9 @@ def create_objects(data, usernames, force, z_names, z_dict):
             if name == "GR006047":
                 pass
             part_total = 0
+            day1 = None
             for timestamp, value in series:
+                day1 = timestamp
                 if (latest_ts and latest_ts < timestamp) or (not latest_ts):
                     if not isnan(value):
                         total += value
@@ -355,21 +359,23 @@ def create_objects(data, usernames, force, z_names, z_dict):
 
             timeseries_data[variable] = timeseries
             try:
+                print "trying %s" % username
                 if not exists or force:
                     if s and e:
-                        log.debug("*** ADDING SERIES FROM %s TO %s FOR "
-                                  "USERNAME %s" % (s, e, username))
+                        log.debug("*** ADDING SERIES FOR %s (after %s) FOR "
+                                  "USERNAME %s" % (day1.date(), e, username))
                     timeseries.write_to_db(db=db.connection,
                                            transaction=transaction,
                                            commit=True)
                 else:
-                    log.debug("*** APPENDING SERIES FROM %s TO %s FOR "
-                              "USERNAME %s" % (s, e, username))
-                    timeseries.append_to_db(db=db.connection,
-                                            transaction=transaction,
-                                            commit=True)
-            except ValueError:
-                continue
+                    log.debug("*** APPENDING SERIES FOR %s (after %s) FOR "
+                              "USERNAME %s" % (day1.date(), e, username))
+                    timeseries.write_to_db(db=db.connection,
+                                           transaction=transaction,
+                                           commit=True)
+                print "ok"
+            except ValueError as xx:
+                print repr(xx)
         if 'WaterCold' in timeseries_data and not found:  # only for new HH
             calc_occupancy(timeseries_data['WaterCold'], household)
     return households
