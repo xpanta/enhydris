@@ -403,6 +403,14 @@ def has_burst(household):
     _all = []
     i = 0
     for ts in timestamps:
+        # first check if it is 00:15 (the first measurement of the day)
+        # then check if previous day was NaN. If yes, then do not add this
+        # value to the list of values
+        if ts.hour == 0 and ts.minute == 15:
+            yesterday = datetime(day=ts.day, month=ts.month, year=ts.year)
+            yester_val = daily_series[yesterday]
+            if isnan(yester_val):
+                continue
         val = series[ts]
         if i < len(timestamps) - 100:
             if not isnan(val) and not val == 0:
@@ -755,15 +763,15 @@ def process_data(data, usernames, force, z_names, zone_dict):
 #                                                        notification="leakage",
 #                                                        detected=yesterday,
 #                                                        consumption=cons * 1000)
-#            cons, _time = has_burst(household)
-#            if cons:
-#                today = datetime.today()
-#                yesterday = today - timedelta(days=1)
-#                UserNotifications.objects.get_or_create(user=household.user,
-#                                                        notification="burst",
-#                                                        detected=yesterday,
-#                                                        consumption=cons * 1000,
-#                                                        event_time=_time)
+            cons, _time = has_burst(household)
+            if cons:
+                today = datetime.today()
+                yesterday = today - timedelta(days=1)
+                UserNotifications.objects.get_or_create(user=household.user,
+                                                        notification="burst",
+                                                        detected=yesterday,
+                                                        consumption=cons * 1000,
+                                                        event_time=_time)
         log.info("Process ended... Committing!")
         transaction.commit()
         log.info("SUCCESS!")
