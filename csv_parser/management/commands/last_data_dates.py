@@ -23,9 +23,9 @@ class Command(BaseCommand):
             else:
                 users = User.objects.all()
             out = []
+            print "output for {x} users".format(x=len(users))
             for user in users:
                 household = Household.objects.get(user=user)
-                s1 = e1 = None
                 try:
                     for variable in (VAR_PERIOD, VAR_ENERGY_PERIOD):
                         if variable == VAR_PERIOD:
@@ -56,8 +56,7 @@ class Command(BaseCommand):
                     print (repr(e))
                     continue
             import time
-            ts = int(time.time())
-            _outfile = "%s_last_imported_dates_%s.csv" % (prefix, ts)
+            _outfile = "%s_bounding_dates.csv" % prefix
             _path = "data/"
             with open(path.join(_path, _outfile), 'w') as of:
                 a = csv.writer(of, delimiter=',',

@@ -95,10 +95,19 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         log = logging.getLogger(__name__)
+        custom_date = None
+        custom_file = None
         try:
-            user_filename = args[0]
+            arg = args[0]
+            param = arg.split('=')[0]
+            val = arg.split('=')[1]
+            if param == "file":
+                custom_file = val
+            elif param == "date":
+                custom_date = datetime.strptime(val, "%Y-%m-%d")
         except IndexError:
-            user_filename = ""
+            print ("Stopping! Argument error")
+            return -1
         try:
             force = args[1]
             if force == "replace":
@@ -114,15 +123,18 @@ class Command(BaseCommand):
             _filenames = []
             _path = "data/athens/"
             all_files = sorted(listdir(_path))
-            today = datetime.today()
+            if custom_date:
+                today = custom_date
+            else:
+                today = datetime.today()
             # I used %02d to format two digits from the datetime object
             _date = "%s%02d%02d" % (today.year, today.month, today.day)
             _pattern = _date + "*"
             for f_name in all_files:
                 if fnmatch(f_name, _pattern):
                     _filenames.append(f_name)
-            if user_filename:
-                _filenames = [user_filename]
+            if custom_file and not custom_date:
+                _filenames = [custom_file]
             if not _filenames:
                 log.info(" *** did not find file with pattern %s" % _pattern)
                 notify_admins()

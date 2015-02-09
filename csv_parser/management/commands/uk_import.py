@@ -144,13 +144,6 @@ class Command(BaseCommand):
         except IndexError:
             _curr_user_filename = ""
             _prev_user_filename = ""
-        my_arr = [
-            "19_11_14_uk.csv", "20_11_14_uk.csv", "21_11_14_uk.csv",
-            "24_11_14_uk.csv", "25_11_14_uk.csv", "26_11_14_uk.csv", "27_11_14_uk.csv", "28_11_14_uk.csv", "01_12_14_uk.csv", "02_12_14_uk.csv", "03_12_14_uk.csv", "04_12_14_uk.csv", "05_12_14_uk.csv", "08_12_14_uk.csv", "09_12_14_uk.csv",
-            "10_12_14_uk.csv", "11_12_14_uk.csv", "12_12_14_uk.csv", "15_12_14_uk.csv", "16_12_14_uk.csv", "17_12_14_uk.csv", "18_12_14_uk.csv", "19_12_14_uk.csv", "22_12_14_uk.csv", "05_01_15_uk.csv", "06_01_15_uk.csv", "07_01_15_uk.csv",
-            "08_01_15_uk.csv", "09_01_15_uk.csv", "12_01_15_uk.csv", "13_01_15_uk.csv", "14_01_15_uk.csv", "15_01_15_uk.csv", "16_01_15_uk.csv", "20_01_2015_uk.csv", "21_01_15_uk.csv", "22_01_15_uk.csv", "23_01_15_uk.csv", "26_01_15_uk.csv",
-            "27_01_15_uk.csv", "28_01_15_uk.csv", "29_01_15_uk.csv", "30_01_15_uk.csv", "03_02_15_uk.csv", "05_02_15_uk.csv"
-        ]
         try:
             timer1 = datetime.now()
             log.debug("staring UK import. Setting timer at %s" % timer1)
@@ -167,10 +160,10 @@ class Command(BaseCommand):
                     _curr_file = f_name
             # Let's find previous metre data file (unfortunately
             # we can't know when was the previous time we had a data file
-            # so we need to go back n (=max 15) days.
+            # so we need to go back n (=max 5) days.
             found = False
             x = 1
-            while not found and x < 15:
+            while not found and x < 5:
                 prev = today - timedelta(days=x)
                 _date2 = "%02d_%02d_%s" % (prev.day, prev.month,
                                            str(prev.year)[2:])
@@ -186,22 +179,19 @@ class Command(BaseCommand):
                 _curr_file = _curr_user_filename
             if _prev_user_filename:
                 _prev_file = _prev_user_filename
-            for i in range(1, len(my_arr)-40):
-                _prev_file = my_arr[i-1]
-                _curr_file = my_arr[i]
-                print "importing %s -> %s" % (_prev_file, _curr_file)
-                if _curr_file and _prev_file:
-                    log.info("parsing file %s" % _curr_file)
-                    force = False  # True = Rewrite
-                    old_cons = parse_prev_consumption(_prev_file, _path)
-                    process_file(_curr_file, _path, old_cons)
-                    timer2 = datetime.now()
-                    mins = (timer2 - timer1).seconds / 60
-                    secs = (timer2 - timer1).seconds % 60
-                    log.debug("process ended. It took %s "
-                              "minutes and %s seconds." % (mins, secs))
-                else:
-                    log.info("No files found for today and yesterday data! "
-                             "Stopping!")
+            print "importing %s -> %s" % (_prev_file, _curr_file)
+            if _curr_file and _prev_file:
+                log.info("parsing file %s" % _curr_file)
+                force = False  # True = Rewrite
+                old_cons = parse_prev_consumption(_prev_file, _path)
+                process_file(_curr_file, _path, old_cons)
+            else:
+                log.info("No files found for today and yesterday data! "
+                         "Stopping!")
+            timer2 = datetime.now()
+            mins = (timer2 - timer1).seconds / 60
+            secs = (timer2 - timer1).seconds % 60
+            log.debug("process ended. It took %s "
+                      "minutes and %s seconds." % (mins, secs))
         except Exception as e:
             raise CommandError(repr(e))

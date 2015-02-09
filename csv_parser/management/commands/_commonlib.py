@@ -359,7 +359,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
 
             timeseries_data[variable] = timeseries
             try:
-                print "trying %s" % username
+                #print "trying %s" % username
                 if not exists or force:
                     if s and e:
                         log.debug("*** ADDING SERIES FOR %s (after %s) FOR "
@@ -373,7 +373,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
                     timeseries.write_to_db(db=db.connection,
                                            transaction=transaction,
                                            commit=True)
-                print "ok"
+                #print "ok"
             except ValueError as xx:
                 print repr(xx)
         if 'WaterCold' in timeseries_data and not found:  # only for new HH
@@ -739,23 +739,23 @@ def process_data(data, usernames, force, z_names, zone_dict):
         for household in households:
             #log.info("Processing ts records for household %s" % household)
             process_household(household)
-            cons = has_leakage(household)
-            if cons:
-                today = datetime.today()
-                yesterday = today - timedelta(days=1)
-                UserNotifications.objects.get_or_create(user=household.user,
-                                                        notification="leakage",
-                                                        detected=yesterday,
-                                                        consumption=cons * 1000)
-            cons, _time = has_burst(household)
-            if cons:
-                today = datetime.today()
-                yesterday = today - timedelta(days=1)
-                UserNotifications.objects.get_or_create(user=household.user,
-                                                        notification="burst",
-                                                        detected=yesterday,
-                                                        consumption=cons * 1000,
-                                                        event_time=_time)
+#            cons = has_leakage(household)
+#            if cons:
+#                today = datetime.today()
+#                yesterday = today - timedelta(days=1)
+#                UserNotifications.objects.get_or_create(user=household.user,
+#                                                        notification="leakage",
+#                                                        detected=yesterday,
+#                                                        consumption=cons * 1000)
+#            cons, _time = has_burst(household)
+#            if cons:
+#                today = datetime.today()
+#                yesterday = today - timedelta(days=1)
+#                UserNotifications.objects.get_or_create(user=household.user,
+#                                                        notification="burst",
+#                                                        detected=yesterday,
+#                                                        consumption=cons * 1000,
+#                                                        event_time=_time)
         log.info("Process ended... Committing!")
         transaction.commit()
         log.info("SUCCESS!")
