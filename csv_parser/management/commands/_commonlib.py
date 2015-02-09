@@ -388,21 +388,29 @@ def has_burst(household):
     timeseries = household \
         .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
                         variable__id=VAR_PERIOD)
+    daily_ts = household \
+        .timeseries.get(time_step__id=TSTEP_DAILY, variable__id=VAR_PERIOD)
+    # We need daily TS to find days of 0 consumption. Most probably the
+    # transmitter is off. So the next 15 value has all missing consumption
+    # it is not a burst. So we need to remove it. Missing day gives NaN
     series = TSeries(id=timeseries.id)
     series.read_from_db(db.connection)
+    daily_series = TSeries(id=daily_ts.id)
+    daily_series.read_from_db(db.connection)
+    days = sorted(daily_series.keys())
     timestamps = sorted(series.keys())
     today = []  # all today's values
     _all = []
     i = 0
     for ts in timestamps:
+        val = series[ts]
         if i < len(timestamps) - 100:
-            _all.append(series[ts])
+            if not isnan(val) and not val == 0:
+                _all.append(series[ts])
         else:
             tm = "%s:%s" % (ts.time().hour, ts.time().minute)
-            val = series[ts]
-            if isnan(val):
-                val = 0
-            today.append((val, tm))
+            if not isnan(val) and not val == 0:
+                today.append((val, tm))
         i += 1
 
     if _all and today:
