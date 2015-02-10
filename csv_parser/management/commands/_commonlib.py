@@ -26,6 +26,7 @@ from random import randint
 from datetime import datetime, timedelta
 import numpy as np
 from enhydris.settings import SSO_APP
+from profilehooks import timecall
 
 AVERAGE_UNIT_WATER_CONSUMPTION = 100.000
 log = logging.getLogger(__name__)
@@ -263,7 +264,7 @@ def create_processed_timeseries(household):
         )
         assert ts_object
 
-
+@timecall
 def create_objects(data, usernames, force, z_names, z_dict):
     """
 
@@ -322,14 +323,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
             _dict = data[hh_id]
             arr = _dict[variable]
             series = arr
-            # At this point we should check that the timestamp of the data
-            # we are trying to enter is not less the the last latest
-            # timestamp of the previous import. But how?
-            name = household.user.username
-            if name == "GR006047":
-                pass
             part_total = 0
-            day1 = None
             for timestamp, value in series:
                 day1 = timestamp
                 if (latest_ts and latest_ts < timestamp) or (not latest_ts):
@@ -344,8 +338,9 @@ def create_objects(data, usernames, force, z_names, z_dict):
                     if not part_total:  # find it
                         for _date in dates:
                             if _date < timestamp:
-                                part_total = timeseries[_date]
+                                continue
                             else:
+                                part_total = timeseries[_date]
                                 break
                     if not isnan(value):
                         part_total += value
@@ -356,10 +351,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
                     # need the new total. (we always suppose that dates are
                     # increasing.
                     total = part_total
-
-            timeseries_data[variable] = timeseries
             try:
-                #print "trying %s" % username
                 if not exists or force:
                     if s and e:
                         log.debug("*** ADDING SERIES FOR %s (after %s) FOR "
@@ -373,7 +365,6 @@ def create_objects(data, usernames, force, z_names, z_dict):
                     timeseries.write_to_db(db=db.connection,
                                            transaction=transaction,
                                            commit=True)
-                #print "ok"
             except ValueError as xx:
                 print repr(xx)
         if 'WaterCold' in timeseries_data and not found:  # only for new HH
@@ -388,30 +379,20 @@ def has_burst(household):
     timeseries = household \
         .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
                         variable__id=VAR_PERIOD)
-    daily_ts = household \
-        .timeseries.get(time_step__id=TSTEP_DAILY, variable__id=VAR_PERIOD)
-    # We need daily TS to find days of 0 consumption. Most probably the
-    # transmitter is off. So the next 15 value has all missing consumption
-    # it is not a burst. So we need to remove it. Missing day gives NaN
     series = TSeries(id=timeseries.id)
     series.read_from_db(db.connection)
-    daily_series = TSeries(id=daily_ts.id)
-    daily_series.read_from_db(db.connection)
-    days = sorted(daily_series.keys())
     timestamps = sorted(series.keys())
     today = []  # all today's values
     _all = []
-    i = 0
-    for ts in timestamps:
-        # first check if it is 00:15 (the first measurement of the day)
-        # then check if previous day was NaN. If yes, then do not add this
-        # value to the list of values
-        if ts.hour == 0 and ts.minute == 15:
-            yesterday = datetime(day=ts.day, month=ts.month, year=ts.year)
-            yester_val = daily_series[yesterday]
-            if isnan(yester_val):
-                continue
+    for i in range(1, len(timestamps)):
+        ts = timestamps[i]
+        prev_ts = timestamps[i-1]
+        # if previous value is NaN we don't take this value into consideration
+        # Because it might have all consumption of all the previous NaN times
         val = series[ts]
+        prev_val = series[prev_ts]
+        if isnan(prev_val):
+            continue
         if i < len(timestamps) - 100:
             if not isnan(val) and not val == 0:
                 _all.append(series[ts])
@@ -419,7 +400,6 @@ def has_burst(household):
             tm = "%s:%s" % (ts.time().hour, ts.time().minute)
             if not isnan(val) and not val == 0:
                 today.append((val, tm))
-        i += 1
 
     if _all and today:
         all1 = np.array(_all)
