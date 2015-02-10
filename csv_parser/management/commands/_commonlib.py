@@ -439,10 +439,13 @@ def has_leakage(household):
         _t = ts.time()
         val = series[ts]
         if 3 <= _t.hour <= 5:
-            try:
-                night_dict[_d] += val
-            except KeyError:
-                night_dict[_d] = val
+            if val == 0:
+                night_dict[_d] = 0  # make all night 0 if one 0
+            else:
+                try:
+                    night_dict[_d] += val
+                except KeyError:
+                    night_dict[_d] = val
         try:
             total_dict[_d] += val
         except KeyError:
@@ -735,14 +738,14 @@ def process_data(data, usernames, force, z_names, zone_dict):
         for household in households:
             #log.info("Processing ts records for household %s" % household)
             process_household(household)
-#            cons = has_leakage(household)
-#            if cons:
-#                today = datetime.today()
-#                yesterday = today - timedelta(days=1)
-#                UserNotifications.objects.get_or_create(user=household.user,
-#                                                        notification="leakage",
-#                                                        detected=yesterday,
-#                                                        consumption=cons * 1000)
+            cons = has_leakage(household)
+            if cons:
+                today = datetime.today()
+                yesterday = today - timedelta(days=1)
+                UserNotifications.objects.get_or_create(user=household.user,
+                                                        notification="leakage",
+                                                        detected=yesterday,
+                                                        consumption=cons * 1000)
             cons, _time = has_burst(household)
             if cons:
                 today = datetime.today()
