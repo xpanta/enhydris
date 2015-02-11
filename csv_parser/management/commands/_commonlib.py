@@ -26,7 +26,7 @@ from random import randint
 from datetime import datetime, timedelta
 import numpy as np
 from enhydris.settings import SSO_APP
-from profilehooks import timecall
+#from profilehooks import timecall
 
 AVERAGE_UNIT_WATER_CONSUMPTION = 100.000
 log = logging.getLogger(__name__)
