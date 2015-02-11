@@ -98,10 +98,14 @@ var page_view_url = "{% url "user_page_view" %}";
                     <li><a href="#cuc31" onclick="addUserPageView('{{ user.username }}', 'C_UC03.1', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.1 (Compare Current and Historical Water Consumption)" %}</a></li>
 					<li><a href="#cuc32" onclick="addUserPageView('{{ user.username }}', 'C_UC03.2', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.2 (Compare Water Consumption with other Consumers)" %}</a></li>
 					<li><a href="#cuc33" onclick="addUserPageView('{{ user.username }}', 'C_UC03.3', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.3 (Compare water consumption with standard profiles)" %}</a></li>
-					<li><a href="#cuc34" onclick="addUserPageView('{{ user.username }}', 'C_UC03.4', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.4 (Compare household water consumption with most efficient users)" %}</a></li>
+                    {% if prefix != "PT" %}
+                        <li><a href="#cuc34" onclick="addUserPageView('{{ user.username }}', 'C_UC03.4', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.4 (Compare household water consumption with most efficient users)" %}</a></li>
+                    {% endif %}
                     <li><a href="#cuc36" onclick="loadFaultHistory('{{ user.username }}');addUserPageView('{{ user.username }}', 'C_UC03.6', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC3.6 (Receive warnings about faults (leakages, bursts) and unusual water consumptions)" %}</a></li>
-					<li><a href="#cuc52" onclick="addUserPageView('{{ user.username }}', 'C_UC05.2', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.2 (Receive information on specific and alternatives pricing schemes)" %}</a></li>
-                    <li><a href="#cuc53" onclick="addUserPageView('{{ user.username }}', 'C_UC05.3', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.3 (Forecast Water Bill)" %}</a></li>
+                    {% if prefix != "PT" %}
+                        <li><a href="#cuc52" onclick="addUserPageView('{{ user.username }}', 'C_UC05.2', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.2 (Receive information on specific and alternatives pricing schemes)" %}</a></li>
+                        <li><a href="#cuc53" onclick="addUserPageView('{{ user.username }}', 'C_UC05.3', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC5.3 (Forecast Water Bill)" %}</a></li>
+					{% endif %}
 				{% endif %}
 			</ul>
 		</li>
@@ -119,13 +123,15 @@ var page_view_url = "{% url "user_page_view" %}";
 			</ul>
 		</li>
         {% endif %}
-        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Device Controls" %} <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu" id="waterusecase">
-                {% if not user.is_staff and not user.is_superuser %}
-                    <li><a href="#cuc61" onclick="addUserPageView('{{ user.username }}', 'C_UC06.1', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC6.1 (Direct Control of Water Consumption)" %}</a></li>
-                {% endif %}
-            </ul>
-        </li>
+        {% if prefix != "PT" %}
+            <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "Device Controls" %} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu" id="waterusecase">
+                    {% if not user.is_staff and not user.is_superuser %}
+                        <li><a href="#cuc61" onclick="addUserPageView('{{ user.username }}', 'C_UC06.1', page_view_url);" data-toggle="tab"><span class="glyphicon glyphicon-tint"></span> {% trans "Use Case C_UC6.1 (Direct Control of Water Consumption)" %}</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+    	{% endif %}
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> {% trans "Settings" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="settings">
 				<!-- 2 in the javascript method is the index of the menu tab -->

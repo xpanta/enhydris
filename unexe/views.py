@@ -486,7 +486,8 @@ class consumer(TemplateView):
             checkboxes, selects = ihousehold.getHouseholdData(household.id)
             data = {
                 "allowed_plegma_users": ["GR006047"],
-                "list_100" : range(101),
+                "prefix": user.username[0:2],
+                "list_100": range(101),
                 "water_pricing_list": zip(range(1, 8), [_("Flat rate tariff"),
                                                         _("Water metering tariff"),
                                                         _("Rising block tariff"),
