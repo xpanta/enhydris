@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 from math import isnan
 from lib.common import get_chart_data
 from django.utils.translation import ugettext as _
-
+from django.utils.encoding import smart_text
 
 #@cache_page(30 * 60)  # cache for 30 minutes
 @login_required
@@ -179,12 +179,13 @@ def compare(request, username):
             winter_dict = get_chart_data(household, dates, units, step,
                                          view, start, end)
         _str = _("Resolution chart")
+        smart_text(_str, encoding='utf-8')
         if start == end:
             title = "{x} {s} {y}"\
-                .format(x=step.title(), y=start, s=_str)
+                .format(x=step.title(), y=start, s=_str.encode('utf-8'))
         else:
             title = "{x} {s} {z} - {y}"\
-                .format(x=step.title(), z=start, y=end, s=_str)
+                .format(x=step.title(), z=start, y=end, s=_str.encode('utf-8'))
         if start2 and end2:
             total_dict2, night_dict2, day_dict2, summer_dict2, \
                 winter_dict2 = get_chart_data(household, dates, units, step,

@@ -146,8 +146,8 @@
 
     {% if view == 'summer_winter' %}
         $.plot("#placeholder", [
-                { label: "{% trans ' - Summer Consumption in' %} {{ unit|safe }}", data: [ [1, {{ summer_total|floatformat:2 }}] ] },
-                { label: " {% trans ' - Winter Consumption in' %} {{ unit|safe }}", data: [ [2, {{ winter_total|floatformat:2 }}] ] }
+                { label: "{% trans 'Summer Consumption in' %} {{ unit|safe }}", data: [ [1, {{ summer_total|floatformat:2 }}] ] },
+                { label: " {% trans 'Winter Consumption in' %} {{ unit|safe }}", data: [ [2, {{ winter_total|floatformat:2 }}] ] }
             ],
             {
                 series: {
@@ -186,8 +186,8 @@
             });
         {% if summer_total2 and winter_total2 %}
             $.plot("#placeholder2", [
-                        { label: "{% trans ' - Summer Consumption in' %} {{ unit|safe }}", data: [ [1, {{ summer_total2|floatformat:2 }}] ] },
-                        { label: "{% trans '- Winter Consumption in' %} {{ unit|safe }}", data: [ [2, {{ winter_total2|floatformat:2 }}] ] }
+                        { label: "{% trans 'Summer Consumption in' %} {{ unit|safe }}", data: [ [1, {{ summer_total2|floatformat:2 }}] ] },
+                        { label: "{% trans 'Winter Consumption in' %} {{ unit|safe }}", data: [ [2, {{ winter_total2|floatformat:2 }}] ] }
                     ],
                     {
                         series: {
@@ -226,14 +226,14 @@
                     });
         {% endif %}
     {% else %}
-        total_label = " {% trans '- Total Consumption in' %} {{ unit|safe }}";
-        night_label = " {% trans '- Night Consumption in' %} {{ unit|safe }}";
+        total_label = " {% trans 'Total Consumption in' %} {{ unit|safe }}";
+        night_label = " {% trans 'Night Consumption in' %} {{ unit|safe }}";
         day_label = " - {% trans 'Day Consumption in' %} {{ unit|safe }}";
 
         {% if "cost" in step %}
-            total_label = " {% trans '- Total Consumption in' %} &euro;";
-            night_label = " {% trans '- Night Consumption in' %} &euro;";
-            day_label = " {% trans '- Day Consumption in' %} &euro;";
+            total_label = " {% trans 'Total Consumption in' %} &euro;";
+            night_label = " {% trans 'Night Consumption in' %} &euro;";
+            day_label = " {% trans 'Day Consumption in' %} &euro;";
         {% endif %}
 
         {% if total_data2 %}
