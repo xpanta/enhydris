@@ -95,19 +95,19 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         log = logging.getLogger(__name__)
-        custom_date = None
-        custom_file = None
         try:
             arg = args[0]
             param = arg.split('=')[0]
             val = arg.split('=')[1]
             if param == "file":
                 custom_file = val
+                custom_date = None
             elif param == "date":
                 custom_date = datetime.strptime(val, "%Y-%m-%d")
+                custom_file = None
         except IndexError:
-            print ("Stopping! Argument error")
-            return -1
+            custom_date = None
+            custom_file = None
         try:
             force = args[1]
             if force == "replace":

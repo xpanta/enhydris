@@ -264,7 +264,8 @@ def create_processed_timeseries(household):
         )
         assert ts_object
 
-@timecall
+
+#@timecall
 def create_objects(data, usernames, force, z_names, z_dict):
     """
 
