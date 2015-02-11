@@ -49,7 +49,7 @@ class TimeseriesDetailView(TDV):
         except IWTimeseries.DoesNotExist:
             raise Http404('Timeseries object does not exist')
         is_household = hasattr(ts.gentity, 'gpoint') \
-            and hasattr(ts.gentity.gpoint, 'household')
+                       and hasattr(ts.gentity.gpoint, 'household')
         if not (user.is_staff or user.is_superuser) and \
                 (not is_household
                  or ts.gentity.gpoint.household.user.id != user.id):
@@ -147,7 +147,7 @@ def household_view(request, household_id=None):
             'initial_display': False,
             'main_timeseries_id': ts_fifteen.id,
             'span_options': [_('month'), _('week'), _('day')],
-        },
+            },
         {
             'id': 7,
             'name': _('Hourly water consumption (litres)'),
@@ -159,7 +159,7 @@ def household_view(request, household_id=None):
             'main_timeseries_id': ts_hourly.id,
             'has_pie': 1,
             'span_options': [_('year'), _('month'), _('week'), _('day')],
-        },
+            },
         {
             'id': 6,
             'name': _('Cumulative consumption - raw measurements (m<sup>3</sup>)'),
@@ -170,7 +170,7 @@ def household_view(request, household_id=None):
             'initial_display': False,
             'main_timeseries_id': ts_raw.id,
             'span_options': [_('month'), _('week'), _('day')],
-        },
+            },
         'Fifteen energy placeholder',
         'Hourly energy placeholder',
         {
@@ -183,7 +183,7 @@ def household_view(request, household_id=None):
             'initial_display': True,
             'main_timeseries_id': ts_daily.id, 'occupancy': nocc,
             'span_options': [_('year'), _('month'), _('week')],
-        },
+            },
         {
             'id': 3,
             'name': _('Daily water consumption per capita (litres)'),
@@ -193,7 +193,7 @@ def household_view(request, household_id=None):
             'display_lastvalue': True,
             'initial_display': False,
             'span_options': [_('year'), _('month'), _('week')],
-        },
+            },
         'Daily energy placeholder',
         'Daily energy per capita placeholder',
         {
@@ -207,17 +207,17 @@ def household_view(request, household_id=None):
             'main_timeseries_id': ts_monthly.id, 'occupancy': nocc,
             'has_pie': 2,
             'span_options': [],
-        },
+            },
         {
             'id': 8,
-             # 'name': u'Water cost per month, up to a year period (€)',
-             # 'display_min': True, 'display_max': True, 'display_avg': True,
-             # 'display_sum': True, 'time_span': 'year', 'is_vector': False,
-             # 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
-             # 'display_lastvalue': True,
-             # 'initial_display': False,
-             # 'main_timeseries_id': ts_cost.id, 'occupancy': nocc,
-             # 'span_options': [],
+            # 'name': u'Water cost per month, up to a year period (€)',
+            # 'display_min': True, 'display_max': True, 'display_avg': True,
+            # 'display_sum': True, 'time_span': 'year', 'is_vector': False,
+            # 'has_stats': True, 'can_zoom': True, 'has_info_box': True,
+            # 'display_lastvalue': True,
+            # 'initial_display': False,
+            # 'main_timeseries_id': ts_cost.id, 'occupancy': nocc,
+            # 'span_options': [],
         },
         {
             'id': 5,
@@ -226,13 +226,13 @@ def household_view(request, household_id=None):
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
-            'initial_display': False, 
+            'initial_display': False,
             'span_options': [],
-        },
+            },
         'Monthly energy placeholder',
         # 'Monthly energy cost placeholder',
         'Monthly energy per capita placeholder',
-    ]
+        ]
     if ts_daily_energy:
         # There are energy time series, add them to the array
         index = charts.index('Daily energy placeholder')
@@ -247,7 +247,7 @@ def household_view(request, household_id=None):
                 'initial_display': False,
                 'main_timeseries_id': ts_daily_energy.id, 'occupancy': nocc,
                 'span_options': [_('year'), _('month'), _('week')],
-            }
+                }
 
         index = charts.index('Fifteen energy placeholder')
         charts[index] = \
@@ -261,7 +261,7 @@ def household_view(request, household_id=None):
                 'initial_display': False,
                 'main_timeseries_id': ts_fifteen_energy.id,
                 'span_options': [_('month'), _('week'), _('day')],
-            }
+                }
 
         index = charts.index('Hourly energy placeholder')
         charts[index] = \
@@ -277,7 +277,7 @@ def household_view(request, household_id=None):
                 'main_timeseries_id': ts_hourly_energy.id,
                 'has_pie': 3,
                 'span_options': [_('year'), _('month'), _('week'), _('day')],
-            }
+                }
 
         index = charts.index('Daily energy per capita placeholder')
         charts[index] = \
@@ -290,7 +290,7 @@ def household_view(request, household_id=None):
                 'display_lastvalue': True,
                 'initial_display': False,
                 'span_options': [_('year'), _('month'), _('week')],
-            }
+                }
 
         index = charts.index('Monthly energy placeholder')
         charts[index] = \
@@ -305,10 +305,10 @@ def household_view(request, household_id=None):
                 'main_timeseries_id': ts_monthly_energy.id, 'occupancy': nocc,
                 'has_pie': 4,
                 'span_options': [],
-            }
+                }
 
         index = charts.index('Monthly energy cost placeholder')
-        charts[index] =\
+        charts[index] = \
             {
                 'id': 14,
                 # 'name': u'Energy cost per month, up to a year period (€)',
@@ -322,7 +322,7 @@ def household_view(request, household_id=None):
             }
 
         index = charts.index('Monthly energy per capita placeholder')
-        charts[index] =\
+        charts[index] = \
             {
                 'id': 15,
                 # 'name': 'Montlhly energy consumption per capita (kWh)',
@@ -342,7 +342,7 @@ def household_view(request, household_id=None):
                 'Monthly energy placeholder',
                 # 'Monthly energy cost placeholder',
                 'Monthly energy per capita placeholder',
-                
+
         ):
             charts.remove(placeholder)
 
@@ -353,27 +353,27 @@ def household_view(request, household_id=None):
     #        title: a category title to display
     #        default: default item from selections
     chart_selectors = {
-            1: {
-                'selections': [(1, _('Fifteen minutes water consumption')),
-                               (7, _('Hourly water consumption')),
-                               (6, _('Raw measurements')), ],
-                'title': _('High resolution data'),
-                'default': 7
-            },
-            2: {
-                'selections': [(2, _('Daily water consumption')),
-                               (3, _('Daily water consumption per capita')), ],
-                'title': _('Daily data'),
-                'default': 2
-            },
-            4: {
-                'selections': [(4, _('Monthly water consumption')),
-                               # (8, 'Monthly water cost'),
-                               (5, _('Monthly water consumption per capita')), ],
-                'title': _('Monthly data'),
-                'default': 4
-            },
-    }
+        1: {
+            'selections': [(1, _('Fifteen minutes water consumption')),
+                           (7, _('Hourly water consumption')),
+                           (6, _('Raw measurements')), ],
+            'title': _('High resolution data'),
+            'default': 7
+        },
+        2: {
+            'selections': [(2, _('Daily water consumption')),
+                           (3, _('Daily water consumption per capita')), ],
+            'title': _('Daily data'),
+            'default': 2
+        },
+        4: {
+            'selections': [(4, _('Monthly water consumption')),
+                           # (8, 'Monthly water cost'),
+                           (5, _('Monthly water consumption per capita')), ],
+            'title': _('Monthly data'),
+            'default': 4
+        },
+        }
 
     if ts_daily_energy:
         # There are energy time series, add them to selectors
@@ -394,53 +394,53 @@ def household_view(request, household_id=None):
             'timeseries_id': ts_fifteen.id,
             'is_bar': True, 'bar_width': 7*60*1000,
             'factor': 1000.000,
-        },
+            },
         {
             'id': 2, 'chart_id': 2, 'name': 'var_name',
             'timeseries_id': ts_daily.id,
             'is_bar': True, 'bar_width': 11*60*60*1000,
             'factor': 1000.000,
-        },
+            },
         {
             'id': 3, 'chart_id': 4, 'name': 'var_name',
             'timeseries_id': ts_monthly.id,
             'is_bar': True, 'bar_width': 14*24*60*60*1000,
             'factor': 1,
-        },
+            },
         {
             'id': 4, 'chart_id': 6, 'name': 'var_name',
             'timeseries_id': ts_raw.id,
             'is_bar': False,
             'factor': 1.000,
-        },
+            },
         {
             'id': 5, 'chart_id': 3, 'name': 'Household',
             'timeseries_id': ts_daily.id,
             'is_bar': True, 'bar_width': 11*60*60*1000,
             'factor': 1000.000/nocc,
-        },
+            },
         {
             'id': 6, 'chart_id': 3, 'name': 'DMA',
             'timeseries_id': ts_dma_daily_pc.id,
             'factor': 1000.000,
-        },
+            },
         {
             'id': 7, 'chart_id': 5, 'name': 'Household',
             'timeseries_id': ts_monthly.id,
             'is_bar': True, 'bar_width': 14*24*60*60*1000,
             'factor': 1.000/nocc,
-        },
+            },
         {
             'id': 8, 'chart_id': 5, 'name': 'DMA',
             'timeseries_id': ts_dma_monthly_pc.id,
             'factor': 1.000,
-        },
+            },
         {
             'id': 9, 'chart_id': 7, 'name': 'var_name',
             'timeseries_id': ts_hourly.id,
             'is_bar': True, 'bar_width': 30*60*1000,
             'factor': 1000.000,
-        },
+            },
         # {
         #     'id': 10, 'chart_id': 8, 'name': 'var_name',
         #     'timeseries_id': ts_cost.id,
@@ -456,36 +456,36 @@ def household_view(request, household_id=None):
                 'timeseries_id': ts_daily_energy.id,
                 'is_bar': True, 'bar_width': 11*60*60*1000,
                 'factor': 1.0,
-            },
+                },
             {
                 'id': 12, 'chart_id': 10, 'name': 'var_name',
                 'timeseries_id': ts_fifteen_energy.id,
                 'is_bar': True, 'bar_width': 7*60*1000,
                 'factor': 1.0,
-            },
+                },
             {
                 'id': 13, 'chart_id': 11, 'name': 'var_name',
                 'timeseries_id': ts_hourly_energy.id,
                 'is_bar': True, 'bar_width': 30*60*1000,
                 'factor': 1.0,
-            },
+                },
             {
                 'id': 14, 'chart_id': 12, 'name': 'Household',
                 'timeseries_id': ts_daily_energy.id,
                 'is_bar': True, 'bar_width': 11*60*60*1000,
                 'factor': 1.0/nocc,
-            },
+                },
             {
                 'id': 15, 'chart_id': 12, 'name': 'DMA',
                 'timeseries_id': ts_dma_daily_energy_pc.id,
                 'factor': 1.000,
-            },
+                },
             {
                 'id': 16, 'chart_id': 13, 'name': 'var_name',
                 'timeseries_id': ts_monthly_energy.id,
                 'is_bar': True, 'bar_width': 14*24*60*60*1000,
                 'factor': 1,
-            },
+                },
             # {
             #     'id': 17, 'chart_id': 14, 'name': 'var_name',
             #     'timeseries_id': ts_energy_cost.id,
@@ -497,13 +497,13 @@ def household_view(request, household_id=None):
                 'timeseries_id': ts_monthly_energy.id,
                 'is_bar': True, 'bar_width': 14*24*60*60*1000,
                 'factor': 1.000/nocc,
-            },
+                },
             {
                 'id': 19, 'chart_id': 15, 'name': 'DMA',
                 'timeseries_id': ts_dma_monthly_energy_pc.id,
                 'factor': 1.000,
-            },
-        ]
+                },
+            ]
 
     pies = {
         1: {'timeseries_id': ts_hourly.id,
@@ -522,30 +522,30 @@ def household_view(request, household_id=None):
     if ts_daily_energy:
         # There are energy time series, add them to pies
         pies.update({
-                    3: {'timeseries_id': ts_hourly_energy.id,
-                        'period_unit': 'hour',
-                        'period_from': 3,
-                        'period_to': 5,
-                        'default_period': 'Nightly consumption 3:00-05:00',
-                        'alternate_period': 'Daily consumption 04:01-24:59'},
-                    4: {'timeseries_id': ts_monthly_energy.id,
-                        'period_unit': 'month',
-                        'period_from': 5,
-                        'period_to': 9,
-                        'default_period': 'Summer consumption (May-September)',
-                        'alternate_period': 'Winter consumption (October-April)'}
-            })
+            3: {'timeseries_id': ts_hourly_energy.id,
+                'period_unit': 'hour',
+                'period_from': 3,
+                'period_to': 5,
+                'default_period': 'Nightly consumption 3:00-05:00',
+                'alternate_period': 'Daily consumption 04:01-24:59'},
+            4: {'timeseries_id': ts_monthly_energy.id,
+                'period_unit': 'month',
+                'period_from': 5,
+                'period_to': 9,
+                'default_period': 'Summer consumption (May-September)',
+                'alternate_period': 'Winter consumption (October-April)'}
+        })
 
     js_data = {
-            'timeseries_data_url': reverse('timeseries_data'),
-            'periods_stats_url': reverse('periods_stats'),
-            'charts': charts,
-            'variables': variables,
-            'pies': pies
+        'timeseries_data_url': reverse('timeseries_data'),
+        'periods_stats_url': reverse('periods_stats'),
+        'charts': charts,
+        'variables': variables,
+        'pies': pies
     }
     js_data = simplejson.dumps(js_data)
     form = HouseholdForm(instance=household)
-    for field in form.fields:                
+    for field in form.fields:
         form.fields[field].required = False
         form.fields[field].widget.attrs['disabled'] = 'disabled'
         form.fields[field].help_text=u''
@@ -558,10 +558,10 @@ def household_view(request, household_id=None):
                'energy_overview': None}
     if ts_daily_energy:
         context['energy_overview'] = energy_statistics_on_daily(
-                ts_daily_energy, nocc)
+            ts_daily_energy, nocc)
     return render_to_response('household.html',
-            context,
-        context_instance=RequestContext(request))
+                              context,
+                              context_instance=RequestContext(request))
 
 @login_required
 def dma_view(request, dma_id):
@@ -574,25 +574,25 @@ def dma_view(request, dma_id):
     except DMA.DoesNotExist:
         raise Http404('DMA does not exist')
     ts_daily = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
-            ~Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
+                                     ~Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
     ts_monthly = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
-            ~Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
+                                       ~Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
     ts_daily_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
-            Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
+                                        Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
     ts_monthly_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
-            Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
+                                          Q(name__icontains='capita') & Q(variable__id=VAR_PERIOD))[0]
 
     ts_daily_energy = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
-            ~Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+                                            ~Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
     ts_daily_energy = ts_daily_energy[0] if ts_daily_energy else None
     ts_monthly_energy = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
-            ~Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+                                              ~Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
     ts_monthly_energy = ts_monthly_energy[0] if ts_monthly_energy else None
     ts_daily_energy_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
-            Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+                                               Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
     ts_daily_energy_pc = ts_daily_energy_pc[0] if ts_daily_energy_pc else None
     ts_monthly_energy_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
-            Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
+                                                 Q(name__icontains='capita') & Q(variable__id=VAR_ENERGY_PERIOD))[:1]
     ts_monthly_energy_pc = ts_monthly_energy_pc[0] if ts_monthly_energy_pc else None
 
     charts = [
@@ -606,7 +606,7 @@ def dma_view(request, dma_id):
             'main_timeseries_id': ts_daily.id,
             'span_options': [_('year'), _('month'), _('week')],
             'initial_display': True,
-        },
+            },
         {
             'id': 2,
             'name': _('Water consumption per month, up to a year period (m<sup>3</sup>)'),
@@ -617,7 +617,7 @@ def dma_view(request, dma_id):
             'main_timeseries_id': ts_monthly.id,
             'span_options': [],
             'initial_display': True,
-        },
+            },
         {
             'id': 3,
             'name': _('Daily water consumption per capita (litres)'),
@@ -628,7 +628,7 @@ def dma_view(request, dma_id):
             'main_timeseries_id': ts_daily_pc.id,
             'span_options': [_('year'), _('month'), _('week')],
             'initial_display': True,
-        },
+            },
         {
             'id': 4,
             'name': _('Water consumption per month, up to a year period, per capita (<sup>3</sup>)'),
@@ -639,8 +639,8 @@ def dma_view(request, dma_id):
             'main_timeseries_id': ts_monthly_pc.id,
             'span_options': [],
             'initial_display': True,
-        },
-    ]
+            },
+        ]
     if ts_daily_energy:
         charts += [
             {
@@ -653,7 +653,7 @@ def dma_view(request, dma_id):
                 'main_timeseries_id': ts_daily_energy.id,
                 'span_options': [_('year'), _('month'), _('week')],
                 'initial_display': True,
-            },
+                },
             {
                 'id': 6,
                 'name': _('Energy consumption per month, up to a year period (MWh)'),
@@ -664,7 +664,7 @@ def dma_view(request, dma_id):
                 'main_timeseries_id': ts_monthly_energy.id,
                 'span_options': [],
                 'initial_display': True,
-            },
+                },
             {
                 'id': 7,
                 'name': _('Daily energy consumption per capita (kWh)'),
@@ -675,7 +675,7 @@ def dma_view(request, dma_id):
                 'main_timeseries_id': ts_daily_energy_pc.id,
                 'span_options': [_('year'), _('month'), _('week')],
                 'initial_display': True,
-            },
+                },
             {
                 'id': 8,
                 'name': _('Energy consumption per month, up to a year period, per capita (kWh)'),
@@ -686,8 +686,8 @@ def dma_view(request, dma_id):
                 'main_timeseries_id': ts_monthly_energy_pc.id,
                 'span_options': [],
                 'initial_display': True,
-            },
-        ]
+                },
+            ]
 
     variables = [
         {
@@ -695,26 +695,26 @@ def dma_view(request, dma_id):
             'timeseries_id': ts_daily.id,
             'is_bar': True, 'bar_width': 11*60*60*1000,
             'factor': 1.000,
-        },
+            },
         {
             'id': 2, 'chart_id': 2, 'name': 'var_name',
             'timeseries_id': ts_monthly.id,
             'is_bar': True, 'bar_width': 14*24*60*60*1000,
             'factor': 1.000,
-        },
+            },
         {
             'id': 3, 'chart_id': 3, 'name': 'var_name',
             'timeseries_id': ts_daily_pc.id,
             'is_bar': True, 'bar_width': 11*60*60*1000,
             'factor': 1000.000,
-        },
+            },
         {
             'id': 4, 'chart_id': 4, 'name': 'var_name',
             'timeseries_id': ts_monthly_pc.id,
             'is_bar': True, 'bar_width': 14*24*60*60*1000,
             'factor': 1.000,
-        },
-    ]
+            },
+        ]
     if ts_daily_energy:
         variables += [
             {
@@ -722,26 +722,26 @@ def dma_view(request, dma_id):
                 'timeseries_id': ts_daily_energy.id,
                 'is_bar': True, 'bar_width': 11*60*60*1000,
                 'factor': 1.000,
-            },
+                },
             {
                 'id': 6, 'chart_id': 6, 'name': 'var_name',
                 'timeseries_id': ts_monthly_energy.id,
                 'is_bar': True, 'bar_width': 14*24*60*60*1000,
                 'factor': .001,
-            },
+                },
             {
                 'id': 7, 'chart_id': 7, 'name': 'var_name',
                 'timeseries_id': ts_daily_energy_pc.id,
                 'is_bar': True, 'bar_width': 11*60*60*1000,
                 'factor': 1.000,
-            },
+                },
             {
                 'id': 8, 'chart_id': 8, 'name': 'var_name',
                 'timeseries_id': ts_monthly_energy_pc.id,
                 'is_bar': True, 'bar_width': 14*24*60*60*1000,
                 'factor': 1.000,
-            },
-        ]
+                },
+            ]
 
     js_data = \
         {
@@ -751,10 +751,10 @@ def dma_view(request, dma_id):
         }
     js_data = simplejson.dumps(js_data)
     return render_to_response('dma.html',
-            {'dma': dma,
-             'charts': charts,
-             'js_data': js_data},
-        context_instance=RequestContext(request))
+                              {'dma': dma,
+                               'charts': charts,
+                               'js_data': js_data},
+                              context_instance=RequestContext(request))
 
 @login_required
 def super_index(request):
@@ -787,10 +787,10 @@ def household_properties(request):
     else:
         form = HouseholdForm(instance=household)
     return render_to_response('household_properties_form.html',
-            {'form': form,
-             'household': household,
-             },
-        context_instance=RequestContext(request))
+                              {'form': form,
+                               'household': household,
+                               },
+                              context_instance=RequestContext(request))
 
 import linecache
 from enhydris.hcore.tstmpupd import update_ts_temp_file
@@ -808,10 +808,10 @@ def periods_distribution(request, *args, **kwargs):
         b = b.days*86400+b.seconds
         return float(a)/float(b)
 
-# Return the nearest record number to the specified date
-# The second argument is 0 for exact match, -1 if no
-# exact match and the date is after the record found,
-# 1 if no exact match and the date is before the record.
+    # Return the nearest record number to the specified date
+    # The second argument is 0 for exact match, -1 if no
+    # exact match and the date is after the record found,
+    # 1 if no exact match and the date is before the record.
     def find_line_at_date(adatetime, totlines):
         if totlines < 2:
             return totlines
@@ -849,7 +849,7 @@ def periods_distribution(request, *args, **kwargs):
         else:
             key = 'alternate_period'
         gstats[key] += value
-            
+
     def inc_datetime(adate, unit, steps):
         if unit == 'day':
             return adate+steps * timedelta(days=1)
@@ -860,14 +860,14 @@ def periods_distribution(request, *args, **kwargs):
         elif unit == 'year':
             return inc_month(adate, 12*steps)
         elif unit == 'moment':
-            return adate            
+            return adate
         elif unit == 'hour':
             return adate+steps * timedelta(minutes=60)
         elif unit == 'twohour':
             return adate+steps * timedelta(minutes=120)
         else:
             raise Http404
-   
+
     if not (request.method == "GET" and request.GET.get('object_id')):
         raise Http404
     response = HttpResponse(content_type='application/json')
@@ -908,8 +908,8 @@ def periods_distribution(request, *args, **kwargs):
             else:
                 last_date = date_at_pos(end_pos)
                 first_date = inc_datetime(last_date, request.GET['last'], -1)
-# This is an almost bad workarround to exclude the first record from
-# sums, i.e. when we need the 144 10 minute values from a day.
+                # This is an almost bad workarround to exclude the first record from
+                # sums, i.e. when we need the 144 10 minute values from a day.
                 if 'start_offset' in request.GET.keys():
                     offset = float(request.GET['start_offset'])
                     first_date += timedelta(minutes=offset)
@@ -935,11 +935,11 @@ def periods_distribution(request, *args, **kwargs):
             s = linecache.getline(afilename, pos)
             if s.isspace():
                 pos+=fine_step
-                continue 
-            t = s.split(',') 
-# Use the following exception handling to catch incoplete
-# reads from cache. Tries only one time, next time if
-# the error on the same line persists, it raises.
+                continue
+            t = s.split(',')
+            # Use the following exception handling to catch incoplete
+            # reads from cache. Tries only one time, next time if
+            # the error on the same line persists, it raises.
             try:
                 k = datetime_from_iso(t[0])
                 v = t[1]
@@ -953,15 +953,15 @@ def periods_distribution(request, *args, **kwargs):
             if v != '':
                 afloat = float(v)
                 add_to_stats(params, k, afloat)
-# Some times linecache tries to read a file being written (from 
-# timeseries.write_file). So every 5000 lines refresh the cache.
+            # Some times linecache tries to read a file being written (from
+            # timeseries.write_file). So every 5000 lines refresh the cache.
             if (pos-start_pos) % 5000 == 0:
                 linecache.checkcache(afilename)
             pos += fine_step
     finally:
         linecache.clearcache()
     response.content = simplejson.dumps({'stats': gstats})
-    callback = request.GET.get("jsoncallback", None)    
+    callback = request.GET.get("jsoncallback", None)
     if callback:
         response.content = '%s(%s)' % (callback, response.content,)
     return response
@@ -998,25 +998,25 @@ def dashboard_view(request, household_id=None):
 
     dma = household.dma
     ts_dma_daily_pc = dma.timeseries.filter(
-            Q(time_step__id=TSTEP_DAILY) &
-            Q(name__icontains='capita'))[0]
+        Q(time_step__id=TSTEP_DAILY) &
+        Q(name__icontains='capita'))[0]
     ts_dma_monthly_pc = dma.timeseries.filter(
-            Q(time_step__id=TSTEP_MONTHLY) &
-            Q(name__icontains='capita'))[0]
+        Q(time_step__id=TSTEP_MONTHLY) &
+        Q(name__icontains='capita'))[0]
     ts_raw = household.timeseries.filter(time_step__isnull=True,
-            variable__id=VAR_CUMULATIVE)[0]
+                                         variable__id=VAR_CUMULATIVE)[0]
     ts_fifteen = household.timeseries.filter(
-            time_step__id=TSTEP_FIFTEEN_MINUTES,
-            variable__id=VAR_PERIOD)[0]
+        time_step__id=TSTEP_FIFTEEN_MINUTES,
+        variable__id=VAR_PERIOD)[0]
     ts_hourly = household.timeseries.filter(
-            time_step__id=TSTEP_HOURLY,
-            variable__id=VAR_PERIOD)[0]
+        time_step__id=TSTEP_HOURLY,
+        variable__id=VAR_PERIOD)[0]
     ts_daily = household.timeseries.filter(
-            time_step__id=TSTEP_DAILY,
-            variable__id=VAR_PERIOD)[0]
+        time_step__id=TSTEP_DAILY,
+        variable__id=VAR_PERIOD)[0]
     ts_monthly = household.timeseries.filter(
-            time_step__id=TSTEP_MONTHLY,
-            variable__id=VAR_PERIOD)[0]
+        time_step__id=TSTEP_MONTHLY,
+        variable__id=VAR_PERIOD)[0]
     # ts_cost = household.timeseries.filter(
     #         time_step__id=TSTEP_MONTHLY,
     #         variable__id=VAR_COST)[:1]
@@ -1076,7 +1076,7 @@ def dashboard_view(request, household_id=None):
             'initial_display': True,
             'main_timeseries_id': ts_fifteen.id,
             'span_options': [_('month'), _('week'), _('day')],
-        },
+            },
         {
             'id': 7,
             'name': _('Hourly water consumption (litres)'),
@@ -1088,7 +1088,7 @@ def dashboard_view(request, household_id=None):
             'main_timeseries_id': ts_hourly.id,
             'has_pie': 1,
             'span_options': [_('year'), _('month'), _('week'), _('day')],
-        },
+            },
         {
             'id': 6,
             'name': _('Cumulative consumption - raw measurements (m<sup>3</sup>)'),
@@ -1099,7 +1099,7 @@ def dashboard_view(request, household_id=None):
             'initial_display': False,
             'main_timeseries_id': ts_raw.id,
             'span_options': [_('month'), _('week'), _('day')],
-        },
+            },
         {
             'id': 2,
             'name': _('Daily water consumption (litres)'),
@@ -1110,7 +1110,7 @@ def dashboard_view(request, household_id=None):
             'initial_display': True,
             'main_timeseries_id': ts_daily.id, 'occupancy': nocc,
             'span_options': [_('year'), _('month'), _('week')],
-        },
+            },
         {
             'id': 3,
             'name': _('Daily water consumption per capita (litres)'),
@@ -1120,7 +1120,7 @@ def dashboard_view(request, household_id=None):
             'display_lastvalue': True,
             'initial_display': False,
             'span_options': [_('year'), _('month'), _('week')],
-        },
+            },
         {
             'id': 4,
             'name': _('Water consumption per month, up to a year period (m<sup>3</sup>)'),
@@ -1132,7 +1132,7 @@ def dashboard_view(request, household_id=None):
             'main_timeseries_id': ts_monthly.id, 'occupancy': nocc,
             'has_pie': 2,
             'span_options': [],
-        },
+            },
         # {
         #     'id': 8,
         #     'name': u'Water cost per month, up to a year period (€)',
@@ -1153,8 +1153,8 @@ def dashboard_view(request, household_id=None):
             'display_lastvalue': True,
             'initial_display': False,
             'span_options': [],
-        },
-    ]
+            },
+        ]
     # Energy Charts added by Chris Pantazis
     charts_nrg = []
     if has_energy:
@@ -1169,7 +1169,7 @@ def dashboard_view(request, household_id=None):
                 'initial_display': True,
                 'main_timeseries_id': ts_fifteen_nrg.id,
                 'span_options': [_('month'), _('week'), _('day')],
-            },
+                },
             {
                 'id': 11,
                 'name': _('Daily energy consumption (Wh)'),
@@ -1180,7 +1180,7 @@ def dashboard_view(request, household_id=None):
                 'initial_display': True,
                 'main_timeseries_id': ts_daily_nrg.id,
                 'span_options': [_('month'), _('week'), _('day')],
-            },
+                },
             {
                 'id': 12,
                 # 'name': 'Energy Cost per Month (€)',
@@ -1203,7 +1203,7 @@ def dashboard_view(request, household_id=None):
                 'main_timeseries_id': ts_hourly_nrg.id,
                 'has_pie': 3,
                 'span_options': [_('year'), _('month'), _('week'), _('day')],
-            },
+                },
             {
                 'id': 14,
                 'name': _('Cumulative consumption - raw measurements (KWh)'),
@@ -1214,7 +1214,7 @@ def dashboard_view(request, household_id=None):
                 'initial_display': False,
                 'main_timeseries_id': ts_raw.id,
                 'span_options': [_('month'), _('week'), _('day')],
-            },
+                },
             {
                 'id': 15,
                 'name': _('Daily energy consumption per capita (Wh)'),
@@ -1224,7 +1224,7 @@ def dashboard_view(request, household_id=None):
                 'display_lastvalue': True,
                 'initial_display': False,
                 'span_options': [_('year'), _('month'), _('week')],
-            },
+                },
             {
                 'id': 16,
                 # 'name': u'Energy cost per month, up to a year period (€)',
@@ -1245,7 +1245,7 @@ def dashboard_view(request, household_id=None):
                 'display_lastvalue': True,
                 'initial_display': False,
                 'span_options': [],
-            },
+                },
             {
                 'id': 18,
                 'name': _('Energy consumption per month, up to a year period (Wh)'),
@@ -1257,8 +1257,8 @@ def dashboard_view(request, household_id=None):
                 'main_timeseries_id': ts_monthly_nrg.id, 'occupancy': nocc,
                 'has_pie': 4,
                 'span_options': [],
-            },
-        ]
+                },
+            ]
     # chart_selectors items:
     # key: id: the id attribute of chart instance in above chart list
     #          Select input element will be above the chart
@@ -1305,60 +1305,60 @@ def dashboard_view(request, household_id=None):
             'title': _('Monthly data'),
             'default': 12
         },
-    }
+        }
     variables = [
         {
             'id': 1, 'chart_id': 1, 'name': 'var_name',
             'timeseries_id': ts_fifteen.id,
             'is_bar': True, 'bar_width': 7*60*1000,
             'factor': 1000.000,
-        },
+            },
         {
             'id': 2, 'chart_id': 2, 'name': 'var_name',
             'timeseries_id': ts_daily.id,
             'is_bar': True, 'bar_width': 11*60*60*1000,
             'factor': 1000.000,
-        },
+            },
         {
             'id': 3, 'chart_id': 4, 'name': 'var_name',
             'timeseries_id': ts_monthly.id,
             'is_bar': True, 'bar_width': 14*24*60*60*1000,
             'factor': 1,
-        },
+            },
         {
             'id': 4, 'chart_id': 6, 'name': 'var_name',
             'timeseries_id': ts_raw.id,
             'is_bar': False,
             'factor': 1.000,
-        },
+            },
         {
             'id': 5, 'chart_id': 3, 'name': 'Household',
             'timeseries_id': ts_daily.id,
             'is_bar': True, 'bar_width': 11*60*60*1000,
             'factor': 1000.000/nocc,
-        },
-        {
-            'id': 6, 'chart_id': 3, 'name': 'DMA',
-            'timeseries_id': ts_dma_daily_pc.id,
-            'factor': 1000.000,
-        },
+            },
+#        {
+#            'id': 6, 'chart_id': 3, 'name': 'DMA',
+#            'timeseries_id': ts_dma_daily_pc.id,
+#            'factor': 1000.000,
+#            },
         {
             'id': 7, 'chart_id': 5, 'name': 'Household',
             'timeseries_id': ts_monthly.id,
             'is_bar': True, 'bar_width': 14*24*60*60*1000,
             'factor': 1.000/nocc,
-        },
-        {
-            'id': 8, 'chart_id': 5, 'name': 'DMA',
-            'timeseries_id': ts_dma_monthly_pc.id,
-            'factor': 1.000,
-        },
+            },
+#        {
+#            'id': 8, 'chart_id': 5, 'name': 'DMA',
+#            'timeseries_id': ts_dma_monthly_pc.id,
+#            'factor': 1.000,
+#            },
         {
             'id': 9, 'chart_id': 7, 'name': 'var_name',
             'timeseries_id': ts_hourly.id,
             'is_bar': True, 'bar_width': 30*60*1000,
             'factor': 1000.000,
-        },
+            },
         # {
         #     'id': 10, 'chart_id': 8, 'name': 'var_name',
         #     'timeseries_id': ts_cost.id,
@@ -1376,13 +1376,13 @@ def dashboard_view(request, household_id=None):
                 'timeseries_id': ts_fifteen_nrg.id,
                 'is_bar': True, 'bar_width': 7*60*1000,
                 'factor': 1000.000,
-            },
+                },
             {
                 'id': 12, 'chart_id': 11, 'name': 'energy',
                 'timeseries_id': ts_daily_nrg.id,
                 'is_bar': True, 'bar_width': 11*60*60*1000,
                 'factor': 1000.000,
-            },
+                },
             {
                 'id': 13, 'chart_id': 12, 'name': 'energy',
                 # 'timeseries_id': ts_cost_nrg.id,
@@ -1394,13 +1394,13 @@ def dashboard_view(request, household_id=None):
                 'timeseries_id': ts_hourly_nrg.id,
                 'is_bar': True, 'bar_width': 30*60*1000,
                 'factor': 1000.000,
-            },
+                },
             {
                 'id': 15, 'chart_id': 15, 'name': 'energy',
                 'timeseries_id': ts_daily_nrg.id,
                 'is_bar': True, 'bar_width': 11*60*60*1000,
                 'factor': 1000.000/nocc,
-            },
+                },
             {
                 'id': 16, 'chart_id': 16, 'name': 'energy',
                 # 'timeseries_id': ts_cost_nrg.id,
@@ -1412,14 +1412,14 @@ def dashboard_view(request, household_id=None):
                 'timeseries_id': ts_monthly_nrg.id,
                 'is_bar': True, 'bar_width': 14*24*60*60*1000,
                 'factor': 1.000/nocc,
-            },
+                },
             {
                 'id': 18, 'chart_id': 18, 'name': 'energy',
                 'timeseries_id': ts_monthly_nrg.id,
                 'is_bar': True, 'bar_width': 14*24*60*60*1000,
                 'factor': 1.000,
-            },
-        ]
+                },
+            ]
     pies = {
         1: {'timeseries_id': ts_hourly.id,
             'period_unit': 'hour',
@@ -1451,13 +1451,13 @@ def dashboard_view(request, household_id=None):
         })
 
     js_data = {
-            'timeseries_data_url': '/timeseries/data/',#reverse('timeseries_data'), commented by Adeel and replace with Static URL
-            'periods_stats_url': '/ajax/period_stats/',#reverse('periods_stats'), commented by Adeel and replace with Static URL
-            'charts': charts,
-            'charts_nrg': charts_nrg,
-            'variables_nrg': variables_nrg,
-            'variables': variables,
-            'pies': pies
+        'timeseries_data_url': '/timeseries/data/',#reverse('timeseries_data'), commented by Adeel and replace with Static URL
+        'periods_stats_url': '/ajax/period_stats/',#reverse('periods_stats'), commented by Adeel and replace with Static URL
+        'charts': charts,
+        'charts_nrg': charts_nrg,
+        'variables_nrg': variables_nrg,
+        'variables': variables,
+        'pies': pies
     }
     js_data = simplejson.dumps(js_data)
     form = HouseholdForm(instance=household)
@@ -1481,7 +1481,7 @@ def dashboard_view(request, household_id=None):
         'overview': statistics_on_daily(ts_daily, nocc),
         'overview_nrg': overview_nrg,
         'has_energy': has_energy,
-    }
+        }
 
 
 '''
@@ -1499,13 +1499,13 @@ def dmas_view(request, dma_id):
         raise Http404('DMA does not exist')
 
     ts_daily = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
-            ~Q(name__icontains='capita'))[0]
+                                     ~Q(name__icontains='capita'))[0]
     ts_monthly = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
-            ~Q(name__icontains='capita'))[0]
+                                       ~Q(name__icontains='capita'))[0]
     ts_daily_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_DAILY) &
-            Q(name__icontains='capita'))[0]
+                                        Q(name__icontains='capita'))[0]
     ts_monthly_pc = dma.timeseries.filter(Q(time_step__id=TSTEP_MONTHLY) &
-            Q(name__icontains='capita'))[0]
+                                          Q(name__icontains='capita'))[0]
     charts = [
         {
             'id': 1,
@@ -1517,7 +1517,7 @@ def dmas_view(request, dma_id):
             'main_timeseries_id': ts_daily.id,
             'span_options': [_('year'), _('month'), _('week')],
             'initial_display': True,
-        },
+            },
         {
             'id': 2,
             'name': _('Water consumption per month, up to a year period (m<sup>3</sup>)'),
@@ -1528,7 +1528,7 @@ def dmas_view(request, dma_id):
             'main_timeseries_id': ts_monthly.id,
             'span_options': [],
             'initial_display': True,
-        },
+            },
         {
             'id': 3,
             'name': _('Daily water consumption per capita (litres)'),
@@ -1539,7 +1539,7 @@ def dmas_view(request, dma_id):
             'main_timeseries_id': ts_daily_pc.id,
             'span_options': [_('year'), _('month'), _('week')],
             'initial_display': True,
-        },
+            },
         {
             'id': 4,
             'name': _('Water consumption per month, up to a year period, per capita (<sup>3</sup>)'),
@@ -1550,38 +1550,38 @@ def dmas_view(request, dma_id):
             'main_timeseries_id': ts_monthly_pc.id,
             'span_options': [],
             'initial_display': True,
-        },
-    ]
+            },
+        ]
     variables = [
         {
             'id': 1, 'chart_id': 1, 'name': 'var_name',
             'timeseries_id': ts_daily.id,
             'is_bar': True, 'bar_width': 11*60*60*1000,
             'factor': 1.000,
-        },
+            },
         {
             'id': 2, 'chart_id': 2, 'name': 'var_name',
             'timeseries_id': ts_monthly.id,
             'is_bar': True, 'bar_width': 14*24*60*60*1000,
             'factor': 1.000,
-        },
+            },
         {
             'id': 3, 'chart_id': 3, 'name': 'var_name',
             'timeseries_id': ts_daily_pc.id,
             'is_bar': True, 'bar_width': 11*60*60*1000,
             'factor': 1000.000,
-        },
+            },
         {
             'id': 4, 'chart_id': 4, 'name': 'var_name',
             'timeseries_id': ts_monthly_pc.id,
             'is_bar': True, 'bar_width': 14*24*60*60*1000,
             'factor': 1.000,
-        },
-    ]
+            },
+        ]
     js_data = {
-            'timeseries_data_url': reverse('timeseries_data'),
-            'charts': charts,
-            'variables': variables
+        'timeseries_data_url': reverse('timeseries_data'),
+        'charts': charts,
+        'variables': variables
     }
     js_data = simplejson.dumps(js_data)
     return  {'dma': dma,
