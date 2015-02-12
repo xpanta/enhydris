@@ -34,20 +34,20 @@ $(window).load(function() {
 	    
 	    if(domutil.hasCssclass("#c_uc32container","hide") && id=="cuc32") //tab id value, need to make global to make effectively and avoid error
 	    {
-	    	data = jQuery.parseJSON("{{c_uc32data|escapejs}}");	
-	    	if(data==null)
-	    		return;		    	
+	    	//data = jQuery.parseJSON("{{c_uc32data|escapejs}}");	
+	    	//if(data==null)
+	    	//	return;		    	
 	    	domutil.removeCssclass("#c_uc32container","hide");
-	    	uc32Chart(data);
+	    	//uc32Chart(data);
 	    }//--end if
 	    
 	    if(domutil.hasCssclass("#c_uc33container","hide") && id=="cuc33") //tab id value, need to make global to make effective and avoid error
 	    {
-	    	data = jQuery.parseJSON("{{c_uc33data|escapejs}}");	
-	    	if(data==null)
-	    		return;		    	
+	    	//data = jQuery.parseJSON("{{c_uc33data|escapejs}}");	
+	    	//if(data==null)
+	    	//	return;		    	
 	    	domutil.removeCssclass("#c_uc33container","hide");
-	    	uc33Chart(data);
+	    	//uc33Chart(data);
 	    }//--end if	 	
 
 	    if(domutil.hasCssclass("#c_uc52container","hide") && id=="cuc52") //tab id value, need to make global to make effective and avoid error

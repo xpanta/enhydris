@@ -1,0 +1,28 @@
+{% load sekizai_tags %}
+{% load i18n %}
+<script>
+	apputil.sendToserver('#c_uc33-form');
+</script>
+
+<div id="c_uc33cont" class="row hide">
+<div id="c_uc33title"><p class="bg-primary text-center"><strong></strong></p></div>
+<div class="col-md-5" id="c_uc33chartcont"></div>
+<div class="col-md-4" id="c_uc33donutchart"></div>
+<div class="col-md-3">
+    <div class="panel panel-primary">
+        <div class="panel-heading">{% trans "AREA SUMMARY" %}</div>
+        <ul class="list-group list-group-flush text-center">
+            <li id="c_uc33household" class="list-group-item"></li>
+            <li id="c_uc33occupant" class="list-group-item"></li>
+        </ul>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">{% trans "YOUR SUMMARY" %}</div>
+        <ul class="list-group list-group-flush text-center">
+            <li id="c_uc33hhold" class="list-group-item"></li>
+            <li id="c_uc33occup"  class="list-group-item"></li>
+            <li class="list-group-item"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>
+        </ul>
+    </div>		    
+</div>		
+</div>

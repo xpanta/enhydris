@@ -1,0 +1,78 @@
+{% load sekizai_tags %}
+{% load i18n %}
+<script>
+	var data = jQuery.parseJSON("{{c_uc32data|escapejs}}");
+	var w = domutil.getdivwidth("c_uc32chart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
+	var dim = {"width":w,"height":450}; //width and height of chart container
+	chartutil.uc32barplot1("#c_uc32chart",dim,data["chart"], data["currency"]);
+	
+	
+	var values= data["yourdata"]["month"];
+	household = values["sum_units"];
+	occupant  = values["unit_person"];
+	$("#c_uc32month").html("<strong>Over 1 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");
+
+	values    = data["yourdata"]["quarter"];
+	household = values["sum_units"];
+	occupant  = values["unit_person"];
+	$("#c_uc32quarter").html("<strong>Over 3 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");	
+
+	values    = data["yourdata"]["half"];
+	household = values["sum_units"];
+	occupant  = values["unit_person"];
+	$("#c_uc32half").html("<strong>Over 6 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");	
+
+	values    = data["yourdata"]["year"];
+	household = values["sum_units"];
+	occupant  = values["unit_person"];
+	$("#c_uc32yearly").html("<strong>Over 12 Months Period:</strong><br/><div class='text-primary'>Units consumed for household: "+household+" (m<sup>3</sup>), Units consumed per occupant: "+occupant+" (m<sup>3</sup>)</div>");
+
+	//area data
+	values    = data["areadata"]["month"];
+	occupant  = values["occupant"];
+	household = values["avg_units"];	
+	$("#c_uc32Month").html("<strong>Over 1 Months Period:</strong><br/><div class='text-muted'>Average consumption per household: "+household+" (m<sup>3</sup>), Average consumption per occupant: "+occupant+" (m<sup>3</sup>)</div>");	
+
+	values    = data["areadata"]["quarter"];
+	occupant  = values["occupant"];
+	household = values["avg_units"];	
+	$("#c_uc32Quarter").html("<strong>Over 3 Months Period:</strong><br/><div class='text-muted'>Average consumption per household: "+household+" (m<sup>3</sup>), Average consumption per occupant: "+occupant+" (m<sup>3</sup>)</div>");
+
+	values    = data["areadata"]["half"];
+	occupant  = values["occupant"];
+	household = values["avg_units"];	
+	$("#c_uc32Half").html("<strong>Over 6 Months Period:</strong><br/><div class='text-muted'>Average consumption per household: "+household+" (m<sup>3</sup>), Average consumption per occupant: "+occupant+" (m<sup>3</sup>)</div>");
+	
+	values    = data["areadata"]["year"];
+	occupant  = values["occupant"];
+	household = values["avg_units"];
+	
+	$("#c_uc32Yearly").html("<strong>Over 12 Months Period:</strong><br/><div class='text-muted'>Average consumption per household: "+household+" (m<sup>3</sup>), Average consumption per occupant: "+occupant+" (m<sup>3</sup>)</div>");
+	
+</script>
+
+<div class="row" id="c_uc32container">
+	<div id="c_uc32title"><p class="bg-primary text-center"><strong>Your last 12 Months bill comparison vs other consumers</strong></p></div>
+	<div class="col-md-7" id="c_uc32chart"></div>
+	<div class="col-md-5" id="c_uc32summary">
+	    <div class="panel panel-primary">
+	        <div class="panel-heading">{% trans "AREA SUMMARY" %}</div>
+	        <ul class="list-group list-group-flush">
+		        <li class="list-group-item" id="c_uc32Yearly"></li>
+		        <li class="list-group-item" id="c_uc32Half"></li>
+		        <li class="list-group-item" id="c_uc32Quarter"></li>
+		        <li class="list-group-item" id="c_uc32Month"></li>
+	        </ul>
+	    </div>
+	    <div class="panel panel-primary">
+	        <div class="panel-heading">{% trans "YOUR SUMMARY" %}</div>
+	        <ul class="list-group list-group-flush">
+		        <li class="list-group-item" id="c_uc32yearly"></li>
+		        <li class="list-group-item" id="c_uc32half"></li>
+		        <li class="list-group-item" id="c_uc32quarter"></li>
+		        <li class="list-group-item" id="c_uc32month"></li>
+	            <li class="list-group-item text-center"><a target="_blank" href={% url 'timeseries_detail' tsid %}>{% trans "Open time series" %}</a></li>
+	        </ul>
+	    </div>				    				
+	</div>		
+</div>

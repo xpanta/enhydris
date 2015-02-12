@@ -66,7 +66,7 @@ class Migration(SchemaMigration):
         db.create_table(u'hcore_gpoint', (
             (u'gentity_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['hcore.Gentity'], unique=True, primary_key=True)),
             ('srid', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('approximate', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('approximate', self.gf('django.db.models.fields.BooleanField')()),
             ('altitude', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('asrid', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('point', self.gf('django.contrib.gis.db.models.fields.PointField')(null=True, blank=True)),
@@ -234,8 +234,8 @@ class Migration(SchemaMigration):
         db.create_table(u'hcore_station', (
             (u'gpoint_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['hcore.Gpoint'], unique=True, primary_key=True)),
             ('owner', self.gf('django.db.models.fields.related.ForeignKey')(related_name='owned_stations', to=orm['hcore.Lentity'])),
-            ('is_automatic', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_automatic', self.gf('django.db.models.fields.BooleanField')()),
+            ('is_active', self.gf('django.db.models.fields.BooleanField')()),
             ('start_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('end_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('copyright_holder', self.gf('django.db.models.fields.TextField')()),
@@ -270,7 +270,7 @@ class Migration(SchemaMigration):
             ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
             ('station', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hcore.Station'])),
             ('person', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hcore.Person'])),
-            ('is_current', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_current', self.gf('django.db.models.fields.BooleanField')()),
             ('start_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('end_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
         ))
@@ -297,7 +297,7 @@ class Migration(SchemaMigration):
             ('type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hcore.InstrumentType'])),
             ('manufacturer', self.gf('django.db.models.fields.CharField')(max_length=50, blank=True)),
             ('model', self.gf('django.db.models.fields.CharField')(max_length=50, blank=True)),
-            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_active', self.gf('django.db.models.fields.BooleanField')()),
             ('start_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('end_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
@@ -410,6 +410,18 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'hcore', ['TsRecords'])
 
+        # Adding model 'UserProfile'
+        db.create_table(u'hcore_userprofile', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.OneToOneField')(related_name='profile', unique=True, to=orm['auth.User'])),
+            ('fname', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+            ('lname', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+            ('address', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('organization', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('email_is_public', self.gf('django.db.models.fields.BooleanField')(default=False)),
+        ))
+        db.send_create_signal(u'hcore', ['UserProfile'])
+
 
     def backwards(self, orm):
         # Deleting model 'Lentity'
@@ -511,6 +523,9 @@ class Migration(SchemaMigration):
         # Deleting model 'TsRecords'
         db.delete_table('ts_records')
 
+        # Deleting model 'UserProfile'
+        db.delete_table(u'hcore_userprofile')
+
 
     models = {
         u'auth.group': {
@@ -531,7 +546,7 @@ class Migration(SchemaMigration):
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -539,7 +554,7 @@ class Migration(SchemaMigration):
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Permission']"}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
         u'contenttypes.contenttype': {
@@ -681,7 +696,7 @@ class Migration(SchemaMigration):
         u'hcore.gpoint': {
             'Meta': {'ordering': "('name',)", 'object_name': 'Gpoint', '_ormbases': [u'hcore.Gentity']},
             'altitude': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'approximate': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'approximate': ('django.db.models.fields.BooleanField', [], {}),
             'asrid': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             u'gentity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['hcore.Gentity']", 'unique': 'True', 'primary_key': 'True'}),
             'point': ('django.contrib.gis.db.models.fields.PointField', [], {'null': 'True', 'blank': 'True'}),
@@ -691,7 +706,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "('name',)", 'object_name': 'Instrument'},
             'end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_active': ('django.db.models.fields.BooleanField', [], {}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
             'manufacturer': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
@@ -746,7 +761,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Overseer'},
             'end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_current': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_current': ('django.db.models.fields.BooleanField', [], {}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
             'original_db': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['dbsync.Database']", 'null': 'True'}),
             'original_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -779,8 +794,8 @@ class Migration(SchemaMigration):
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'created_stations'", 'null': 'True', 'to': u"orm['auth.User']"}),
             'end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             u'gpoint_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['hcore.Gpoint']", 'unique': 'True', 'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_automatic': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_active': ('django.db.models.fields.BooleanField', [], {}),
+            'is_automatic': ('django.db.models.fields.BooleanField', [], {}),
             'maintainers': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'maintaining_stations'", 'null': 'True', 'symmetrical': 'False', 'to': u"orm['auth.User']"}),
             'overseers': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'stations_overseen'", 'symmetrical': 'False', 'through': u"orm['hcore.Overseer']", 'to': u"orm['hcore.Person']"}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'owned_stations'", 'to': u"orm['hcore.Lentity']"}),
@@ -857,6 +872,16 @@ class Migration(SchemaMigration):
             'original_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'symbol': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'variables': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['hcore.Variable']", 'symmetrical': 'False'})
+        },
+        u'hcore.userprofile': {
+            'Meta': {'object_name': 'UserProfile'},
+            'address': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'email_is_public': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'fname': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'lname': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
+            'organization': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': u"orm['auth.User']"})
         },
         u'hcore.variable': {
             'Meta': {'ordering': "('descr',)", 'object_name': 'Variable'},

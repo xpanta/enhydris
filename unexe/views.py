@@ -515,11 +515,11 @@ class consumer(TemplateView):
                 "tsid": ts_monthlyid,
                 "stdate": stdate,
                 "endate": endate,
-                "c_uc32data": json.dumps(c_uc32data),
-                "c_uc33data": json.dumps(c_uc33data),
+                #"c_uc32data": json.dumps(c_uc32data),
+                #"c_uc33data": json.dumps(c_uc33data),
                 "c_uc34data": json.dumps(c_uc34data),                
                 "c_uc41data": json.dumps(c_uc41data),
-                "c_uc52data": json.dumps(c_uc52data),
+                #"c_uc52data": json.dumps(c_uc52data),
                 "c_uc53data": json.dumps(c_uc53data),
                 "c_uc54data": json.dumps(c_uc54data)}
  
@@ -619,6 +619,133 @@ class c_uc54(TemplateView):
     def post(self, request, *args, **kwargs):
         data = None            
         return HttpResponse(json.dumps(data),content_type='application/javascript')
+    
+    
+    
+    
+    
+def tsMonthlyIdFromUser(user):
+    """
+    Helper function to avoid excessively repetetive code.
+    @author: David Walker
+    @date: 08/02/2015
+    """
+    series = iseries()
+    household = user.households.all()[0]
+    ts_monthly = series.getmonthlyseries(household)
+    timeseries_month = series.readseries(ts_monthly)
+    return ts_monthly.id
+    
+    
+def uc_03_2(request):
+    """
+    Sub-template view for consumer use case 3.2.
+    @author: David Walker
+    @date: 06/02/2015
+    """
+    user = request.user
+    ts_monthlyid = tsMonthlyIdFromUser(user)
+    
+    usecase = iusecase(user)
+    c_uc32data = usecase.usecase3_2()
+    
+    data = {
+        "c_uc32data": json.dumps(c_uc32data),
+        "tsid" : ts_monthlyid
+    }
+    
+    variables = RequestContext(request, data)
+    return render_to_response("usecase/inner_c_uc3.2.html", variables)
+
+
+def uc_03_2_compare(request):
+    """
+    Sub-template view for consumer use case 3.2.
+    @author: David Walker
+    @date: 06/02/2015
+    """
+    variables = RequestContext(request, {"tsid" : tsMonthlyIdFromUser(request.user)})
+    return render_to_response("usecase/inner_c_uc3.2_compare.html", variables) 
+
+
+def uc_03_3(request):
+    """
+    Sub-template view for consumer use case 3.3.
+    @author: David Walker
+    @date: 09/02/2015
+    """
+    user = request.user
+    ts_monthlyid = tsMonthlyIdFromUser(user)
+    
+    usecase = iusecase(user)
+    c_uc33data = usecase.usecase3_3()  
+    
+    data = {
+        "c_uc33data" : json.dumps(c_uc33data),
+        "tsid" : ts_monthlyid
+    }
+    
+    variables = RequestContext(request, data)
+    return render_to_response("usecase/inner_c_uc3.3.html", variables)
+
+
+def uc_03_3_compare(request):
+    """
+    Sub-template for consumer use case 3.3.
+    @author: David Walker
+    @date: 09/02/2015
+    """
+    variables = RequestContext(request, {"tsid" : tsMonthlyIdFromUser(request.user)})
+    return render_to_response("usecase/inner_c_uc3.3_compare.html", variables)
+
+
+def uc_05_2(request):
+    """
+    Sub-template for consumer use case 5.2.
+    @author: David Walker
+    @date: 09/02/2015
+    """
+    user = request.user
+    ts_monthlyid = tsMonthlyIdFromUser(user)
+    
+    usecase = iusecase(user)
+    c_uc52data = usecase.usecase5_2()
+    
+    data = {
+        "c_uc52data" : json.dumps(c_uc52data),
+        "tsid" : ts_monthlyid
+    }
+    
+    variables = RequestContext(request, data)
+    return render_to_response("usecase/inner_c_uc5.2.html", variables)
+
+
+def uc_05_3(request):
+    """
+    Sub-template for consumer use case 5.3.
+    @author: David Walker
+    @date: 09/02/2015
+    """
+    user = request.user
+    
+    series = iseries()
+    household = user.households.all()[0]
+    ts_monthly = series.getmonthlyseries(household)
+    timeseries_month = series.readseries(ts_monthly)
+    
+    ts_daily = series.getdailyseries(household)
+    timeseries_daily = series.readseries(ts_daily)
+    
+    c_uc53data = usecase.usecase5_3(user, timeseries_month, timeseries_daily)
+    
+    data = {
+        "c_uc53data" : c_uc53data,
+        "tsid" : ts_monthly.id
+    }
+    
+    variables = RequestContext(request, data)
+    return render_to_response("usecase/inner_c_uc5.3.html", variables)
+    
     
 '''
 TemplateView class for consumer use case 3.2
