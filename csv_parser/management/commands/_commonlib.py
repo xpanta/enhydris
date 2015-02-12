@@ -368,7 +368,6 @@ def create_objects(data, usernames, force, z_names, z_dict):
 
 
 def has_burst(household):
-    print "looking for burst for %s" % household.user.username
     name = household.user.username
     if not name.startswith('GR'):
         return 0, 0
