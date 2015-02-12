@@ -326,7 +326,6 @@ def create_objects(data, usernames, force, z_names, z_dict):
             series = arr
             part_total = 0
             for timestamp, value in series:
-                day1 = timestamp
                 if (latest_ts and latest_ts < timestamp) or (not latest_ts):
                     if not isnan(value):
                         total += value
@@ -354,15 +353,10 @@ def create_objects(data, usernames, force, z_names, z_dict):
                     total = part_total
             try:
                 if not exists or force:
-                    if s and e:
-                        log.debug("*** ADDING SERIES FOR %s (after %s) FOR "
-                                  "USERNAME %s" % (day1.date(), e, username))
                     timeseries.write_to_db(db=db.connection,
                                            transaction=transaction,
                                            commit=True)
                 else:
-                    log.debug("*** APPENDING SERIES FOR %s (after %s) FOR "
-                              "USERNAME %s" % (day1.date(), e, username))
                     timeseries.write_to_db(db=db.connection,
                                            transaction=transaction,
                                            commit=True)
@@ -374,6 +368,7 @@ def create_objects(data, usernames, force, z_names, z_dict):
 
 
 def has_burst(household):
+    print "looking for burst for %s" % household.user.username
     name = household.user.username
     if not name.startswith('GR'):
         return 0, 0
@@ -387,6 +382,10 @@ def has_burst(household):
     _all = []
     for i in range(1, len(timestamps)):
         ts = timestamps[i]
+        if household.user.username == "GR006047" \
+                and ts.year == 2015 and ts.month == 2 and ts.day == 9 \
+                and ts.hour == 17:
+            pass
         prev_ts = timestamps[i-1]
         # if previous value is NaN we don't take this value into consideration
         # Because it might have all consumption of all the previous NaN times

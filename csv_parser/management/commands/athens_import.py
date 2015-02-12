@@ -46,10 +46,12 @@ def process_file(_filename, _path, force):
                 used_meters.append(meter_id)
                 series = initialize_series()  # new meter! Init new series!
             _dt = row[1]
-            consumption = row[3]
-            if not consumption:
-                consumption = 0
-            consumption = float(consumption)
+            try:
+                consumption = float(row[3])
+                if consumption < 0:
+                    continue
+            except ValueError:
+                continue
             if 'Electricity' in meter_id:
                 _type = "Electricity"
             elif 'Water' in meter_id:
