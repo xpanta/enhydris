@@ -68,9 +68,9 @@ function uc33Chart(data)
 }
 $(window).load(function() {
 	
-	var data = jQuery.parseJSON("{{c_uc33data|escapejs}}");	
-	if(data==null)
-		return;	
+	//var data = jQuery.parseJSON("{{c_uc33data|escapejs}}");	
+	//if(data==null)
+	//	return;	
 	
 	//reset form when page refresh
 	formutil.resetForm('#c_uc33-form');
@@ -195,7 +195,9 @@ function c_uc33toggle()
 				$("#uc33").load("loaddata_uc_03_3");
 			}
 		</script>
-		<button onclick="load_uc33('{{ request.user.username }}')" class="btn btn-primary" type="button">View Charts</button>
+		{% if not "PT" in request.user.username %}
+			<button onclick="load_uc33('{{ request.user.username }}')" class="btn btn-primary" type="button">View Charts</button>
+		{% endif %}
 		</form>     
 		</div>
 	 </div>
@@ -267,8 +269,10 @@ function c_uc33toggle()
 
 	<!--  charts and table -->
 	<div class="panel-body" id="panel">
-		<div id="uc33_compare"></div>			
-		<div id="uc33"></div>							
+		<div id="uc33_compare"></div>
+		{% if not "PT" in request.user.username %}			
+			<div id="uc33"></div>
+		{% endif %}							
 	</div>
 	<!--  End charts and table -->	        
 </div>

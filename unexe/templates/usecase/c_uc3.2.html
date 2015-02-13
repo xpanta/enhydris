@@ -169,7 +169,9 @@ function c_uc32disabled()
 				$("#uc32").load("loaddata_uc_03_2");
 			}
 		</script>
-		<button onclick="load_uc32('{{ request.user.username }}')" class="btn btn-primary" type="button">View Charts</button>		
+		{% if not "PT" in user.username %}
+			<button onclick="load_uc32('{{ request.user.username }}')" class="btn btn-primary" type="button">View Charts</button>
+		{% endif %}		
 		</form>     		
 		</div>
 	 </div>
@@ -240,7 +242,9 @@ function c_uc32disabled()
 	<!--  charts and table -->
 	<div class="panel-body" id="panel">
 		<div id="uc32_compare"></div>
-		<div id="uc32"></div>							
+		{% if not "PT" in user.username %}
+			<div id="uc32"></div>
+		{% endif %}							
 	</div>
 	<!--  End charts and table -->	        
 </div>
