@@ -8,7 +8,7 @@ var yearlist = dateutil.getyearlist(parseInt(start),parseInt(end));
 
 function uc52Chart(data)
 {
-	var w = domutil.getdivwidth("c_uc52chartcont"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
+	/*var w = domutil.getdivwidth("c_uc52chartcont"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 	var dim = {"width":w,"height":450}; //width and height of chart container
 	
 	chartutil.c_uc52linechart("#c_uc52chartcont",dim,data["tariff1"],data["tariff2"]);
@@ -44,13 +44,14 @@ function uc52Chart(data)
 	$("#c_uc52t2avg").html("<div class='text-warning'>Average Per Month: £"+data["tariff2data"]["avg"]+"</div");	
 	$("#c_uc52t2high").html("<div class='text-danger'>Highest: £"+data["tariff2data"]["high"]["max"]+" in "+data["tariff2data"]["high"]["date"]+"</div");
 	$("#c_uc52t2low").html("<div class='text-success'>Lowest: £"+data["tariff2data"]["low"]["min"]+" in "+data["tariff2data"]["low"]["date"]+"</div");
+	*/
 }//--end uc52Chart()
 
 $(window).load(function() {
 	
-	var data = jQuery.parseJSON("{{c_uc52data|escapejs}}");
-	if(data==null)
-		return;   
+	//var data = jQuery.parseJSON("{{c_uc52data|escapejs}}");
+	//if(data==null)
+	//	return;   
 	
 	// on page load allways set the default selection to reflect display of chart 
 	$("input[name=c_uc52_per][value='days']").prop('checked', 'checked');
@@ -135,7 +136,12 @@ function c_uc52toggle()
 		<label class="radio inline">
 			<input type="radio" name="c_uc52_per" id="c_uc52_per" value="12" onchange="c_uc52toggle();"/> {% trans "12 Months" %}
 		</label>	
-		<button type="button" class="btn btn-primary" onClick="apputil.sendToserver('#c_uc52-form');">{% trans "Analyse" %}</button>
+		<script>
+			function load_uc52(username) {
+				$("#uc52").load("loaddata_uc_05_2");
+			}
+		</script>
+		<button type="button" class="btn btn-primary" onClick="load_uc52('{{ request.user.username }}')">{% trans "Analyse" %}</button>
 		</form>     
 		</div>
 	 </div>
@@ -201,42 +207,8 @@ function c_uc52toggle()
 	
 	<!--  charts and table -->
 	<div class="panel-body" id="panel">
-        <p id="init_prompt52" style="font-size: 24px; text-align: center; color: #aaa">{% trans "Please, select a period to analyse!" %}</p>
-		<div class="row hide" id="c_uc52container">
-		<div id="c_uc52title"><p class="bg-primary text-center"><strong></strong></p></div>
-		<div class="col-md-6" id="c_uc52chartcont"></div>
-		<div class="col-md-3" id="c_uc52compchart"></div>	  
-		<div class="col-md-3">
-            <strong>* {% trans "You are subscribed to Tariff1" %}</strong>
-		    <div class="panel panel-primary hide" id="panel52_t1">
-		        <div class="panel-heading">{% trans "Tariff1 (Cost Summary)" %}
-		        </div>
-		        <ul class="list-group list-group-flush text-center">
-		        	<li class="list-group-item" id="c_uc52t1sum"></li>
-		            <li class="list-group-item" id="c_uc52t1avg"></li>
-		            <li class="list-group-item" id="c_uc52t1high"></li>
-		            <li class="list-group-item" id="c_uc52t1low"></li>
-		            <li class="list-group-item"><a target="_blank" href="{% url 'timeseries_detail' tsid %}">{% trans "Open time series" %}</a></li>
-		        </ul>
-		    </div>
-
-		    <div class="panel panel-primary hide" id="panel52_t2">
-		        <div class="panel-heading">{% trans "Tariff2 (Cost Summary)" %}
-
-		        </div>
-		        <ul class="list-group list-group-flush text-center">
-		        	<li class="list-group-item" id="c_uc52t2sum"></li>
-		            <li class="list-group-item" id="c_uc52t2avg"></li>
-		            <li class="list-group-item" id="c_uc52t2high"></li>
-		            <li class="list-group-item" id="c_uc52t2low"></li>
-		            <li class="list-group-item"><a target="_blank" href="{% url 'timeseries_detail' tsid %}">{% trans "Open time series" %}</a></li>
-		        </ul>
-		    </div>
-		</div>
-		</div>
-		<div class="row hide c_uc52containe">
-			<div class="col-md-6" id="c_uc52donutchart"></div>
-		</div>			
+		<p id="init_prompt52" style="font-size: 24px; text-align: center; color: #aaa">{% trans "Please, select a period to analyse!" %}</p>
+		<div id="uc52"></div>
 	</div>
 	<!--  End charts and table -->
 </div>
