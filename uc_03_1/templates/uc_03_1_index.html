@@ -146,7 +146,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <select id="c_uc31styear" class="form-control" required="true"></select>
+                        <select id="c_uc31styear" class="form-control" required="true">
+                        {% for yr in yearlist %}
+                            <option value="{{ yr }}">{{ yr }}</option>
+                        {% endfor %}
+                        </select>
                     </div>
                     {% comment %}Translators: Context -> FROM January TO February {% endcomment %}
                     {% trans "TO" %}
@@ -167,7 +171,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <select id="c_uc31endyear" class="form-control" required="true"></select>
+                        <select id="c_uc31endyear" class="form-control" required="true">
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
             </div>
@@ -201,11 +209,19 @@
                 <div class="form-group">
                     <div class="form-group col-md-3">
                         {% comment %}Translators: Context -> FROM January TO February {% endcomment %}
-                        <p>{% trans "From" %}: <select id="c_uc31swyear1from" class="form-control"></select></p>
+                        <p>{% trans "From" %}: <select id="c_uc31swyear1from" class="form-control">
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}
+                        </select></p>
                     </div>
                     <div class="form-group col-md-3">
                         {% comment %}Translators: Context -> FROM January TO February {% endcomment %}
-                        <p>{% trans "To" %}: <select id="c_uc31swyear1to" class="form-control"></select></p>
+                        <p>{% trans "To" %}: <select id="c_uc31swyear1to" class="form-control">
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}
+                        </select></p>
                     </div>
                 </div>
             </div>
@@ -215,11 +231,19 @@
                 <div class="form-group">
                     <div class="form-group col-md-3">
                         {% comment %}Translators: Context -> FROM January TO February {% endcomment %}
-                        <p>{% trans "From" %}: <select id="c_uc31swyear2from" class="form-control"></select></p>
+                        <p>{% trans "From" %}: <select id="c_uc31swyear2from" class="form-control">
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}
+                        </select></p>
                     </div>
                     <div class="form-group col-md-3">
                         {% comment %}Translators: Context -> FROM January TO February {% endcomment %}
-                        <p>{% trans "To" %}: <select id="c_uc31swyear2to" class="form-control"></select></p>
+                        <p>{% trans "To" %}: <select id="c_uc31swyear2to" class="form-control">
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}
+                        </select></p>
                     </div>
                 </div>
             </div>
@@ -246,7 +270,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <select id="c_uc31styear2" class="form-control" required="true"></select>
+                        <select id="c_uc31styear2" class="form-control" required="true">
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     {% comment %}Translators: Context -> FROM January TO February {% endcomment %}
                     {% trans "TO" %}
@@ -267,7 +295,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <select id="c_uc31endyear2" class="form-control" required="true"></select>
+                        <select id="c_uc31endyear2" class="form-control" required="true">
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
             </div>

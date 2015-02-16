@@ -331,13 +331,23 @@ class consumer(TemplateView):
 
         series = iseries()
         ts_monthly = series.getmonthlyseries(household)
+        timeseries_month = series.readseries(ts_monthly)
         ###
-
+        if ts_monthly:
+            ys = series.getstdate(timeseries_month).year
+            ye = series.getendate(timeseries_month).year
+            yearlist = []
+            while ys <= ye:
+                yearlist.append(ys)
+                ys += 1
+        else:
+            yearlist = []
         #end of NTUA use case
         # overview_nrg added by Chris Pantazis
         # to show Energy Consumption in Dashboard
         # Remeber this data dict goes to the dashboard
         data = {
+            "yearlist": yearlist,
             "household": household,
             "overview": values['overview'],
             "overview_nrg": values['overview_nrg'],
@@ -364,7 +374,7 @@ class consumer(TemplateView):
             #monthly series
             ts_monthly = series.getmonthlyseries(household)
             timeseries_month = series.readseries(ts_monthly)
-            
+
             ts_monthlyid = ts_monthly.id
             #daily series
             ts_daily = series.getdailyseries(household)
@@ -505,6 +515,7 @@ class consumer(TemplateView):
                 "checkboxes" : checkboxes,
                 "selects" : selects,
                 "household": household,
+                "yearlist": yearlist,
                 "overview": values['overview'],
                 "overview_nrg": values['overview_nrg'],
                 "has_energy": values['has_energy'],
