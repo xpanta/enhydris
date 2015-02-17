@@ -25,6 +25,7 @@ class Command(BaseCommand):
             out = []
             print "output for {x} users".format(x=len(users))
             for user in users:
+                print "looking for user %s" % user.username
                 household = Household.objects.get(user=user)
                 try:
                     for variable in (VAR_PERIOD, VAR_ENERGY_PERIOD):
