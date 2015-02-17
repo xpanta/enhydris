@@ -332,7 +332,8 @@ def create_objects(data, usernames, force, z_names, z_dict):
                         timeseries[timestamp] = total
                     else:
                         timeseries[timestamp] = float('NaN')
-                elif latest_ts and timestamp <= latest_ts:  # insert
+                elif latest_ts and timestamp <= latest_ts \
+                        and "GR" in username:  # insert but only for Athens
                     # find total consumption till timestamp
                     dates = sorted(timeseries.keys())
                     if not part_total:  # find it
