@@ -403,7 +403,7 @@ def has_burst(household):
 
     if _all and today:
         all1 = np.array(_all)
-        p = np.percentile(all1, 90)
+        p = np.percentile(all1, 95)
         for cons, tm in today:
             if cons > p:
                 return cons, tm
