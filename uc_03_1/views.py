@@ -16,8 +16,9 @@ def compare(request, username):
     # cache_value = cache.get(cache_key)
     # if cache_value is not None:
     #     return cache_value
-    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
-              "Sep", "Oct", "Nov", "Dec"]
+    months = [_("January"), _("February"), _("March"), _("April"), _("May"),
+              _("June"), _("July"), _("August"),
+              _("September"), _("October"), _("November"), _("December")]
     user = request.user
     step = ""
     timeseries1 = timeseries2 = None
