@@ -26,19 +26,19 @@
                     <input type="hidden" name="t" value="{{ user_id }}">
                     <div class="form-group" style="margin-top: 40px">
                         <label class="col-md-4 control-label">{% trans "First Name" %}: </label>
-                        <div class="col-md-6"><input class="form-control" placeholder="First name..." name="first" id="first" type="text" value="{{ first }}" required="true"></div>
+                        <div class="col-md-6"><input class="form-control" placeholder="{% trans 'First name' %}..." name="first" id="first" type="text" value="{{ first }}" required="true"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-4 control-label">{% trans "Last Name" %}: </label>
-                        <div class="col-md-6"><input class="form-control" placeholder="Last name..." name="last" id="last" type="text" value="{{ last }}" required="true"></div>
+                        <div class="col-md-6"><input class="form-control" placeholder="{% trans 'Last name' %}..." name="last" id="last" type="text" value="{{ last }}" required="true"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-4 control-label">{% trans "Email" %}: </label>
-                        <div class="col-md-6"><input class="form-control" placeholder="(in case you forget your password...)" name="email" id="email" type="email" value="{{ email }}" required="true"></div>
+                        <div class="col-md-6"><input class="form-control" placeholder="({% trans 'in case you forget your password' %}...)" name="email" id="email" type="email" value="{{ email }}" required="true"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-4 control-label">{% trans "Occupants in your Household" %}: *</label>
-                        <div class="col-md-6"><input class="form-control" placeholder="Number of occupants..." name="nocc" id="nocc" type="text" value="{{ nocc }}" required="true"></div>
+                        <div class="col-md-6"><input class="form-control" placeholder="{% trans 'Number of occupants' %}..." name="nocc" id="nocc" type="text" value="{{ nocc }}" required="true"></div>
                     </div>
                     <p class="text-warning text-center">{% trans "Required" %} (*)</p>
                     <div class="form-group">

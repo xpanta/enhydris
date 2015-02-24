@@ -107,7 +107,7 @@
                         </table>
                     </div>
                     <p>
-                        <em>(*)  m&#179; {% trans " is 1000 litres" %}</em>
+                        <em>(*) 1 m&#179; {% trans " is 1000 litres" %}</em>
                     </p>
                     <p>
                         <em>(**) {%  trans "The presented information corresponds to previous period of the same length, e.g. previous day, week, month, year" %}</em>
@@ -158,7 +158,6 @@
                                 <th>{% trans "Measurement Period" %}</th>
                                 <th>{% trans "Consumption This Period" %}</th>
                                 <th>{% trans "Consumption Previous Period (**)" %}</th>
-                                <th>{% trans "Current Target" %} (***)</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -166,33 +165,21 @@
                                 <td style="font-weight: bold">{% trans "Current Day" %}</td>
                                 <td>{{ overview_nrg.today|floatformat:2 }} Wh</td>
                                 <td>{{ overview_nrg.yesterday|floatformat:2 }} Wh</td>
-                                <td>
-                                    {{ overview_nrg.current_target_day }} Wh
-                                </td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold">{% trans "Current Week" %}</td>
                                 <td>{{ overview_nrg.current_week|floatformat:2 }} Wh</td>
                                 <td>{{ overview_nrg.last_week|floatformat:2 }} Wh</td>
-                                <td>
-                                    {{ overview_nrg.current_target_week }} Wh
-                                </td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold">{% trans "Current Month" %} (*)</td>
                                 <td>{{ overview_nrg.current_month|floatformat:2 }} Wh</td>
                                 <td>{{ overview_nrg.last_month|floatformat:2 }} Wh</td>
-                                <td>
-                                    {{ overview_nrg.current_target_month }} Wh
-                                </td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold">{% trans "Current Year" %} (*)</td>
                                 <td>{{ overview_nrg.current_year|floatformat:2 }} Wh;</td>
                                 <td>{{ overview_nrg.last_year|floatformat:2 }} Wh</td>
-                                <td>
-                                    {{ overview_nrg.current_target_year }} Wh
-                                </td>
                             </tr>
                             </tbody>
                         </table>

@@ -55,7 +55,7 @@ def event_history(request, username):
 
 @login_required
 def user_events(request, username):
-    f = request.GET.get("f", "all")
+    f = request.GET.get("f", "new")
     _id = request.GET.get("hide", "")
     if _id:
         try:

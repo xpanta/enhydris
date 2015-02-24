@@ -19,6 +19,7 @@ import os
 import binascii
 from sso.common import encrypt_and_hash_pwd
 from datetime import datetime
+from django.utils import translation
 
 
 def sso_redirect(request):
@@ -68,6 +69,15 @@ def sso_redirect(request):
             #log.debug("text is %s" % text)
             username = text.split("|")[0]
             username = username.replace('@', '')
+            if 'PT' in username:
+                user_language = 'pt'
+            elif 'GR' in username:
+                user_language = 'el'
+            else:
+                user_language = 'en'
+            translation.activate(user_language)
+            # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+            request.LANGUAGE_CODE = translation.get_language()
             log.debug("username is %s" % username)
             user = User.objects.get(username=username)
             user.backend = 'django.contrib.auth.backends.ModelBackend'

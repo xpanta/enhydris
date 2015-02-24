@@ -181,21 +181,21 @@ def compare(request, username):
         _str = _("Resolution chart")
         smart_text(_str, encoding='utf-8')
         if start == end:
-            title = "{x} {s} {y}"\
-                .format(x=step.title(), y=start, s=_str.encode('utf-8'))
+            title = "{s} {y}"\
+                .format(y=start, s=_str.encode('utf-8'))
         else:
-            title = "{x} {s} {z} - {y}"\
-                .format(x=step.title(), z=start, y=end, s=_str.encode('utf-8'))
+            title = "{s} {z} - {y}"\
+                .format(z=start, y=end, s=_str.encode('utf-8'))
         if start2 and end2:
             total_dict2, night_dict2, day_dict2, summer_dict2, \
                 winter_dict2 = get_chart_data(household, dates, units, step,
                                               view, start2, end2)
             if start2 == end2:
-                title2 = "{x} {s} {y}" \
-                    .format(x=step.title(), y=start2, s=_str)
+                title2 = "{s} {y}" \
+                    .format(y=start2, s=_str)
             else:
-                title2 = "{x} {s} {z} - {y}" \
-                    .format(x=step.title(), z=start2, y=end2, s=_str)
+                title2 = "{s} {z} - {y}" \
+                    .format(z=start2, y=end2, s=_str)
         tdk = total_dict.keys()
         if total_dict2:
             tdk2 = total_dict2.keys()

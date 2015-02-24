@@ -29,13 +29,14 @@
                          -->
                 {% trans "Number of Occupants" %}: {{household.num_of_occupants}}
                 | {% trans "Property type" %}:
-                {%  if household.property_type == "Detached " %}
+
+                {%  if household.property_type.descr == "Detached" %}
                     {% trans "Detached" %}
-                {% elif household.property_type == "Semi Detached" %}
+                {% elif household.property_type.descr == "Semi Detached" %}
                     {% trans "Semi Detached" %}
-                {% elif household.property_type == "Flat" %}
+                {% elif household.property_type.descr == "Flat" %}
                     {% trans "Flat" %}
-                {% elif household.property_type == "Tenament" %}
+                {% elif household.property_type.descr == "Tenament" %}
                     {% trans "Tenament" %}
                 {% endif %}
                 <hr/>
@@ -46,7 +47,9 @@
             <div class="panel-heading"><div class="panel-title">{% trans "SUBSCRIPTION" %}</div></div>
             <div class="panel-body">
                 {% trans "Water Tariff: Tariff1" %}<br/>{% trans "Rate: Fixed rate with Volumetric charge" %}<hr/>
-                {% trans "Energy Tariff: Night Saver Rate: 3.25/Unit" %}
+                {% if has_energy %}
+                    {% trans "Energy Tariff: Night Saver Rate: 3.25/Unit" %}
+                {% endif %}
             </div>
         </div>
         <div class="panel panel-default">
