@@ -72,7 +72,7 @@ def sso_redirect(request):
             if 'PT' in username:
                 user_language = 'pt'
             elif 'GR' in username:
-                user_language = 'pt'
+                user_language = 'el'
             else:
                 user_language = 'en'
             translation.activate(user_language)

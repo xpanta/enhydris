@@ -193,10 +193,10 @@ def compare(request, username):
                                               view, start2, end2)
             if start2 == end2:
                 title2 = "{s} {y}" \
-                    .format(y=start2, s=_str)
+                    .format(y=start2, s=_str.encode('utf-8'))
             else:
                 title2 = "{s} {z} - {y}" \
-                    .format(z=start2, y=end2, s=_str)
+                    .format(z=start2, y=end2, s=_str.encode('utf-8'))
         tdk = total_dict.keys()
         if total_dict2:
             tdk2 = total_dict2.keys()
