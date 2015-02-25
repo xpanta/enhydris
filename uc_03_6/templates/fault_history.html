@@ -11,6 +11,8 @@
         <div class="row">
             <div class="col-md-7">
                 <p class="text-center"><strong>{% trans "Your Fault Consumption History" %}</strong></p>
+                <p class="text-center">{% trans "Nightly consumption 3:00-05:00" %}</p>
+
                 <div class="table-responsive">
                     <table class="table table-condensed table-striped table-hover">
                         <thead class="bg-primary">
@@ -18,7 +20,7 @@
                             <th>{% trans "Date detected" %}</th>
                             <th>{% trans "Time of event" %}</th>
                             <th>{% trans "Event Type" %}</th>
-                            <th>{% trans "Fault Consumption" %}</th>
+                            <th>{% trans "Fault Consumption" %} ({% trans "litres" %})</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -43,7 +45,7 @@
                                     {% if event.notification == "burst" %}
                                         {{ event.consumption }}
                                     {% else %}
-                                        n/a
+                                        {{ event.consumption }}
                                     {% endif %}
 
                                 </td>
