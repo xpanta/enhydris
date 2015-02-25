@@ -264,8 +264,8 @@ def compare(request, username):
                 cons_table_data.append(arr)
             if "monthly" in step:
                 d_time = datetime.strptime(dt, "%Y/%m")
-                txt = "%s of %s" % (months[d_time.month-1],
-                                    str(d_time.year))
+                txt = "%s %s" % (months[d_time.month-1],
+                                 str(d_time.year))
                 arr = [txt, val]
                 if view == "day_night":
                     arr.append(night_dict[dt])
@@ -317,8 +317,8 @@ def compare(request, username):
                     cons_table_data2.append(arr)
                 if "monthly" in step:
                     d_time = datetime.strptime(dt, "%Y/%m")
-                    txt = "%s of %s" % (months[d_time.month-1],
-                                        str(d_time.year))
+                    txt = "%s %s" % (months[d_time.month-1],
+                                     str(d_time.year))
                     arr = [txt, val]
                     if view == "day_night":
                         arr.append(night_dict2[dt])

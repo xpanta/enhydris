@@ -72,12 +72,13 @@ def sso_redirect(request):
             if 'PT' in username:
                 user_language = 'pt'
             elif 'GR' in username:
-                user_language = 'el'
+                user_language = 'pt'
             else:
                 user_language = 'en'
             translation.activate(user_language)
-            # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
             request.LANGUAGE_CODE = translation.get_language()
+            request.session['django_language'] = user_language
+            # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
             log.debug("username is %s" % username)
             user = User.objects.get(username=username)
             user.backend = 'django.contrib.auth.backends.ModelBackend'
