@@ -1,4 +1,4 @@
-__author__ = 'chris'
+__author__ = 'Chris Pantazis'
 from django.core.management.base import BaseCommand, CommandError
 from ftplib import FTP, all_errors
 from fnmatch import fnmatch
@@ -135,14 +135,17 @@ class Command(BaseCommand):
                 user_filename = None
                 custom_date = datetime.strptime(value, "%Y-%m-%d")
                 today = custom_date
+                target = datetime.today()
                 _path = "data/ags/"
                 all_files = sorted(listdir(_path))
-                _date = "TM%s%02d%02d" % (str(today.year)[2:],
-                                          today.month, today.day)
-                _pattern = _date + "*"
-                for f_name in all_files:
-                    if fnmatch(f_name, _pattern):
-                        new_files.append(f_name)
+                while today <= target:
+                    _date = "TM%s%02d%02d" % (str(today.year)[2:],
+                                              today.month, today.day)
+                    _pattern = _date + "*"
+                    for f_name in all_files:
+                        if fnmatch(f_name, _pattern):
+                            new_files.append(f_name)
+                    today += timedelta(days=1)
         except IndexError:
             user_filename = ""
             custom_date = ""
@@ -204,12 +207,12 @@ class Command(BaseCommand):
                             i = find_nth(line, "|", 3)
                             line = line[0:i]
                             data = line.split('|')
+                            username = data[0]
+                            if not username == "83924":
+                                continue
+                            data[0] = "IWDEMO"
                             z = 1
-                            if '_2.' in _filename:
-                                z = 2
-                            elif '_3.' in _filename:
-                                z = 3
-                            z_dict['PT%s' % data[0]] = "Portugal water %s" % z
+                            z_dict['PT%s' % data[0]] = "Portugal water 1"
                             # Some files are corrupt. Reading stops in
                             # the middle of the line. We keep only the lines
                             # which have meter id, date and consumption values

@@ -139,7 +139,7 @@ def create_user(identifier, m_id):
         """ in case of the standard householder SSO APP (ie hhApp)
             we create a more complex password. Otherwise we keep the easy one.
         """
-        if SSO_APP == "hhApp" and identifier != "GRIWDEMO":
+        if SSO_APP == "hhApp" and "DEMO" not in identifier:
             u.profile.fname = u.first_name
             u.profile.lname = u.last_name
             u.profile.save()
