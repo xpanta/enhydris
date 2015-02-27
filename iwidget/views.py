@@ -1128,7 +1128,7 @@ def dashboard_view(request, household_id=None):
             'display_sum': True, 'time_span': 'year', 'is_vector': False,
             'has_stats': True, 'can_zoom': True, 'has_info_box': True,
             'display_lastvalue': True,
-            'initial_display': False,
+            'initial_display': True,
             'main_timeseries_id': ts_monthly.id, 'occupancy': nocc,
             'has_pie': 2,
             'span_options': [],
