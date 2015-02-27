@@ -57,6 +57,7 @@ def get_chart_data(household, dates, units, step, view, start, end):
             _("Sat"), _("Sun")]
     total_dict = {}
     day_dict = {}
+    nulls = []
     night_dict = {}
     hh = ihousehold()
     for x in range(0, len(dates)):
@@ -78,6 +79,7 @@ def get_chart_data(household, dates, units, step, view, start, end):
             consumption = float(units[x])
             if isnan(consumption):
                 consumption = 0
+                nulls.append(key)
             try:
                 total_dict[key] += consumption
             except KeyError:  # if not there, put it!
@@ -144,4 +146,4 @@ def get_chart_data(household, dates, units, step, view, start, end):
                 # This way dict values are sorted correctly and added to a list
                 # for the chart to be displayed correctly.
 
-    return total_dict, night_dict, day_dict, summer_dict, winter_dict
+    return total_dict, night_dict, day_dict, summer_dict, winter_dict, nulls

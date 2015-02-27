@@ -91,7 +91,11 @@ def statistics_on_daily(ts_daily, occupancy = 1):
         ADDED YESTERDAY's CONSUMPTION VALUE BY CHRIS PANTAZIS
     """
     try:
-        result['yesterday'] = timeseries[today-timedelta(days=1)]*1000.0
+        yesterday = timeseries[today-timedelta(days=1)]*1000.0
+        if math.isnan(yesterday):
+            result['yesterday'] = 0
+        else:
+            result['yesterday'] = yesterday
     except KeyError:
         result['yesterday'] = 0
     """
@@ -138,7 +142,6 @@ def statistics_on_daily(ts_daily, occupancy = 1):
         timeseries,
         today.replace(day=1),
         today)
-    result['current_month_m3'] = round(result['current_month'] / 1000, 2)
     result['current_month_last_year'] = aggregate_period(
         timeseries,
         _dec_year(today.replace(day=1)),
@@ -163,12 +166,13 @@ def statistics_on_daily(ts_daily, occupancy = 1):
         result['current_year'])
     result['last_year_cost'] = monthly_cost_from_consumption(
         result['last_year'])
+    cc = monthrange(today.year, today.month)
     daily_consumption = occupancy * TARGET_CONSUMPTION
     result['target_daily'] = daily_consumption * 1000.0
     result['target_weekly'] = daily_consumption * 7.0 * 1000.0
-    result['target_month'] = daily_consumption * today.day
-    result['target_year'] = daily_consumption * ((today - 
-            today.replace(month=1, day=1)).days + 1)
+    result['target_month'] = daily_consumption * int(cc[1]) * 1000.0
+    #result['target_year'] = daily_consumption * ((today - today.replace(month=1, day=1)).days + 1)
+    result['target_year'] = daily_consumption * 365 * 1000.0
     """
         CODE ADDED BY Chris Pantazis at 07/08/2014
         NEXT FRAGMENT ADDS DICTIONARY ENTRIES FOR TARGET
@@ -185,26 +189,26 @@ def statistics_on_daily(ts_daily, occupancy = 1):
     weekly_max = []
     monthly_max = []
     yearly_max = []
-    cc = monthrange(today.year, today.month)
     _type = ts_daily.variable.id
     if _type == 6:
         targets = targets_nrg  # For Energy consumption we have other targets
     for t in targets:
         daily_max.append(t * occupancy)
         weekly_max.append(t * 7 * occupancy)
-        monthly_max.append(t * int(cc[1]) * 80 * occupancy)
+        monthly_max.append(t * int(cc[1]) * occupancy)
         yearly_max.append(t * 365 * occupancy)
 
     cdc = result["today"]
     cwc = result["current_week"]
-    cmc = result["current_month"]
-    cyc = result["current_year"]
+    cmc = result["current_month"] * 1000.0
+    cyc = result["current_year"] * 1000.0
 
     ctd = result['current_target_day'] = get_next_target(cdc, daily_max)
     ctw = result['current_target_week'] = get_next_target(cwc, weekly_max)
     ctm = result['current_target_month'] = get_next_target(cmc, monthly_max)
-    result['current_target_month_m3'] = round(ctm / 1000, 2)
+    result['current_target_month_m3'] = round(float(ctm) / 1000.0, 2)
     cty = result['current_target_year'] = get_next_target(cyc, yearly_max)
+    result['current_target_year_m3'] = round(float(cty) / 1000.0, 2)
 
     result['today_lpd'] = get_lpd_arr(ctd, daily_max)
     result['current_week_lpd'] = get_lpd_arr(ctw, weekly_max)
@@ -313,11 +317,11 @@ def energy_statistics_on_daily(ts_daily, occupancy = 1):
     result['last_year_cost'] = monthly_cost_from_consumption(
             result['last_year'], rate=KWH_FLAT_RATE)
     daily_consumption = occupancy * TARGET_ENERGY_CONSUMPTION
+    cc = monthrange(today.year, today.month)
     result['target_daily'] = daily_consumption
     result['target_weekly'] = daily_consumption * 7.0
-    result['target_month'] = daily_consumption * today.day
-    result['target_year'] = daily_consumption * ((today - 
-            today.replace(month=1, day=1)).days + 1)
+    result['target_month'] = daily_consumption * cc[1]
+    result['target_year'] = daily_consumption * 365
     cache.set(cache_key, result, 600)
     return result
 

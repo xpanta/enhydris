@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 #from django.views.decorators.cache import cache_page
-from math import isnan
 from lib.common import get_chart_data
 from django.utils.translation import ugettext as _
 from django.utils.encoding import smart_text
@@ -177,8 +176,8 @@ def compare(request, username):
                             end2 = datetime.strptime(end_date2,
                                                      "%Y-%m-%d").date()
         total_dict, night_dict, day_dict, summer_dict, \
-            winter_dict = get_chart_data(household, dates, units, step,
-                                         view, start, end)
+            winter_dict, nulls = get_chart_data(household, dates, units, step,
+                                                view, start, end)
         _str = _("Resolution chart")
         smart_text(_str, encoding='utf-8')
         if start == end:
@@ -189,8 +188,8 @@ def compare(request, username):
                 .format(z=start, y=end, s=_str.encode('utf-8'))
         if start2 and end2:
             total_dict2, night_dict2, day_dict2, summer_dict2, \
-                winter_dict2 = get_chart_data(household, dates, units, step,
-                                              view, start2, end2)
+                winter_dict2, nulls2 = get_chart_data(household, dates, units,
+                                                      step, view, start2, end2)
             if start2 == end2:
                 title2 = "{s} {y}" \
                     .format(y=start2, s=_str.encode('utf-8'))
@@ -228,6 +227,8 @@ def compare(request, username):
                 key_dates2 = key_dates2[-80:]
         for dt in key_dates:
             val = float(total_dict[dt])
+            if dt in nulls:
+                val = -1
             if step != "monthly":
                 val *= 1000
             total_data.append([x, val])
@@ -236,13 +237,16 @@ def compare(request, username):
             if view == 'day_night':
                 nv = night_dict[dt]
                 dv = day_dict[dt]
+                night_total += nv
+                day_total += dv
+                if dt in nulls:
+                    nv = -1
+                    dv = -1
                 if step != "monthly":
                     nv *= 1000
                     dv *= 1000
                 night_data.append([x, nv])
                 day_data.append([x, dv])
-                night_total += nv
-                day_total += dv
             elif view == 'summer_winter':
                 summer_data.append([x, summer_dict[dt]])
                 winter_data.append([x, winter_dict[dt]])
@@ -286,16 +290,26 @@ def compare(request, username):
         if key_dates2:
             for dt in key_dates2:
                 val = float(total_dict2[dt])
+                if dt in nulls2:
+                    val = -1
                 if step != "monthly":
                     val *= 1000
                 total_data2.append([x, val])
                 if val > max_val2:
                     max_val2 = val
                 if view == 'day_night':
-                    night_data2.append([x, night_dict2[dt]])
-                    day_data2.append([x, day_dict2[dt]])
-                    night_total2 += night_dict2[dt]
-                    day_total2 += day_dict2[dt]
+                    nv = night_dict2[dt]
+                    dv = day_dict2[dt]
+                    night_total2 += nv
+                    day_total2 += dv
+                    if dt in nulls2:
+                        nv = -1
+                        dv = -1
+                    if step != "monthly":
+                        nv *= 1000
+                        dv *= 1000
+                    night_data2.append([x, nv])
+                    day_data2.append([x, dv])
                 elif view == 'summer_winter':
                     summer_data2.append([x, summer_dict2[dt]])
                     winter_data2.append([x, winter_dict2[dt]])

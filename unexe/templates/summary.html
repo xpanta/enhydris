@@ -75,7 +75,7 @@
                                 </tr>
                                 <tr>
                                     <td style="font-weight: bold">{% trans "Current Month" %} (*)</td>
-                                    <td>{{ overview.current_month_m3|floatformat:2 }} m&#179;</td>
+                                    <td>{{ overview.current_month|floatformat:2 }} m&#179;</td>
                                     <td>{{ overview.last_month_m3|floatformat:2 }} m&#179;</td>
                                     <td>
                                         {{ overview.current_target_month_m3 }} m&#179;
@@ -93,7 +93,7 @@
                                     <td>{{ overview.current_year|floatformat:2 }} m&#179;</td>
                                     <td>{{ overview.last_year|floatformat:2 }} m&#179;</td>
                                     <td>
-                                        {{ overview.current_target_year }} m&#179;
+                                        {{ overview.current_target_year_m3 }} m&#179;
                                     </td>
                                     <td>
                                         {% for v in overview.current_year_lpd %}

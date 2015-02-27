@@ -510,14 +510,14 @@ def household_view(request, household_id=None):
             'period_unit': 'hour',
             'period_from': 3,
             'period_to': 5,
-            'default_period': 'Nightly consumption 3:00-05:00',
-            'alternate_period': 'Daily consumption 04:01-24:59'},
+            'default_period': _('Nightly consumption 3:00-05:00'),
+            'alternate_period': _('Daily consumption 04:01-24:59')},
         2: {'timeseries_id': ts_monthly.id,
             'period_unit': 'month',
             'period_from': 5,
             'period_to': 9,
-            'default_period': 'Summer consumption (May-September)',
-            'alternate_period': 'Winter consumption (October-April)'}
+            'default_period': _('Summer consumption (May-September)'),
+            'alternate_period': _('Winter consumption (October-April)')}
     }
     if ts_daily_energy:
         # There are energy time series, add them to pies
@@ -526,14 +526,14 @@ def household_view(request, household_id=None):
                 'period_unit': 'hour',
                 'period_from': 3,
                 'period_to': 5,
-                'default_period': 'Nightly consumption 3:00-05:00',
-                'alternate_period': 'Daily consumption 04:01-24:59'},
+                'default_period': _('Nightly consumption 3:00-05:00'),
+                'alternate_period': _('Daily consumption 04:01-24:59')},
             4: {'timeseries_id': ts_monthly_energy.id,
                 'period_unit': 'month',
                 'period_from': 5,
                 'period_to': 9,
-                'default_period': 'Summer consumption (May-September)',
-                'alternate_period': 'Winter consumption (October-April)'}
+                'default_period': _('Summer consumption (May-September)'),
+                'alternate_period': _('Winter consumption (October-April)')}
         })
 
     js_data = {
@@ -1425,14 +1425,14 @@ def dashboard_view(request, household_id=None):
             'period_unit': 'hour',
             'period_from': 3,
             'period_to': 5,
-            'default_period': 'Nightly consumption 3:00-05:00',
-            'alternate_period': 'Daily consumption 04:01-24:59'},
+            'default_period': _('Nightly consumption 3:00-05:00'),
+            'alternate_period': _('Daily consumption 04:01-24:59')},
         2: {'timeseries_id': ts_monthly.id,
             'period_unit': 'month',
             'period_from': 5,
             'period_to': 9,
-            'default_period': 'Summer consumption (May-September)',
-            'alternate_period': 'Winter consumption (October-April)'}
+            'default_period': _('Summer consumption (May-September)'),
+            'alternate_period': _('Winter consumption (October-April)')}
     }
     if has_energy:
         pies.update({
@@ -1440,14 +1440,14 @@ def dashboard_view(request, household_id=None):
                 'period_unit': 'hour',
                 'period_from': 3,
                 'period_to': 5,
-                'default_period': 'Nightly consumption 3:00-05:00',
-                'alternate_period': 'Daily consumption 04:01-24:59'},
+                'default_period': _('Nightly consumption 3:00-05:00'),
+                'alternate_period': _('Daily consumption 04:01-24:59')},
             4: {'timeseries_id': ts_monthly_nrg.id,
                 'period_unit': 'month',
                 'period_from': 5,
                 'period_to': 9,
-                'default_period': 'Summer consumption (May-September)',
-                'alternate_period': 'Winter consumption (October-April)'}
+                'default_period': _('Summer consumption (May-September)'),
+                'alternate_period': _('Winter consumption (October-April)')}
         })
 
     js_data = {

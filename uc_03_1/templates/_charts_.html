@@ -35,14 +35,34 @@
                         {{ d.0 }}
                     </td>
                     <td>
-                        {{ d.1|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                        {% if d.1 >= 0 %}
+                            {{ d.1|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
                     {% if view == "day_night"  %}
                         <td>
-                            {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                            {% if d.1 >= 0 %}
+                                {% if d.3 >= 0 %}
+                                    {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                         <td>
-                            {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                            {% if d.1 >= 0 %}
+                                {% if d.2 >= 0 %}
+                                    {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                     {% endif %}
                 </tr>
@@ -75,14 +95,34 @@
                             {{ d.0 }}
                         </td>
                         <td>
-                            {{ d.1|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                            {% if d.1 >= 0 %}
+                                {{ d.1|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                         {% if view == "day_night"  %}
                             <td>
-                                {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                                {% if d.1 >= 0 %}
+                                    {% if d.3 >= 0 %}
+                                        {{ d.3|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                             <td>
-                                {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                                {% if d.1 >= 0 %}
+                                    {% if d.2 >= 0 %}
+                                        {{ d.2|floatformat:2 }} {% if "cost" in step %} &euro; {% else %} {{ unit|safe }} {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                         {% endif %}
                     </tr>
@@ -105,6 +145,32 @@
 </div>
 <script>
     var previousPoint = null;
+    var total_data_nulls = {{ total_data }};
+    var total_data_nulls2 = {{ total_data2 }};
+    var night_data_nulls = {{ night_data }};
+    var day_data_nulls = {{ day_data }};
+
+    for (var i = 0; i < total_data_nulls.length; i++){
+        if (parseFloat(total_data_nulls[i][1]) < 0){
+            total_data_nulls[i][1] = null;
+        }
+    }
+    for (i = 0; i < total_data_nulls2.length; i++){
+        if (parseFloat(total_data_nulls2[i][1]) < 0){
+            total_data_nulls2[i][1] = null;
+        }
+    }
+    for (i = 0; i < night_data_nulls.length; i++){
+        if (parseFloat(night_data_nulls[i][1]) < 0){
+            night_data_nulls[i][1] = null;
+        }
+    }
+    for (i = 0; i < day_data_nulls.length; i++){
+        if (parseFloat(day_data_nulls[i][1]) < 0){
+            day_data_nulls[i][1] = null;
+        }
+    }
+
     $.fn.UseTooltip = function () {
         $(this).bind("plothover", function (event, pos, item) {
             if (item) {
@@ -238,7 +304,7 @@
 
         {% if total_data2 %}
             $.plot("#placeholder2", [
-                { label: total_label, data: {{ total_data2 }} },
+                { label: total_label, data: total_data_nulls2 },
                 {% if view == 'day_night' %}
                     { label: night_label, data: {{ night_data2 }} },
                     { label: day_label, data: {{ day_data2 }} }
@@ -281,10 +347,10 @@
             {% endif %}
 
         $.plot("#placeholder", [
-            { label: total_label, data: {{ total_data }} },
+            { label: total_label, data: total_data_nulls },
             {% if view == 'day_night' %}
-                { label: night_label, data: {{ night_data }} },
-                { label: day_label, data: {{ day_data }} }
+                { label: night_label, data: night_data_nulls },
+                { label: day_label, data: day_data_nulls }
             {% endif %}
             ],
             {
