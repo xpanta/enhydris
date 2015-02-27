@@ -77,9 +77,14 @@ def get_chart_data(household, dates, units, step, view, start, end):
                 yr = str(dates[x].date().year)
                 key = "%s/%s/%s" % (yr, mo, day)
             consumption = float(units[x])
+            # I don't check for NaNs in monthly graphs because
+            # it is not easy. I need to have a way to count how many of them
+            # they are
             if isnan(consumption):
                 consumption = 0
-                nulls.append(key)
+                if 'monthly' not in step:
+                    if key not in nulls:
+                        nulls.append(key)
             try:
                 total_dict[key] += consumption
             except KeyError:  # if not there, put it!
