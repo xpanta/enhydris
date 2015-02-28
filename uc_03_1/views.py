@@ -222,9 +222,9 @@ def compare(request, username):
         x = 0
         # Prepare chart data to be displayed and the x-axis labels
         if step == "15min":
-            key_dates = key_dates[-80:]
+            key_dates = key_dates[-96:]
             if key_dates2:
-                key_dates2 = key_dates2[-80:]
+                key_dates2 = key_dates2[-96:]
         for dt in key_dates:
             val = float(total_dict[dt])
             if dt in nulls:
