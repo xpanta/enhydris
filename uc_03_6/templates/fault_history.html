@@ -1,5 +1,6 @@
 {% load sekizai_tags %}
 {% load i18n %}
+{% load uc3_6tags %}
 <div class="panel panel-default">
     <!-- chart menu/toolbar -->
     <div class="panel-heading clearfix" id="">
@@ -26,7 +27,7 @@
                         <tbody>
                         {% for event in events %}
                             <tr>
-                                <td>{{ event.detected|date:"d M y" }}</td>
+                                <td>{{ event.detected|yesterday|date:"d M y" }}</td>
                                 <td>
                                     {% if event.notification == "burst" %}
                                         {{ event.event_time }}
@@ -43,9 +44,9 @@
                                 </td>
                                 <td>
                                     {% if event.notification == "burst" %}
-                                        {{ event.consumption }}
+                                        {{ event.consumption|floatformat:2 }}
                                     {% else %}
-                                        {{ event.consumption }}
+                                        {{ event.consumption|floatformat:2 }}
                                     {% endif %}
 
                                 </td>
