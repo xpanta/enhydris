@@ -39,7 +39,7 @@ def event_history(request, username):
             d = dates[i].date()
             t = dates[i].time()
             if d == yesterday.date():
-                if night_start <= t.hour <= night_end:  # day
+                if night_start <= t.hour <= night_end:  # night
                     night_cons += units1[i]
                 else:  # day
                     day_cons += units1[i]

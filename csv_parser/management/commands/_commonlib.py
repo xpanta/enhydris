@@ -369,6 +369,59 @@ def create_objects(data, usernames, force, z_names, z_dict):
 
 
 def has_burst(household):
+    """
+    We won't be using this algorithm any more
+    :param household:
+    :return:
+    """
+    name = household.user.username
+    if not name.startswith('GR'):
+        return 0, 0
+    timeseries = household \
+        .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                        variable__id=VAR_PERIOD)
+    series = TSeries(id=timeseries.id)
+    series.read_from_db(db.connection)
+    timestamps = sorted(series.keys())
+    today = []  # all today's values
+    daily_maxes = {}
+    for i in range(1, len(timestamps)):
+        ts = timestamps[i]
+        prev_ts = timestamps[i-1]
+        date = ts.date()
+        # if previous value is NaN we don't take this value into consideration
+        # Because it might have all consumption of all the previous NaN times
+        val = series[ts]
+        prev_val = series[prev_ts]
+        if isnan(prev_val):
+            continue
+        if i < len(timestamps) - 100:
+            if not isnan(val) and not val == 0:
+                daily_max = daily_maxes.get(date, 0)
+                if val > daily_max:
+                    daily_maxes[date] = val
+        else:
+            tm = "%s-%s-%s %s:%s" % (ts.year, ts.month, ts.day,
+                                     ts.time().hour, ts.time().minute)
+            if not isnan(val) and not val == 0:
+                today.append((val, tm))
+
+    if daily_maxes and today:
+        maxes = np.array(daily_maxes.values())
+        p = np.percentile(maxes, 90)
+        for cons, tm in today:
+            if cons > p:
+                return cons, tm
+    return 0, 0
+
+
+
+def has_burst_old(household):
+    """
+    We won't be using this algorithm any more
+    :param household:
+    :return:
+    """
     name = household.user.username
     if not name.startswith('GR'):
         return 0, 0
