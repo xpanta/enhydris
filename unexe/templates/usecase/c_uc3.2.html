@@ -184,7 +184,11 @@ function c_uc32disabled()
 			<option value="autumn">Autumn</option>
 			<option value="spring">Spring</option>			
 			</select>
-			<select id="c_uc32_seasonyear" class="form-control" required="true"></select>	 				 	
+			<select id="c_uc32_seasonyear" class="form-control" required="true">
+                {% for yr in yearlist %}
+                    <option value="{{ yr }}">{{ yr }}</option>
+                {% endfor %}
+            </select>
 	 	</div>		 
 		<div class="form-inline col-md-6 hide" id="c_uc32_daterange">
 		 	<div class="form-group">
@@ -204,7 +208,11 @@ function c_uc32disabled()
 			</select>
 			</div>
 			<div class="form-group">
-			<select id="c_uc32styear" class="form-control" required="true"></select>			
+			<select id="c_uc32styear" class="form-control" required="true">
+                {% for yr in yearlist %}
+                    <option value="{{ yr }}">{{ yr }}</option>
+                {% endfor %}
+            </select>
 			</div>
 			TO
 		 	<div class="form-group">
@@ -224,7 +232,11 @@ function c_uc32disabled()
 			</select>
 			</div>		
 		 	<div class="form-group">
-			<select id="c_uc32endyear" class="form-control" required="true"></select>
+			<select id="c_uc32endyear" class="form-control" required="true">
+                {% for yr in yearlist %}
+                    <option value="{{ yr }}">{{ yr }}</option>
+                {% endfor %}
+            </select>
 			</div>					
 		 <!-- 
 			 <div class="form-group col-md-3">

@@ -476,7 +476,7 @@ def has_leakage(household):
     if name == "GR059E35":
         pass
     if name.startswith('GB'):  # not UK because they send daily data
-        return 0
+        return 0, 0
     timeseries = household \
         .timeseries.get(time_step__id=TSTEP_HOURLY,
                         variable__id=VAR_PERIOD)
@@ -538,12 +538,15 @@ def has_leakage(household):
         if total > 0 and night > 0 and not isnan(total) and not isnan(night):
             _today.append(float(night) / float(total))
     if _all and _today:
+        ts = timestamps[-1]
+        tm = "%s-%s-%s %s:%s" % (ts.year, ts.month, ts.day,
+                                 ts.time().hour, ts.time().minute)
         all1 = np.array(_all)
         p = np.percentile(all1, 90)
         for val in _today:
             if val > p:
-                return val
-    return 0
+                return val, tm
+    return 0, 0
 
 
 def calc_occupancy(timeseries, household):
@@ -791,14 +794,15 @@ def process_data(data, usernames, force, z_names, zone_dict):
         for household in households:
             #log.info("Processing ts records for household %s" % household)
             process_household(household)
-            cons = has_leakage(household)
+            cons, _time = has_leakage(household)
             if cons:
                 today = datetime.today()
                 yesterday = today - timedelta(days=1)
                 UserNotifications.objects.get_or_create(user=household.user,
                                                         notification="leakage",
                                                         detected=yesterday,
-                                                        consumption=cons * 1000)
+                                                        consumption=cons * 1000,
+                                                        event_time=_time)
             cons, _time = has_burst(household)
             if cons:
                 today = datetime.today()

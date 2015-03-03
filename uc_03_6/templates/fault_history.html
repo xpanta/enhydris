@@ -19,7 +19,6 @@
                         <thead class="bg-primary">
                         <tr>
                             <th>{% trans "Date detected" %}</th>
-                            <th>{% trans "Date of event" %}</th>
                             <th>{% trans "Event Type" %}</th>
                             <th>{% trans "Fault Consumption" %} ({% trans "litres" %})</th>
                         </tr>
@@ -27,7 +26,6 @@
                         <tbody>
                         {% for event in events %}
                             <tr>
-                                <td>{{ event.detected|date:"d M y" }}</td>
                                 <td>
                                     {% if event.notification == "burst" %}
                                         {{ event.event_time }}
