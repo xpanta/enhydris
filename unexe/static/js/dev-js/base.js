@@ -2291,8 +2291,12 @@ function AppUtil()
 					alert("No data is available for analysis");
 					return;
 				}
-				
-				domutil.removeCssclass("#c_uc33cont","hide"); //make chart container visible 
+
+				var tr_title1b = data["title1"]; //translated title from unexe/views.py:734 (Chris Pantazis)
+				var tr_title2b = data["title2"]; //translated title from unexe/views.py:734 (Chris Pantazis)
+				var tr_title3b = data["title3"]; //translated title from unexe/views.py:734 (Chris Pantazis)
+				var tr_title4b = data["title4"]; //translated title from unexe/views.py:734 (Chris Pantazis)
+				domutil.removeCssclass("#c_uc33cont","hide"); //make chart container visible
 				$("#c_uc33chartcont").empty(); //clear previous chart
 				$("#c_uc33donutchart").empty(); //clear previous chart
 				$("#c_uc33title").empty();
@@ -2309,17 +2313,17 @@ function AppUtil()
 				//area
 				
 				var household = data["area"]["areadata"]["household"];
-				$("#c_uc33household").html("<div class='text-muted'>Total Units Consumed for household: "+household+" m<sup>3</sup></div>");
+				$("#c_uc33household").html("<div class='text-muted'>" + tr_title1b +": "+household+" m<sup>3</sup></div>");
 				
 				var occupant = data["area"]["areadata"]["occupant"];
-				$("#c_uc33occupant").html("<div class='text-muted'>Units consumed per occupant: "+occupant+" m<sup>3</sup></div>");				
+				$("#c_uc33occupant").html("<div class='text-muted'>" + tr_title2b +": "+occupant+" m<sup>3</sup></div>");
 				
 				//household
 				household = data["you"]["yourdata"]["household"];
-				$("#c_uc33hhold").html("<div class='text-primary'>Total Units Consumed for household: "+household+" m<sup>3</sup></div>");
+				$("#c_uc33hhold").html("<div class='text-primary'>" + tr_title3b +": "+household+" m<sup>3</sup></div>");
 
 				occupant = data["you"]["yourdata"]["occupant"];
-				$("#c_uc33occup").html("<div class='text-primary'>Units consumed per occupant: "+occupant+" m<sup>3</sup></div>");				
+				$("#c_uc33occup").html("<div class='text-primary'>" + tr_title4b +": "+occupant+" m<sup>3</sup></div>");
 				/*
 				if(dataObj.period=="season")
 				{

@@ -994,7 +994,11 @@ class c_uc33(TemplateView):
         else:
             #data["donutchart"] = donutchart
             data["comparechart"] = comparechart
-        
+            data["title1"] = _("Total Units Consumed for household")
+            data["title2"] = _("Units consumed per occupant")
+            data["title3"] = _("Total Units Consumed for household")
+            data["title4"] = _("Units consumed per occupant")
+
                     
         return HttpResponse(json.dumps(data),content_type='application/javascript')
         
