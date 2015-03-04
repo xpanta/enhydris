@@ -38,26 +38,6 @@ def sso_redirect(request):
     token = request.GET.get('t')
     log = logging.getLogger(__name__)
     if token:
-        #http://iwidget.up-ltd.co.uk/core/sso/auth/?t=8A-6B-80-B7-D8-87-CC-EE-2D-58-1B-72-08-F6-7F-20-BC-FB-CE-5D-C8-6B-76-43-F0-C1-8A-15-15-68-85-7C-1E-98-7D-E2-F7-D4-AF-61-ED-62-D3-3C-F6-67-8B-10-DE-7C-73-48-74-65-34-F8-A4-B2-65-1A-B9-9E-32-FE
-        #superuser token:
-        #http://localhost:8000/core/sso/auth/?t=94-66-FC-83-3F-28-95-F6-06-E2-A6-BA-85-57-B0-D4-7E-F6-C6-D7-CF-28-7B-17-20-B6-5A-9F-6E-98-18-87-10-8A-2A-C7-F7-2C-17-9C-51-C9-DD-41-0F-FA-92-10-01-53-5B-FA-0C-50-F2-E9-E4-71-A6-A3-25-EB-B7-BC
-        # empty as of 23/10 user 059E14?
-        #http://localhost:8000/core/sso/auth/?t=44-28-E7-A5-4B-ED-D8-1E-8B-95-4C-E9-9E-05-79-FA-79-82-15-63-3C-D4-DA-71-92-52-8C-AD-A4-18-76-25-B7-15-26-66-20-DE-9C-9E-52-A4-03-2A-3F-3C-D3-D7-5B-01-01-A1-18-CE-27-3A-93-5B-2B-89-71-77-FB-3E
-        # 006063
-        #http://localhost:8000/core/sso/auth/?t=BC-7A-AF-90-AC-D6-60-18-35-BD-A2-96-AB-6A-18-B1-8C-F4-65-21-50-F6-6A-CF-7D-1F-59-DF-8C-0E-5F-2F-C0-67-45-A7-59-A9-36-9A-46-58-7D-29-FA-92-57-6E-40-90-86-B6-34-2E-A9-21-9B-B7-38-14-68-EC-14-1A
-        #log.debug("Received token %s" % token)
-        # 0062702 (old - no energy)
-        #http://localhost:8000/core/sso/auth/?t=C8-2A-CD-F8-A3-5D-02-6F-B0-3E-1C-78-05-52-76-83-88-8E-BC-E7-8E-78-C0-36-A5-1E-0A-7C-F1-A5-11-C5-79-2A-66-04-E2-A2-91-55-4D-F5-E5-BA-26-7B-6D-11-D1-E6-34-A1-AB-4D-2F-1A-F4-27-61-B6-43-AA-34-F7
-        # 006047
-        #http://localhost:8000/core/sso/auth/?t=AD-FD-EC-11-F2-BF-3E-A9-23-16-A9-E7-9A-72-8B-33-EB-A7-64-F3-AB-35-0D-D2-A2-69-2A-4E-28-77-92-B4-D6-0F-45-65-02-1A-AD-2D-77-B5-78-82-18-78-F1-E4-2D-ED-B3-B6-38-16-71-E5-27-F0-12-02-4C-83-E8-4A
-        # GR059E35 (leakage?)
-        #http://localhost:8000/core/sso/auth/?t=B4-3D-FE-6F-AC-E0-65-66-7A-57-74-3B-A3-6E-10-19-28-9B-A0-2D-53-93-71-65-C3-FA-BE-1E-53-9E-A7-5E-00-B4-56-78-C7-06-25-81-83-72-D8-75-7B-3F-D2-71-25-0A-60-4F-00-48-CA-49-32-E3-51-33-39-88-57-47
-        #dev
-        #http://localhost:8000/core/sso/auth/?t=82-66-CA-F3-1A-38-D6-F7-35-6B-11-05-47-B1-7B-4C-CF-F0-80-DD-D8-69-E3-0B-63-9F-B3-9F-ED-0F-17-15-91-81-59-E1-11-C0-3B-2D-82-34-06-0F-1A-BB-05-FE-E2-61-23-32-F0-7F-1F-E6-80-8F-8B-3D-1C-84-20-45
-        #GR059E34
-        #http://localhost:8000/core/sso/auth/?t=C6-F6-3C-1F-21-1B-E3-50-55-50-86-F3-71-E1-FB-25-E9-48-8C-3C-1A-B4-E2-1D-D8-82-87-EF-F0-18-15-C1-60-FE-F3-2B-4A-AC-99-8A-23-15-73-9E-3A-EE-8C-04-34-38-BD-BC-4A-BC-80-17-BA-DA-F8-1D-20-13-EB-D4
-        #PTIWDEMO
-        #http://localhost:8000/core/sso/auth/?t=17-28-E9-7D-F7-CF-06-0B-12-59-7E-C9-A5-DD-AC-D7-43-94-D2-D1-DC-BD-7D-6B-9E-72-44-C1-F6-D3-DE-D6-9C-9D-A4-54-B1-EF-87-44-D6-1A-10-D7-F9-15-05-DB-AD-2C-4B-11-EA-EC-07-B4-A4-22-1D-77-D1-36-C5-FF
         xml = xml.strip()
         xml = xml.replace("##TOKEN##", token)
         url = "https://services.up-ltd.co.uk/cryptoservice_iwidget/service.asmx"

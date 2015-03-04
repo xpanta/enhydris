@@ -213,7 +213,7 @@
     {% if view == 'summer_winter' %}
         $.plot("#placeholder", [
                 { label: "{% trans 'Summer Consumption' %} ({{ unit|safe }})", data: [ [1, {{ summer_total|floatformat:2 }}] ] },
-                { label: " {% trans 'Winter Consumption' %} ({{ unit|safe }})", data: [ [2, {{ winter_total|floatformat:2 }}] ] }
+                { label: "{% trans 'Winter Consumption' %} ({{ unit|safe }})", data: [ [2, {{ winter_total|floatformat:2 }}] ] }
             ],
             {
                 series: {

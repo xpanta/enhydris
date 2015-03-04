@@ -12,14 +12,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            _range = args[0]
+            code = args[0]
         except IndexError:
-            print "Please, provide a user id range"
+            print "Please, provide a country code id range"
             return
-        _min = _range.split('-')[0]
-        _max = _range.split('-')[1]
         try:
-            users = User.objects.filter(id__gte=_min, id__lte=_max)\
+            users = User.objects.filter(username__contains=code)\
                 .order_by("username")
             out = []
             for user in users:
