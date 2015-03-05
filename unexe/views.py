@@ -768,7 +768,16 @@ class c_uc32(TemplateView):
     #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         #donutchart=[{"label":"You"   , "value":"", "color":"#80B1D3"},{"label":"Area" , "value":"", "color":"#C0C0C0"}]
-        comparechart=[{"Units":"","Data":"Area"},{"Units":"","Data":"You"}]
+        comparechart=[
+            {
+                "Units": "",
+                "Data": _("Area")
+            },
+            {
+                "Units": "",
+                "Data": _("You")
+            }
+        ]
         compare = iutility.getPostValue("compare",request)
         year    = iutility.getPostValue("year",request)
         period  = iutility.getPostValue("period",request)        
@@ -874,6 +883,11 @@ class c_uc32(TemplateView):
             data["title2"] = _("Units consumed per occupant")
             data["title3"] = _("Total Units Consumed for household")
             data["title4"] = _("Units consumed per occupant")
+            data["area_label"] = _("Area")
+            data["data_label"] = _("Data")
+            data["you_label"] = _("You")
+            data["units_label"] = _("Units")
+            data["date_label"] = _("Date")
 
         #print data["comparechart"]            
         return HttpResponse(json.dumps(data),content_type='application/javascript')
@@ -886,8 +900,28 @@ class c_uc33(TemplateView):
 
     #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
-        donutchart=[{"label":_("You"), "value":"", "color":"#80B1D3"},{"label":_("Area") , "value":"", "color":"#C0C0C0"}]
-        comparechart=[{"Units":"","Data":"Area"},{"Units":"","Data":"You"}]
+        donutchart=[
+            {
+                "label": "You",
+                "value": "",
+                "color": "#80B1D3"
+            },
+            {
+                "label": "Area",
+                "value": "",
+                "color": "#C0C0C0"
+            }
+        ]
+        comparechart = [
+            {
+                "Units": "",
+                "Data": _("Area")
+            },
+            {
+                "Units": "",
+                "Data": _("You")
+            }
+        ]
         compare = iutility.getPostValue("compare",request)
         year    = iutility.getPostValue("year",request)
         period  = iutility.getPostValue("period",request)        
@@ -998,6 +1032,11 @@ class c_uc33(TemplateView):
             data["title2"] = _("Units consumed per occupant")
             data["title3"] = _("Total Units Consumed for household")
             data["title4"] = _("Units consumed per occupant")
+            data["area_label"] = _("Area")
+            data["data_label"] = _("Data")
+            data["you_label"] = _("You")
+            data["units_label"] = _("Units")
+            data["date_label"] = _("Date")
 
                     
         return HttpResponse(json.dumps(data),content_type='application/javascript')

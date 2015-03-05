@@ -958,9 +958,9 @@ function ChartUtil()
         });	 		
 	}
 	
-	this.c_uc33comparechart = function(id,dim,data)
+	this.c_uc33comparechart = function(id,dim,server_data)
 	{
-	    
+		var data = server_data["comparechart"];
 		var start = 0;
 		var end   = 10;
 		var h 	  = data[0]["Units"];
@@ -982,7 +982,6 @@ function ChartUtil()
 		y.showGridlines = true;
 	    y.tickFormat = ',.2f';  
 	    y.title = "Units (m3)";
-		
 		//x.overrideMin = 0;
 		//x.overrideMax = 5;
 		//y.tickFormat = '%';
@@ -991,18 +990,20 @@ function ChartUtil()
 		//y.showPercent = true
 		chart.addLegend(65, 10, dim.width-margin.right, 20, "right");
 		
-		var s1  = chart.addSeries(["Units", "Data"], dimple.plot.bar);
+		var s1  = chart.addSeries([server_data["units_label"], server_data["data_label"]], dimple.plot.bar);
 		//var s2 = chart.addSeries("Price Break", dimple.plot.line);
 		//s2.data = price_break;
-		chart.assignColor("Area", "#C0C0C0")
+		chart.assignColor(server_data["area_label"], "#C0C0C0");
 		chart.draw(1500);
-		
+		x.titleShape.text(server_data["data_label"]);
+		y.titleShape.text(server_data["units_label"]);
+
 	    /*Change tooltip data*/
 	    s1.getTooltipText = function (e) {
 	    	var parser   = d3.time.format("%b-%Y");
             return [
-                "Units: " + e.y +" m3",
-                "Data: "+ e.x
+                server_data["units_label"] + ": " + e.y +" m3",
+                server_data["data_label"] + ": "+ e.x
             ];
         };
         
@@ -1172,40 +1173,42 @@ function ChartUtil()
 	 * 
 	 */
 
-	this.c_uc33linechart = function(id,dim,data1,data2)
+	this.c_uc33linechart = function(id,dim,server_data)
 	{
+		var data1 = server_data["you"]["data"];
+		var data2 = server_data["area"]["data"];
 		var margin = {top: 30, right: 80, bottom: 110, left: 60};
 	    var keys = Object.keys(data1[0]);
 	    var xcord = keys[0];
 	    var ycord = keys[1];
 	    var svg = dimple.newSvg(id, dim.width, dim.height);
-	    var parser = d3.time.format("%Y-%m-%d")
-	    
+	    var parser = d3.time.format("%Y-%m-%d");
+
 	    var dateReader = function (d) { return parser.parse(d[xcord]); }
 	    var start = d3.time.day.offset(d3.min(data1, dateReader), -5);
 	    var end = d3.time.day.offset(d3.max(data1, dateReader), 15);
 
 	    var myChart = new dimple.chart(svg,data1);
-	    myChart.setBounds(margin.left,margin.top,dim.width-margin.right,dim.height-margin.bottom);     	
-	    
-    	var x = myChart.addTimeAxis("x", xcord, "%Y-%m-%d","%b %Y");
-	    
+	    myChart.setBounds(margin.left,margin.top,dim.width-margin.right,dim.height-margin.bottom);
+
+    	var x = myChart.addTimeAxis("x", xcord, "%Y-%m-%d","%m/%Y");
+
 	    x.overrideMin = start;
 	    x.overrideMax = end;
 	    x.addOrderRule(xcord);
 	    x.showGridlines = true;
 	    x.timePeriod = d3.time.months;
 	    x.floatingBarWidth = dim.width/data1.length/2;
-	    x.title = "Date";
-	    
+	    x.title = server_data["date_label"]
+
 	    var y = myChart.addMeasureAxis("y", ycord);
 	    y.showGridlines = true;
-	    y.tickFormat = ',.2f';  
-	    y.title = "Units (m3)";
-	    
-	    var s1 = myChart.addSeries("You", dimple.plot.line);
-	    var s2 = myChart.addSeries("Area", dimple.plot.line);
-	    
+	    y.tickFormat = ',.2f';
+	    y.title = server_data['units_label'] + " (m3)";
+
+	    var s1 = myChart.addSeries(server_data["you_label"], dimple.plot.line);
+	    var s2 = myChart.addSeries(server_data["area_label"], dimple.plot.line);
+
 	    s1.lineMarkers = true;
 	    s1.lineWeight = 3;
 	    s1.lineMarkers = true;
@@ -1214,33 +1217,35 @@ function ChartUtil()
 
 	    s2.lineMarkers = true;
 	    s2.lineWeight = 3;
-	    s2.lineMarkers = true;	    
-	    
+	    s2.lineMarkers = true;
+
 		myChart.addLegend(65,10,dim.width-margin.right,20,"right");
-		
-	    myChart.assignColor("Area", "#C0C0C0");
+
+	    myChart.assignColor(server_data["area_label"], "#C0C0C0");
 	    //myChart.assignColor("Area", "#8E35EF");
-	    
-	    myChart.draw(1500);    
-	    
+
+	    myChart.draw(1500);
+		x.titleShape.text(server_data["data_label"]);
+		y.titleShape.text(server_data["units_label"]);
+
 	    /*Change tooltip data*/
 	    s1.getTooltipText = function (e) {
 	    	var parser   = d3.time.format("%b-%Y");
             return [
-                "Date: "+ parser(new Date(e.x)),
-                "Units: " + e.y+ " m3",
-                "Data: "+ e.aggField[0]
+                server_data["date_label"] + ": "+ parser(new Date(e.x)),
+                server_data["units_label"] + ": " + e.y+ " m3",
+                server_data["data_label"] + ":" + e.aggField[0]
             ];
         };
 
 	    s2.getTooltipText = function (e) {
 	    	var parser   = d3.time.format("%b-%Y");
             return [
-                "Date: "+ parser(new Date(e.x)),
-                "Units: " + e.y+ " m3",
-                "Data: "+ e.aggField[0]                
+				server_data["date_label"] + ": "+ parser(new Date(e.x)),
+				server_data["units_label"] + ": " + e.y+ " m3",
+				server_data["data_label"] + ":" + e.aggField[0]
             ];
-        };		    
+        };
 	}
 	
 	/* This method create line chart for the consumer use case 3.4
@@ -2054,11 +2059,11 @@ function AppUtil()
 				}
 				*/
 				//draw line chart
-				chartutil.c_uc33linechart("#c_uc32chartcont",dim,data["you"]["data"],data["area"]["data"]);
+				chartutil.c_uc33linechart("#c_uc32chartcont", dim, data);
 				//draw donut chart
 				var w = domutil.getdivwidth("c_uc32donutchart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 				var dim = {"width":w,"height":450}; //width and height of chart container
-				chartutil.c_uc33comparechart("#c_uc32donutchart",dim,data["comparechart"]);				
+				chartutil.c_uc33comparechart("#c_uc32donutchart", dim, data);
 				
 				
 				/*
@@ -2366,12 +2371,12 @@ function AppUtil()
 				areachart = jQuery.parseJSON(areachart);
 				*/
 				//draw line chart
-				chartutil.c_uc33linechart("#c_uc33chartcont",dim,data["you"]["data"],data["area"]["data"]);
+				chartutil.c_uc33linechart("#c_uc33chartcont",dim, data);
 				//chartutil.c_uc33linechart("#c_uc33chartcont",dim,youchart,areachart);
 				//draw donut chart
 				var w = domutil.getdivwidth("c_uc33donutchart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 				var dim = {"width":w,"height":450}; //width and height of chart container
-				chartutil.c_uc33comparechart("#c_uc33donutchart",dim,data["comparechart"]);				
+				chartutil.c_uc33comparechart("#c_uc33donutchart",dim,data);
 				//chartutil.c_uc52donutchart("#c_uc33donutchart",dim,data["donutchart"]);				
 				
 			}
