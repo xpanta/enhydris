@@ -275,20 +275,26 @@ class gethousehold(TemplateView):
             return HttpResponse(json.dumps(-1),content_type='application/javascript')
         
 
-
 #this class return serialize json object to be process by client side (browser)
 class updatehousehold(TemplateView):
     template_name = "dashboard.html"
 
     def post(self, request):
-        if request.user.is_authenticated(): #only update user if authenticated
-            whousehold = ihousehold() #household class object
-            qs      = iutility.getPostqs(request)    #get quertystring
-            values  = dict(urlparse.parse_qsl(qs)) #parse qs values into dictonary      
-            return HttpResponse(json.dumps(whousehold.updatehousehold(request.user,values)),content_type='application/javascript')
-        else:   #otherwise return -1 to show unexpected error message
-            print "request.user.is_authenticated(): FALSE"
-            return HttpResponse(json.dumps(-1),content_type='application/javascript')
+        if request.user.is_authenticated():  # only update user if authenticated
+            whousehold = ihousehold()  # household class object
+            qs = iutility.getPostqs(request)  # get quertystring
+            values = dict(urlparse.parse_qsl(qs))  # parse qs values into dictonary
+            if whousehold.updatehousehold(request.user, values):
+                ans = _("Your household profile has updated successfully")
+            else:
+                ans = _("There was an error. Please contact the Administrator")
+            return HttpResponse(json.dumps(ans),
+                                content_type='application/javascript')
+        else:  # otherwise return -1 to show unexpected error message
+            # print "request.user.is_authenticated(): FALSE"
+            ans = _("You are not authorised to update data")
+            return HttpResponse(ans,
+                                content_type='application/javascript')
 
 
 #Template class for super user profile and password update

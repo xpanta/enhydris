@@ -990,7 +990,7 @@ function ChartUtil()
 		//y.showPercent = true
 		chart.addLegend(65, 10, dim.width-margin.right, 20, "right");
 		
-		var s1  = chart.addSeries([server_data["units_label"], server_data["data_label"]], dimple.plot.bar);
+		var s1  = chart.addSeries(["Units", "Data"], dimple.plot.bar);
 		//var s2 = chart.addSeries("Price Break", dimple.plot.line);
 		//s2.data = price_break;
 		chart.assignColor(server_data["area_label"], "#C0C0C0");
@@ -1869,15 +1869,16 @@ function AppUtil()
 			}//--end profile-form logic	
 			else if(id==iwidgetutil.householdform) //if matched household form id
 			{
-				var status = ajaxutil.postAjax(this.createjson(id),formutil.getAction(id)); //send data to server
-				if(status==true) {
-					this.showmessage(iwidgetutil.householdmsg, successclass, "Your household profile has updated successfully");
-					this.showmessage(iwidgetutil.householdmsg2, successclass, "Your household profile has updated successfully");
-				}
-				else {
-					this.showmessage(iwidgetutil.householdmsg, dangerclass, iwidgetutil.unexpectederror);
-					this.showmessage(iwidgetutil.householdmsg2, dangerclass, iwidgetutil.unexpectederror);
-				}
+				var answer = ajaxutil.postAjax(this.createjson(id),formutil.getAction(id)); //send data to server
+				this.showmessage(iwidgetutil.householdmsg, successclass, answer);
+				//if(status==true) {
+				//	this.showmessage(iwidgetutil.householdmsg, successclass, "Your household profile has updated successfully");
+				//	this.showmessage(iwidgetutil.householdmsg2, successclass, "Your household profile has updated successfully");
+				//}
+				//else {
+				//	this.showmessage(iwidgetutil.householdmsg, dangerclass, iwidgetutil.unexpectederror);
+				//	this.showmessage(iwidgetutil.householdmsg2, dangerclass, iwidgetutil.unexpectederror);
+				//}
 			}//--end household-form
 			else if(id==iwidgetutil.c_uc53form) //if matched forecast form id
 			{
