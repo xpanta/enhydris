@@ -69,7 +69,7 @@ def process_file(_filename, _path, force):
                     series[_type].append(t)
                 meter_data[meter_id] = series
                 # when we create a HH we need a new username
-                username = "GB" + meter_id
+                username = "GBA" + meter_id
                 usernames[meter_id] = username
         z_names = ["UK water"]
         process_data(meter_data, usernames, force, z_names, {})
