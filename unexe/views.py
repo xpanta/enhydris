@@ -858,9 +858,11 @@ class c_uc32(TemplateView):
         elif period == "days": #if period is defined in range
             stdate = iutility.getPostValue("stdate",request)
             endate = iutility.getPostValue("endate",request)
-            if stdate == endate:
+            s = datetime.datetime.strptime(stdate, "%Y-%m-%d")
+            e = datetime.datetime.strptime(endate, "%Y-%m-%d")
+            if s == e:
                 data["error"] = _("Dates should not be equal")
-            elif stdate < endate:
+            elif e < s:
                 data["error"] = _("Second date should be later than first date")
             else:
                 data["you"] = hhold.getperiodstats(user,stdate,endate)
