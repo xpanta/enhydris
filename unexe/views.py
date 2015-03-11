@@ -239,13 +239,18 @@ class updateuser(TemplateView):
     template_name = "dashboard.html"
 
     def post(self, request):
-        if request.user.is_authenticated(): #only update user if authenticated
-            qs     = iutility.getPostqs(request)    #get quertystring
-            values  = dict(urlparse.parse_qsl(qs)) #parse qs values into dictonary
+        if request.user.is_authenticated():  # only update user if authenticated
+            qs = iutility.getPostqs(request)   # get quertystring
+            values = dict(urlparse.parse_qsl(qs))  # parse qs values into dictonary
             wuser = iuser()
-            return HttpResponse(json.dumps(wuser.updateuser(request.user,values)),content_type='application/javascript')
-        else:   #otherwise return -1 to show unexpected error message
-            return HttpResponse(json.dumps(-1),content_type='application/javascript')
+            if wuser.updateuser(request.user, values):
+                ans = _("Your data has been updated, successfully")
+            else:
+                ans = _("There was an error. Please contact the Administrator")
+        else:
+            ans = _("You are not authorised to update data")
+        return HttpResponse(json.dumps(ans),
+                            content_type='application/javascript')
 
 #this class return serialize json object to be process by client side (browser)
 class getuser(TemplateView):
@@ -293,7 +298,7 @@ class updatehousehold(TemplateView):
         else:  # otherwise return -1 to show unexpected error message
             # print "request.user.is_authenticated(): FALSE"
             ans = _("You are not authorised to update data")
-            return HttpResponse(ans,
+            return HttpResponse(json.dumps(ans),
                                 content_type='application/javascript')
 
 
@@ -815,22 +820,26 @@ class c_uc32(TemplateView):
          #create pandas Series (time series using two different list for timeseries data analysis
         pdf = pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
         pdf.index.name = "dates"
-        data = {}
-
-        if period=="season":
+        data = {"error": ""}
+        if period == "season":
             data["you"]  = hhold.getseasonusage(user,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
             data["area"] = d.getseasonusage(household_dma,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
                 comparechart[0]["Units"] = data["area"]["areadata"]["household"]                    
-        elif period=="days": #if period is defined in range
-            stdate       = iutility.getPostValue("stdate",request)
-            endate       = iutility.getPostValue("endate",request)
-            data["you"]  = hhold.getperiodstats(user,stdate,endate)
-            data["area"] = d.getperiodstats(household_dma,stdate,endate)
-            if data["you"] and data["area"]:                        
-                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
-                comparechart[0]["Units"] = data["area"]["areadata"]["household"]                                
+        elif period == "days": #if period is defined in range
+            stdate = iutility.getPostValue("stdate",request)
+            endate = iutility.getPostValue("endate",request)
+            if stdate == endate:
+                data["error"] = _("Dates should not be equal")
+            elif stdate < endate:
+                data["error"] = _("Second date should be later than first date")
+            else:
+                data["you"] = hhold.getperiodstats(user,stdate,endate)
+                data["area"] = d.getperiodstats(household_dma,stdate,endate)
+                if data["you"] and data["area"]:
+                    comparechart[1]["Units"] = data["you"]["yourdata"]["household"]
+                    comparechart[0]["Units"] = data["area"]["areadata"]["household"]
         else:
             data["you"]  = hhold.getmonthlyusage(user,int(period))
             data["area"] = d.getmonthlyusage(household_dma,int(period))
@@ -880,20 +889,17 @@ class c_uc32(TemplateView):
             comparechart[0]["Units"] = b["household"]
                       
         '''            
-        if not data["you"] or not data["area"]:
-            data = None
-        else:
-            #data["donutchart"] = donutchart
-            data["comparechart"] = comparechart
-            data["title1"] = _("Total Units Consumed for household")
-            data["title2"] = _("Units consumed per occupant")
-            data["title3"] = _("Total Units Consumed for household")
-            data["title4"] = _("Units consumed per occupant")
-            data["area_label"] = _("Area")
-            data["data_label"] = _("Data")
-            data["you_label"] = _("You")
-            data["units_label"] = _("Units")
-            data["date_label"] = _("Date")
+        #data["donutchart"] = donutchart
+        data["comparechart"] = comparechart
+        data["title1"] = _("Total Units Consumed for household")
+        data["title2"] = _("Units consumed per occupant")
+        data["title3"] = _("Total Units Consumed for household")
+        data["title4"] = _("Units consumed per occupant")
+        data["area_label"] = _("Area")
+        data["data_label"] = _("Data")
+        data["you_label"] = _("You")
+        data["units_label"] = _("Units")
+        data["date_label"] = _("Date")
 
         #print data["comparechart"]            
         return HttpResponse(json.dumps(data),content_type='application/javascript')

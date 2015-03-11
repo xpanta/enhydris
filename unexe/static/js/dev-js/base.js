@@ -17,7 +17,7 @@ function IwidgetUtil()
 	this.dashboard 	   = "dashboard";
 	this.household 	   = "household";
 	this.getuser   	   = "getuser";
-	this.gethousehold  = "gethousehold";
+	this.gethousehold  = "gethouseho";
 	this.getforecast   = "getforecast";
 	this.getcompare    = "getcompare";
 	this.ukcsconfirm   = "ukcsregistrationconfirm";
@@ -1861,12 +1861,10 @@ function AppUtil()
 			}//--end password-form logic
 			else if(id==iwidgetutil.profileform) //if matched profile form id
 			{				
-				var status = ajaxutil.postAjax(this.createjson(id),formutil.getAction(id)); //send data to server
-				if(status==true)
-					this.showmessage(iwidgetutil.profilemsg,successclass,"Your profile has updated successfully");
-				else
-					this.showmessage(iwidgetutil.profilemsg,dangerclass,iwidgetutil.unexpectederror);					
-			}//--end profile-form logic	
+				var answer = ajaxutil.postAjax(this.createjson(id),formutil.getAction(id)); //send data to server
+					this.showmessage(iwidgetutil.profilemsg,successclass, answer);
+					//this.showmessage(iwidgetutil.profilemsg,dangerclass,iwidgetutil.unexpectederror);
+			}//--end profile-form logic
 			else if(id==iwidgetutil.householdform) //if matched household form id
 			{
 				var answer = ajaxutil.postAjax(this.createjson(id),formutil.getAction(id)); //send data to server
@@ -1967,19 +1965,6 @@ function AppUtil()
 					dataObj.endate = $("#c_uc32endyear").val()+"-"+$("#c_uc32endmonth").val()+"-01"; //at the server side get the last day of the month (Python)
 					var s = dateutil.strtodate(dataObj.stdate);
 					var e = dateutil.strtodate(dataObj.endate);
-					if(s > e)
-					{
-						this.showmessage(iwidgetutil.c_uc32msg,dangerclass,"Date One should not be greater than Date Two");
-						return;
-					}
-					else if(dateutil.isequal(s,e))
-					{
-						this.showmessage(iwidgetutil.c_uc32msg,dangerclass,"Dates should not be equal");
-						return;
-					}
-					else
-						""
-						
 				}//--end if
 				else if(dataObj.period=="season")
 				{
@@ -2004,11 +1989,10 @@ function AppUtil()
 					
 				}
 				
-				var data  = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
-				if(data==null)
-				{
-					alert("No data is available for analysis");
-					//domutil.addCssclass("#c_uc33cont","show");
+				data  = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
+				var error = data["error"];
+				if (error){
+					this.showmessage(iwidgetutil.c_uc32msg, dangerclass, error);
 					return;
 				}
 				var tr_title1 = data["title1"]; //translated title from unexe/views.py:734 (Chris Pantazis)
@@ -2186,7 +2170,6 @@ function AppUtil()
 					else if(dateutil.isequal(s,e))
 					{
 						this.showmessage(iwidgetutil.c_uc52msg,dangerclass,"Dates should not be equal");
-						alert("Dates should not be equal");
 						return;
 					}
 					else
@@ -2198,7 +2181,7 @@ function AppUtil()
 					dataObj.seasonyear = $("#c_uc52_seasonyear").val();
 				}//--end if
 					
-				var data 	 = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
+				var data = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
 				if(data==null)
 				{
 					//this.showmessage(iwidgetutil.c_uc52msg,dangerclass,"No data is available for this period");

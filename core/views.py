@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, Http404, HttpResponse
@@ -158,7 +159,7 @@ def reset_form(request):
                                                sso=True,
                                                popup=False)
                 if status:
-                    subject = "iWIDGET: New Password Request!"
+                    subject = _("iWIDGET: New Password Request!")
                     to = [user.email]
                     from_email = 'no-reply@iwidget.up-ltd.co.uk'
                     ctx = {
@@ -173,8 +174,8 @@ def reset_form(request):
                     msg.send()
                     messages.add_message(request,
                                          messages.ERROR,
-                                         "We have send you an email with your "
-                                         "new password. Thank you!")
+                                         _("We have send you an email with your "
+                                           "new password. Thank you!"))
                     return HttpResponseRedirect(reverse("reset_form"))
                 else:
                     messages.add_message(request,
@@ -185,14 +186,14 @@ def reset_form(request):
             else:
                 messages.add_message(request,
                                      messages.ERROR,
-                                     "This email has not been registered! "
-                                     "Please contact the system administrator "
-                                     "if the issue persists.")
+                                     _("This email has not been registered! "
+                                       "Please contact the system administrator "
+                                       "if the issue persists."))
                 return HttpResponseRedirect(reverse("reset_form"))
         else:
             messages.add_message(request,
                                  messages.ERROR,
-                                 "Please, provide a valid email address")
+                                 _("Please, provide a valid email address"))
             return HttpResponseRedirect(reverse("reset_form"))
 
 
@@ -250,19 +251,19 @@ def user_profile(request):
                 else:
                     messages.add_message(request,
                                          messages.ERROR,
-                                         "Please, provide the number of "
-                                         "occupants in your house")
+                                         _("Please, provide the number of "
+                                           "occupants in your house"))
                     return HttpResponseRedirect(reverse("user_profile"))
             else:
                 messages.add_message(request,
                                      messages.ERROR,
-                                     "Please, provide a valid email "
-                                     "address")
+                                     _("Please, provide a valid email "
+                                       "address"))
                 return HttpResponseRedirect(reverse("user_profile"))
         else:
             messages.add_message(request,
                                  messages.ERROR,
-                                 "User is not authenticated!")
+                                 _("User is not authenticated!"))
             return HttpResponseRedirect(reverse("user_profile"))
     else:
         return HttpResponseRedirect(reverse("user_profile"))
@@ -332,23 +333,23 @@ def signup(request):
                         uvk.save()
                         messages.add_message(request,
                                              messages.INFO,
-                                             "Thank you! You may now login "
-                                             "with your "
-                                             "username (%s) and "
-                                             "password!" % user.username)
+                                             _("Thank you! You may now login "
+                                               "with your "
+                                               "username (%s) and "
+                                               "password!" % user.username))
                         return HttpResponseRedirect("/login?u=" + user.username)
                     else:
                         messages.add_message(request,
                                              messages.ERROR,
-                                             "Passwords do not match")
+                                             _("Passwords do not match"))
                 else:
                     messages.add_message(request,
                                          messages.ERROR,
-                                         "Please, provide a proper email address")
+                                         _("Please, provide a proper email address"))
             else:
                 messages.add_message(request,
                                      messages.ERROR,
-                                     "Please, provide the number of occupants in your house")
+                                     _("Please, provide the number of occupants in your house"))
         else:
             messages.add_message(request,
                                  messages.ERROR,
