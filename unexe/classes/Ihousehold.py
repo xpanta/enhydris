@@ -1085,7 +1085,6 @@ class ihousehold():
         #    loggeduser.households.filter(user__pk=loggeduser.pk).update(**values)
         #    return True  #household details save successfully
         #except:
-        #    print "DJW: An error occurred"
         #    return -1 #indcates other issues or errors, it needs to be redirected to universal error
       
             

@@ -378,6 +378,7 @@ class consumer(TemplateView):
             usecase= iusecase(user)
             series = iseries()
             household = user.households.all()[0]
+            
             '''
             following code is to do with forecasting use case 5.3
             '''
@@ -410,7 +411,8 @@ class consumer(TemplateView):
             print finish
             print start
             '''
-            c_uc52data = usecase.usecase5_2()
+            # Removed by DJW for login optimisation.
+            #c_uc52data = usecase.usecase5_2()
             
             c_uc53data = usecase.usecase5_3(user,timeseries_month,timeseries_daily) ##use case 5.3
             
@@ -426,51 +428,57 @@ class consumer(TemplateView):
             end of the code for use case 5.3
             '''
             
-            '''
-            code for use case 3.2 - compare consumer with other consumer in the same area or building or neighbour
-            '''
-            c_uc32data = usecase.usecase3_2()
-            dmasummary = ""            
-            '''
-            Default chart for showing on selection of tab.
-            
-            length = len(timeseries_month)
-            dma = household.dma
-            dmastats = DMAstats.objects.filter(dma__pk=dma.pk) #make sure to get the latest DMA stats by reading again from database in case values updated 
-            obj = {}
-            list1 = []
-            for st in dmastats:
-                #getting DMA status for the average unit/bill
-                obj["Units"] = str(st.avgunits)
-                obj["Cost"]  = str(series.getCost(st.avgunits))
-                obj["Period"]= str(st.statsperiod)+" Month"
-                obj["Data"]  = "DMA"
-                list1.append(obj)
-                obj = {}
-                tseries      = timeseries_month[length-st.statsperiod:]
-                obj["Units"] = str(series.getSum(tseries))
-                obj["Cost"]  = str(series.getCost(float(obj["Units"])))
-                obj["Period"]= str(st.statsperiod)+" Month"
-                obj["Data"]  = "You"
-                list1.append(obj)
-                obj = {}
-                
-            end of use case 3.2 code
-            '''     
+            # Removed by DJW for login optimisation.
+            #
+            #'''
+            #code for use case 3.2 - compare consumer with other consumer in the same area or building or neighbour
+            #'''
+            #c_uc32data = usecase.usecase3_2()
+            #dmasummary = ""            
+            #'''
+            #Default chart for showing on selection of tab.
+            #
+            #length = len(timeseries_month)
+            #dma = household.dma
+            #dmastats = DMAstats.objects.filter(dma__pk=dma.pk) #make sure to get the latest DMA stats by reading again from database in case values updated 
+            #obj = {}
+            #list1 = []
+            #for st in dmastats:
+            #    #getting DMA status for the average unit/bill
+            #    obj["Units"] = str(st.avgunits)
+            #    obj["Cost"]  = str(series.getCost(st.avgunits))
+            #    obj["Period"]= str(st.statsperiod)+" Month"
+            #    obj["Data"]  = "DMA"
+            #    list1.append(obj)
+            #    obj = {}
+            #    tseries      = timeseries_month[length-st.statsperiod:]
+            #    obj["Units"] = str(series.getSum(tseries))
+            #    obj["Cost"]  = str(series.getCost(float(obj["Units"])))
+            #    obj["Period"]= str(st.statsperiod)+" Month"
+            #    obj["Data"]  = "You"
+            #    list1.append(obj)
+            #    obj = {}
+            #    
+            #end of use case 3.2 code
+            #'''     
 
-            '''
-            code for use case 3.3 - compare consumer with other consumer in the same area or building or neighbour
-            '''            
-            c_uc33data = usecase.usecase3_3()
-            '''
-            end of use case 3.3 code
-            '''
-            #"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,
+
+            # Removed by DJW for login optimisation.
+            #
+            #'''
+            #code for use case 3.3 - compare consumer with other consumer in the same area or building or neighbour
+            #'''            
+            #c_uc33data = usecase.usecase3_3()
+            #'''
+            #end of use case 3.3 code
+            #'''
+            ##"tsmonth":tsmonth,"high":high,"low":low,"sum":sum,"avg":avg,
             
             '''
             code for use case 3.4
             ''' 
             c_uc34data = usecase.usecase3_4()
+            print "c_uc34data", c_uc34data
             '''            
             End of use case 3.4
             '''
@@ -538,12 +546,12 @@ class consumer(TemplateView):
                 "tsid": ts_monthlyid,
                 "stdate": stdate,
                 "endate": endate,
-                #"c_uc32data": json.dumps(c_uc32data),
-                #"c_uc33data": json.dumps(c_uc33data),
+                #"c_uc32data": json.dumps(c_uc32data),  # Removed by DJW. UCs 3.2, 3.3, 5.2 and 5.3 low load their
+                #"c_uc33data": json.dumps(c_uc33data),  # data as and when it's needed with a separate call.
                 "c_uc34data": json.dumps(c_uc34data),                
                 "c_uc41data": json.dumps(c_uc41data),
                 #"c_uc52data": json.dumps(c_uc52data),
-                "c_uc53data": json.dumps(c_uc53data),
+                #"c_uc53data": json.dumps(c_uc53data),
                 "c_uc54data": json.dumps(c_uc54data)}
  
         return self.render_to_response(data)            
@@ -720,6 +728,26 @@ def uc_03_3_compare(request):
     """
     variables = RequestContext(request, {"tsid" : tsMonthlyIdFromUser(request.user)})
     return render_to_response("usecase/inner_c_uc3.3_compare.html", variables)
+
+
+def uc_03_4(request):
+    """
+    Sub-template for consumer use case 3.4.
+    @author David Walker
+    @date: 10/03/2015
+    """
+    variables = RequestContext(request, {})
+    return render_to_response("usecase/inner_c_uc3.4.html", variables)
+
+
+def uc_04_1(request):
+    """
+    Sub-template for consumer use cases 4.1/5.4.
+    @author David Walker
+    @date: 10/03/2015
+    """
+    variables = RequestContext(request, {})
+    return render_to_response("usecase/inner_c_uc4.1.html", variables)
 
 
 def uc_05_2(request):

@@ -65,6 +65,8 @@ urlpatterns = patterns('',
     url(r'^loaddata_uc_03_2_compare$', uc_03_2_compare, name='uc_03_2_compare'),
     url(r'^loaddata_uc_03_3$', uc_03_3, name="uc_03_3"),
     url(r'^loaddata_uc_03_3_compare$', uc_03_3_compare, name="uc_03_3_compare"),
+    url(r'^loaddata_uc_03_4$', uc_03_4, name="uc_03_4"),
+    url(r'^loaddata_uc_04_1$', uc_04_1, name="uc_04_1"),
     url(r'^loaddata_uc_05_2$', uc_05_2, name="uc_05_2"),
     url(r'^loaddata_uc_05_3$', uc_05_3, name="uc_05_3"),
     
