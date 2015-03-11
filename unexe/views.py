@@ -609,6 +609,12 @@ class c_uc34(TemplateView):
         elif period=="days": #if period is defined in range
             stdate       = iutility.getPostValue("stdate",request)
             endate       = iutility.getPostValue("endate",request)
+            
+            if stdate == endate:
+                data["error"] = _("Dates should not be equal")
+            elif endate < stdate:
+                data["error"] = _("Date One should not be greater than Date Two")
+            
             data["you"]  = hhold.getperiodstats(user,stdate,endate)
             data["area"] = d.getperiodstatsefficient(household_dma,stdate,endate)
             if data["you"] and data["area"]:                        
@@ -620,12 +626,18 @@ class c_uc34(TemplateView):
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
                 comparechart[0]["Units"] = data["area"]["areadata"]["household"]
-                        
-        if not data["you"] or not data["area"]:
+         
+        # Be careful not to overwrite any error messages in data.
+        if (not "you" in data or "area" in data) and not "error" in data:               
+        #if not data["you"] or not data["area"]:
             data = None
         else:
             #data["donutchart"] = donutchart
             data["comparechart"] = comparechart
+            
+        
+        if data == None:
+            data = {"error" : _("No data is available for analysis")} 
         
         return HttpResponse(json.dumps(data),content_type='application/javascript')
 
@@ -1012,11 +1024,17 @@ class c_uc33(TemplateView):
         elif period=="days": #if period is defined in range
             stdate       = iutility.getPostValue("stdate",request)
             endate       = iutility.getPostValue("endate",request)
-            data["you"]  = hhold.getperiodstats(user,stdate,endate)
-            data["area"] = d.getperiodstats(household_dma,stdate,endate)
-            if data["you"] and data["area"]:                        
-                comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
-                comparechart[0]["Units"] = data["area"]["areadata"]["household"] 
+            
+            if stdate == endate:
+                data["error"] = _("Dates should not be equal")
+            elif endate < stdate:
+                data["error"] = _("Date One should not be greater than Date Two")
+            else:
+                data["you"]  = hhold.getperiodstats(user,stdate,endate)
+                data["area"] = d.getperiodstats(household_dma,stdate,endate)
+                if data["you"] and data["area"]:                        
+                    comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
+                    comparechart[0]["Units"] = data["area"]["areadata"]["household"] 
         else:
             data["you"]  = hhold.getmonthlyusage(user,int(period))
             data["area"] = d.getmonthlyusage(household_dma,int(period))
@@ -1064,8 +1082,9 @@ class c_uc33(TemplateView):
             #data["donutchart"] = donutchart 
             comparechart[0]["Units"] = b["household"]
                          
-        '''            
-        if not data["you"] or not data["area"]:
+        '''
+        if (not "you" in data or not "area" in data) and not "error" in data:
+        #if (not data["you"] or not data["area"]) and not data["error"]:     # Careful to avoid overwriting error messages...
             data = None
         else:
             #data["donutchart"] = donutchart
@@ -1080,7 +1099,8 @@ class c_uc33(TemplateView):
             data["units_label"] = _("Units")
             data["date_label"] = _("Date")
 
-                    
+        if data == None:
+            data = {"error" : _("No data is available for analysis")}  
         return HttpResponse(json.dumps(data),content_type='application/javascript')
         
 #TemplateView class for consumer dashboard                                                                  
@@ -1122,73 +1142,78 @@ class c_uc52(TemplateView):
             stdate = iutility.getPostValue("stdate",request)
             endate = iutility.getPostValue("endate",request)
             
-            #number of months to process data
-            period = iutility.diffmonth(iutility.getstrTodate(endate,"%Y-%m-%d"),iutility.getstrTodate(stdate,"%Y-%m-%d")) + 1
+            if stdate == endate:
+                data["error"] = _("Dates should not be equal")
+            elif endate < stdate:
+                data["error"] = _("Date One should not be greater than Date Two")
+            else:   
+                #number of months to process data
+                period = iutility.diffmonth(iutility.getstrTodate(endate,"%Y-%m-%d"),iutility.getstrTodate(stdate,"%Y-%m-%d")) + 1
+                
+                '''
+                obtain timeseries for specified date range
+                '''
+                ts_monthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
+                if ts_monthly:            
+                    '''
+                    prepare panda dataframe for processing timeseries data
+                    '''
+                    #get dates and values in a separate list
+                    dates, units = IT.izip(*ts_monthly) #much better for longer data, returning tuples
+                    #create pandas Series (time series using two different list for timeseries data analysis
+                    pdf =  pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
+                    pdf.index.name = "dates"        
+    
+                    pdf = pdf[stdate:endate]
+                    if period != len(pdf.index):
+                        data = None
+                    elif pdf.empty:
+                        data = None
+                    else:                
+                        '''
+                        prepare data to be used in client (browser)
+                        Note: This code can be optimised if processed using panda dataframe. To do this ihousehold class tariff1 and tariff2 needs to be rewrite using panda dataframe
+                        '''
+                        dates  = pd.to_datetime(pdf.index.values)
+                        units  = pdf.values
+                        
+                        for x in range(0, period):
+                            dtlist.append(str(dates[x].strftime('%Y-%m-%d')))         
+                            tariff1 = hhold.tariff1(float(units[x]))
+                            tariff1data["sum"] = tariff1data["sum"] + tariff1
+                            list1.append(round(tariff1,2))
+                                         
+                            tariff2 = hhold.tariff2(float(units[x]))
+                            tariff2data["sum"] = tariff2data["sum"] + tariff2
+                            list2.append(round(tariff2,2))     
             
-            '''
-            obtain timeseries for specified date range
-            '''
-            ts_monthly = series.readseries(series.getmonthlyseries(household)) #get timeseries
-            if ts_monthly:            
-                '''
-                prepare panda dataframe for processing timeseries data
-                '''
-                #get dates and values in a separate list
-                dates, units = IT.izip(*ts_monthly) #much better for longer data, returning tuples
-                #create pandas Series (time series using two different list for timeseries data analysis
-                pdf =  pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
-                pdf.index.name = "dates"        
-
-                pdf = pdf[stdate:endate]
-                if period != len(pdf.index):
+                        tariff1data["sum"]      = round(tariff1data["sum"],2)
+                        tariff1data["avg"]      = round(tariff1data["sum"]/period,2)
+                        tariff1data["high"]     = {"date":iutility.convertdate(dtlist[list1.index(max(list1))],'%Y-%m-%d','%B-%Y'),"max":max(list1)} #max per nonth
+                        tariff1data["low"]      = {"date":iutility.convertdate(dtlist[list1.index(min(list1))],'%Y-%m-%d','%B-%Y'),"min":min(list1)} #min per nonth
+                          
+                        tariff2data["sum"]      = round(tariff2data["sum"],2)                    
+                        tariff2data["avg"]      = round(tariff2data["sum"]/period,2)
+                        tariff2data["high"]     = {"date":iutility.convertdate(dtlist[list1.index(max(list1))],'%Y-%m-%d','%B-%Y'),"max":max(list1)} #max per nonth
+                        tariff2data["low"]      = {"date":iutility.convertdate(dtlist[list1.index(min(list1))],'%Y-%m-%d','%B-%Y'),"min":min(list1)} #min per nonth
+                        
+                        comparechart[0]["Cost"] = tariff1data["sum"]            
+                        comparechart[1]["Cost"] = tariff2data["sum"]    
+                                               
+                        data["tariff1"]         = series.getlistTojson(dtlist,list1,"Date","Cost")
+                        data["tariff2"]         = series.getlistTojson(dtlist,list2,"Date","Cost")
+                        data["tariff1data"]     = tariff1data
+                        data["tariff2data"]     = tariff2data            
+                        data["comparechart"]    = comparechart
+                        '''
+                        add title to be displayed on top of graph
+                        '''
+                        #convert date from to easily read at client side (eg. December 2009
+                        stdate = iutility.convertdate(str(stdate),'%Y-%m-%d','%B-%Y')
+                        endate = iutility.convertdate(str(endate),'%Y-%m-%d','%B-%Y')
+                        data["title"]   = _("TARIFF COMPARISON FROM ")+stdate+ _(" TO ") +endate
+                else:
                     data = None
-                elif pdf.empty:
-                    data = None
-                else:                
-                    '''
-                    prepare data to be used in client (browser)
-                    Note: This code can be optimised if processed using panda dataframe. To do this ihousehold class tariff1 and tariff2 needs to be rewrite using panda dataframe
-                    '''
-                    dates  = pd.to_datetime(pdf.index.values)
-                    units  = pdf.values
-                    
-                    for x in range(0, period):
-                        dtlist.append(str(dates[x].strftime('%Y-%m-%d')))         
-                        tariff1 = hhold.tariff1(float(units[x]))
-                        tariff1data["sum"] = tariff1data["sum"] + tariff1
-                        list1.append(round(tariff1,2))
-                                     
-                        tariff2 = hhold.tariff2(float(units[x]))
-                        tariff2data["sum"] = tariff2data["sum"] + tariff2
-                        list2.append(round(tariff2,2))     
-        
-                    tariff1data["sum"]      = round(tariff1data["sum"],2)
-                    tariff1data["avg"]      = round(tariff1data["sum"]/period,2)
-                    tariff1data["high"]     = {"date":iutility.convertdate(dtlist[list1.index(max(list1))],'%Y-%m-%d','%B-%Y'),"max":max(list1)} #max per nonth
-                    tariff1data["low"]      = {"date":iutility.convertdate(dtlist[list1.index(min(list1))],'%Y-%m-%d','%B-%Y'),"min":min(list1)} #min per nonth
-                      
-                    tariff2data["sum"]      = round(tariff2data["sum"],2)                    
-                    tariff2data["avg"]      = round(tariff2data["sum"]/period,2)
-                    tariff2data["high"]     = {"date":iutility.convertdate(dtlist[list1.index(max(list1))],'%Y-%m-%d','%B-%Y'),"max":max(list1)} #max per nonth
-                    tariff2data["low"]      = {"date":iutility.convertdate(dtlist[list1.index(min(list1))],'%Y-%m-%d','%B-%Y'),"min":min(list1)} #min per nonth
-                    
-                    comparechart[0]["Cost"] = tariff1data["sum"]            
-                    comparechart[1]["Cost"] = tariff2data["sum"]    
-                                           
-                    data["tariff1"]         = series.getlistTojson(dtlist,list1,"Date","Cost")
-                    data["tariff2"]         = series.getlistTojson(dtlist,list2,"Date","Cost")
-                    data["tariff1data"]     = tariff1data
-                    data["tariff2data"]     = tariff2data            
-                    data["comparechart"]    = comparechart
-                    '''
-                    add title to be displayed on top of graph
-                    '''
-                    #convert date from to easily read at client side (eg. December 2009
-                    stdate = iutility.convertdate(str(stdate),'%Y-%m-%d','%B-%Y')
-                    endate = iutility.convertdate(str(endate),'%Y-%m-%d','%B-%Y')
-                    data["title"]   = _("TARIFF COMPARISON FROM ")+stdate+ _(" TO ") +endate
-            else:
-                data = None
         else:    
             period = int(period)
             ts_monthly = series.getseriesmonths(series.readseries(series.getmonthlyseries(household)),period) #get timeseries
@@ -1242,7 +1267,8 @@ class c_uc52(TemplateView):
             else:
                 data = None
   
-            
+        if data == None:
+            data = {"error" : _("No data is available for this selection (from Python)")}
         return HttpResponse(json.dumps(data),content_type='application/javascript')
 
     

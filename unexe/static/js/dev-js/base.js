@@ -2161,19 +2161,6 @@ function AppUtil()
 					dataObj.endate = $("#endyear").val()+"-"+$("#endmonth").val()+"-01";
 					var s = dateutil.strtodate(dataObj.stdate)
 					var e = dateutil.strtodate(dataObj.endate)
-					if(s > e)
-					{
-						//this.showmessage(iwidgetutil.c_uc52msg,dangerclass,"Date One should not be greater than Date Two");
-						alert("Date One should not be greater than Date Two");
-						return;
-					}
-					else if(dateutil.isequal(s,e))
-					{
-						this.showmessage(iwidgetutil.c_uc52msg,dangerclass,"Dates should not be equal");
-						return;
-					}
-					else
-						""
 				}//--end if	(days)
 				else if(dataObj.period=="season")
 				{
@@ -2181,11 +2168,10 @@ function AppUtil()
 					dataObj.seasonyear = $("#c_uc52_seasonyear").val();
 				}//--end if
 					
-				var data = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
-				if(data==null)
-				{
-					//this.showmessage(iwidgetutil.c_uc52msg,dangerclass,"No data is available for this period");
-					alert("No data is available for this selection");
+				var data = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request				
+				var error = data["error"];
+				if (error) {
+					this.showmessage(iwidgetutil.c_uc52msg, dangerclass, error);
 					return;
 				}
 
@@ -2236,21 +2222,8 @@ function AppUtil()
 					dataObj.endate = $("#c_uc33endyear").val()+"-"+$("#c_uc33endmonth").val()+"-01"; //at the server side get the last day of the month (Python)
 					var s = dateutil.strtodate(dataObj.stdate)
 					var e = dateutil.strtodate(dataObj.endate)
-					if(s > e)
-					{
-						//this.showmessage(iwidgetutil.c_uc33msg,dangerclass,"Date One should not be greater than Date Two");
-						alert("Date One should not be greater than Date Two");
-						return;
-					}
-					else if(dateutil.isequal(s,e))
-					{
-						this.showmessage(iwidgetutil.c_uc33msg,dangerclass,"Dates should not be equal");
-						return;
-					}
-					else
-						""
-						
 				}//--end if
+				
 				else if(dataObj.period=="season")
 				{
 					dataObj.season 	   = $("#c_uc33_seasons").val();
@@ -2275,9 +2248,9 @@ function AppUtil()
 				}
 				
 				var data 	  = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
-				if(data==null)
-				{
-					alert("No data is available for analysis");
+				var error = data["error"];
+				if (error) {
+					this.showmessage(iwidgetutil.c_uc33msg, dangerclass, error);
 					return;
 				}
 
@@ -2381,20 +2354,6 @@ function AppUtil()
 					dataObj.endate = $("#c_uc34endyear").val()+"-"+$("#c_uc34endmonth").val()+"-01"; //at the server side get the last day of the month (Python)
 					var s = dateutil.strtodate(dataObj.stdate)
 					var e = dateutil.strtodate(dataObj.endate)
-					if(s > e)
-					{
-						//this.showmessage(iwidgetutil.c_uc33msg,dangerclass,"Date One should not be greater than Date Two");
-						alert("Date One should not be greater than Date Two");
-						return;
-					}
-					else if(dateutil.isequal(s,e))
-					{
-						this.showmessage(iwidgetutil.c_uc34msg,dangerclass,"Dates should not be equal");
-						return;
-					}
-					else
-						""
-						
 				}//--end if
 				else if(dataObj.period=="season")
 				{
@@ -2420,11 +2379,13 @@ function AppUtil()
 				}
 				
 				var data 	  = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
-				if(data==null)
-				{
-					alert("No data is available for analysis");
+				
+				var error = data["error"];
+				if (error) {
+					this.showmessage(iwidgetutil.c_uc34msg, dangerclass, error);
 					return;
 				}
+				
 				domutil.removeCssclass("#c_uc34cont","hide"); //make chart container visible
 				$("#c_uc34chartcont").empty(); //clear previous chart
 				$("#c_uc34donutchart").empty(); //clear previous chart

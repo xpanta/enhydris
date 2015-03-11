@@ -6,7 +6,7 @@ var start 	 = dateutil.getdateyear("{{stdate}}");
 var end   	 = dateutil.getdateyear("{{endate}}");
 var yearlist = dateutil.getyearlist(parseInt(start),parseInt(end));
 
-function uc33Chart(data)
+/*function uc33Chart(data)
 {
 	//alert(data[0]["chart"]);
 	//alert(JSON.stringify(data["chart"]));
@@ -64,10 +64,8 @@ function uc33Chart(data)
 	w = domutil.getdivwidth("dmachart3"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 	dim = {"width":w,"height":450}; //width and height of chart container	
 	chartutil.uc32barplot1("#dmachart3",dim,data);
-	*/
-}
+}*/
 $(window).load(function() {
-	
 	//var data = jQuery.parseJSON("{{c_uc33data|escapejs}}");	
 	//if(data==null)
 	//	return;	
@@ -87,12 +85,12 @@ $(window).load(function() {
 	
 	//c_uc33disabled();
 	
-	var id = window.location.hash;
-    if(domutil.hasCssclass("#c_uc33container","hide") && id=="#cuc33") //tab id value, need to make global to make effective and avoid error
-    {
-    	domutil.removeCssclass("#c_uc33container","hide");
-    	uc33Chart(data);
-    }//--end if	 	
+	//var id = window.location.hash;
+    //if(domutil.hasCssclass("#c_uc33container","hide") && id=="#cuc33") //tab id value, need to make global to make effective and avoid error
+    //{
+    //	domutil.removeCssclass("#c_uc33container","hide");
+    //	uc33Chart(data);
+    //}//--end if	 	
 });
 
 /*
@@ -227,7 +225,9 @@ function c_uc33toggle()
 			</div>
 			<div class="form-group">
 			<select id="c_uc33styear" class="form-control" required="true">
-
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}
 			</select>			
 			</div>
 			TO
@@ -248,7 +248,11 @@ function c_uc33toggle()
 			</select>
 			</div>		
 		 	<div class="form-group">
-			<select id="c_uc33endyear" class="form-control" required="true"></select>
+			<select id="c_uc33endyear" class="form-control" required="true">
+                            {% for yr in yearlist %}
+                                <option value="{{ yr }}">{{ yr }}</option>
+                            {% endfor %}			
+			</select>
 			</div>					
 		 <!-- 
 			 <div class="form-group col-md-3">
