@@ -1888,26 +1888,32 @@ function AppUtil()
 				{
 					alert("Please select months");
 					return;
-				}				
+				}	
 				var data = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
-
-				// End of strict execution sequence block
-				domutil.removeCssclass("#c_uc53cont","hide"); //make chart container visible 
-				$("#c_uc53chartcont").empty(); //clear previous chart			    
-				var w = domutil.getdivwidth("c_uc53chartcont");
-			    var dim = {"width":w,"height":450}; //chart container width
-			    //alert(JSON.stringify(data["price_break"]));
-			  	chartutil.barplot("#c_uc53chartcont",dim,data["data"],data["price_break"]); //plot the bar chart
-			  	
-				//add title
-				$("#c_uc53ftitle").html('<p class="bg-primary text-center"><strong>'+data["title"]+'</strong></p>');
 				
-				//adding chart details
-				$("#c_uc53fsum").html("Total: £"+data["billdata"]["sum"]);
-				$("#c_uc53favg").html("<div class='text-warning'>Average Monthly Bill: £"+data["billdata"]["avg"]+"</div");
-				$("#c_uc53fhigh").html("<div class='text-danger'>Highest Monthly Bill: £"+data["billdata"]["high"]["max"]+" in "+data["billdata"]["high"]["date"]+"</div");
-				$("#c_uc53flow").html("<div class='text-success'>Lowest Monthly Bill: £"+data["billdata"]["low"]["min"]+" in "+data["billdata"]["low"]["date"]+"</div");			  	
-			    //chartutil.barplot("#c_uc53chartcont",dim,chartdata,price_break); //plot the bar char with line plot also on top
+				var error = data["error"];
+				if (error){
+					this.showmessage(iwidgetutil.c_uc53msg, dangerclass, error);
+					return;
+				} else {
+					// End of strict execution sequence block
+					domutil.removeCssclass("#c_uc53cont","hide"); //make chart container visible 
+					$("#c_uc53chartcont").empty(); //clear previous chart			    
+					var w = domutil.getdivwidth("c_uc53chartcont");
+				    var dim = {"width":w,"height":450}; //chart container width
+				    //alert(JSON.stringify(data["price_break"]));
+				  	chartutil.barplot("#c_uc53chartcont",dim,data["data"],data["price_break"]); //plot the bar chart
+				  	
+					//add title
+					$("#c_uc53ftitle").html('<p class="bg-primary text-center"><strong>'+data["title"]+'</strong></p>');
+					
+					//adding chart details
+					$("#c_uc53fsum").html("Total: £"+data["billdata"]["sum"]);
+					$("#c_uc53favg").html("<div class='text-warning'>Average Monthly Bill: £"+data["billdata"]["avg"]+"</div");
+					$("#c_uc53fhigh").html("<div class='text-danger'>Highest Monthly Bill: £"+data["billdata"]["high"]["max"]+" in "+data["billdata"]["high"]["date"]+"</div");
+					$("#c_uc53flow").html("<div class='text-success'>Lowest Monthly Bill: £"+data["billdata"]["low"]["min"]+" in "+data["billdata"]["low"]["date"]+"</div");			  	
+				    //chartutil.barplot("#c_uc53chartcont",dim,chartdata,price_break); //plot the bar char with line plot also on top
+				}
 			}//--end forecast-form
 			else if(id==iwidgetutil.c_uc41form) //if matched forecast form id
 			{
@@ -1923,29 +1929,35 @@ function AppUtil()
 				}
 				var data = ajaxutil.postAjax(dataObj,formutil.getAction(id)); //send ajax request
 				
-				domutil.removeCssclass("#c_uc41cont","hide"); //make chart container visible 
-				$("#c_uc41chartcont").empty(); //clear previous chart			    
-				var w = domutil.getdivwidth("c_uc41chartcont");
-			    var dim = {"width":w,"height":450}; //chart container width
-			    //alert(JSON.stringify(data["price_break"]));
-			  	chartutil.barplot("#c_uc41chartcont",dim,data["data"],data["price_break"]); //plot the bar chart
-			  	
-				//add title
-				$("#c_uc41ftitle").html('<p class="bg-primary text-center"><strong>'+data["title"]+'</strong></p>');
-				
-				//adding chart details
-				
-				$("#c_uc41fsum").html("Total: £"+data["billdata"]["sum"]);
-				$("#c_uc41favg").html("<div class='text-warning'>Average Monthly Bill: £"+data["billdata"]["avg"]+"</div");
-				$("#c_uc41fhigh").html("<div class='text-danger'>Highest Monthly Bill: £"+data["billdata"]["high"]["max"]+" in "+data["billdata"]["high"]["date"]+"</div");
-				$("#c_uc41flow").html("<div class='text-success'>Lowest Monthly Bill: £"+data["billdata"]["low"]["min"]+" in "+data["billdata"]["low"]["date"]+"</div");
-
-				$("#c_uc41sum").html("Total: £"+data["monthdata"]["sum"]);
-				$("#c_uc41avg").html("<div class='text-warning'>Average Monthly Bill: £"+data["monthdata"]["avg"]+"</div");
-				$("#c_uc41high").html("<div class='text-danger'>Highest Monthly Bill: £"+data["monthdata"]["high"]["max"]+" in "+data["monthdata"]["high"]["date"]+"</div");
-				$("#c_uc41low").html("<div class='text-success'>Lowest Monthly Bill: £"+data["monthdata"]["low"]["min"]+" in "+data["monthdata"]["low"]["date"]+"</div");
-				
-			    //chartutil.barplot("#c_uc53chartcont",dim,chartdata,price_break); //plot the bar char with line plot also on top
+				var error = data["error"];
+				if (error){
+					this.showmessage(iwidgetutil.c_uc41msg, dangerclass, error);
+					return;
+				} else {				
+					domutil.removeCssclass("#c_uc41cont","hide"); //make chart container visible 
+					$("#c_uc41chartcont").empty(); //clear previous chart			    
+					var w = domutil.getdivwidth("c_uc41chartcont");
+				    var dim = {"width":w,"height":450}; //chart container width
+				    //alert(JSON.stringify(data["price_break"]));
+				  	chartutil.barplot("#c_uc41chartcont",dim,data["data"],data["price_break"]); //plot the bar chart
+				  	
+					//add title
+					$("#c_uc41ftitle").html('<p class="bg-primary text-center"><strong>'+data["title"]+'</strong></p>');
+					
+					//adding chart details
+					
+					$("#c_uc41fsum").html("Total: £"+data["billdata"]["sum"]);
+					$("#c_uc41favg").html("<div class='text-warning'>Average Monthly Bill: £"+data["billdata"]["avg"]+"</div");
+					$("#c_uc41fhigh").html("<div class='text-danger'>Highest Monthly Bill: £"+data["billdata"]["high"]["max"]+" in "+data["billdata"]["high"]["date"]+"</div");
+					$("#c_uc41flow").html("<div class='text-success'>Lowest Monthly Bill: £"+data["billdata"]["low"]["min"]+" in "+data["billdata"]["low"]["date"]+"</div");
+	
+					$("#c_uc41sum").html("Total: £"+data["monthdata"]["sum"]);
+					$("#c_uc41avg").html("<div class='text-warning'>Average Monthly Bill: £"+data["monthdata"]["avg"]+"</div");
+					$("#c_uc41high").html("<div class='text-danger'>Highest Monthly Bill: £"+data["monthdata"]["high"]["max"]+" in "+data["monthdata"]["high"]["date"]+"</div");
+					$("#c_uc41low").html("<div class='text-success'>Lowest Monthly Bill: £"+data["monthdata"]["low"]["min"]+" in "+data["monthdata"]["low"]["date"]+"</div");
+					
+				    //chartutil.barplot("#c_uc53chartcont",dim,chartdata,price_break); //plot the bar char with line plot also on top
+				}
 			}//--end forecast-form
 			
 			else if(id==iwidgetutil.c_uc32form)
