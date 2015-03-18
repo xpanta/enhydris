@@ -415,6 +415,7 @@ class consumer(TemplateView):
             #c_uc52data = usecase.usecase5_2()
             
             c_uc53data = usecase.usecase5_3(user,timeseries_month,timeseries_daily) ##use case 5.3
+            print "c_uc53data", c_uc53data
             
             '''
             
@@ -551,7 +552,7 @@ class consumer(TemplateView):
                 "c_uc34data": json.dumps(c_uc34data),                
                 "c_uc41data": json.dumps(c_uc41data),
                 #"c_uc52data": json.dumps(c_uc52data),
-                #"c_uc53data": json.dumps(c_uc53data),
+                "c_uc53data": json.dumps(c_uc53data),
                 "c_uc54data": json.dumps(c_uc54data)}
  
         return self.render_to_response(data)            
@@ -660,7 +661,8 @@ class c_uc54(TemplateView):
 
     #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
-        data = None            
+        data = None    
+        print "this always returns none..."        
         return HttpResponse(json.dumps(data),content_type='application/javascript')
     
     
@@ -790,6 +792,7 @@ def uc_05_3(request):
     @date: 09/02/2015
     """
     user = request.user
+    
     series = iseries()
     household = user.households.all()[0]
     ts_monthly = series.getmonthlyseries(household)
@@ -798,7 +801,7 @@ def uc_05_3(request):
     ts_daily = series.getdailyseries(household)
     timeseries_daily = series.readseries(ts_daily)
     
-    c_uc53data = iusecase.usecase5_3(user, timeseries_month, timeseries_daily)
+    c_uc53data = usecase.usecase5_3(user, timeseries_month, timeseries_daily)
     
     data = {
         "c_uc53data" : c_uc53data,
@@ -1504,18 +1507,12 @@ class c_uc53(TemplateView):
         else: #yearly fordcast
             ts_monthly = series.getmonthlyseries(household)
             timeseries_month = series.readseries(ts_monthly)
-            # first_dt = timeseries_month[0][0]
-            # from dateutil.relativedelta import relativedelta
-            # from random import randrange
-            # for i in range(0, 12):
-            #     x = randrange(3, 12)
-            #     first_dt = first_dt - relativedelta(months=1)
-            #     timeseries_month.insert(0, (first_dt, x))
-
             if forecast.yearfile and len(timeseries_month)>12: #forecast only when data has 12 months of historical cost or usage. later can be fixed for other intervals
                 yearfile = forecast.yearfile
             else:
-                return HttpResponse(json.dumps(False),content_type='application/javascript')                                                  
+                #return HttpResponse(json.dumps(False),content_type='application/javascript')
+                data = {"error" : _("No data is available for analysis")} 
+                return HttpResponse(json.dumps(data),content_type='application/javascript')                                                  
   
         if period=="quarter":    
             data = ifcast.getForecast(timeseries_month,3,type,yearfile)
@@ -1571,7 +1568,8 @@ class c_uc53(TemplateView):
             data.append({"avg":avg})
             data.append({"title":"Next 30 days forecast"});
             '''
-        return HttpResponse(json.dumps(data),content_type='application/javascript')
+        print "data", data
+        return HttpResponse(json.dumps(data),content_type='application/javascript')                          
 
 '''
 This class deals with the consumer use case 5.4 which forecast the energyu bill associated with water consumption.
@@ -1605,7 +1603,9 @@ class c_uc54(TemplateView):
         if forecast.yearfile and len(timeseries_month)>12: #forecast only when data has 12 months of historical cost or usage. later can be fixed for other intervals
             yearfile = forecast.yearfile
         else:
-            return HttpResponse(json.dumps(False),content_type='application/javascript')                                                  
+            #return HttpResponse(json.dumps(False),content_type='application/javascript')
+            data = {"error" : _("No data is available for analysis")} 
+            return HttpResponse(json.dumps(data),content_type='application/javascript')                                                    
   
         data = ifcast.getForecast(timeseries_month,int(period),type,yearfile)
         
