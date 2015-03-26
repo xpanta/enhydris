@@ -28,11 +28,11 @@ function confirmPost(){
 
 $(document).ready(function() {
 	
-	$("#data_holder").hide()	
+	$("#data_holder").hide()
 	$("#progress").append("<img style=\"margin: auto;\" src=\""+STATIC_URL+"images/icons/progress.gif\">");
 
 	 $.getJSON('{% url "timeseries_data" %}', {object_id:{{timeseries.id}}}, function(chart_data){
-	   
+
 		$("#progress").hide()
 		$("#data_holder").show()
 		if ( chart_data ) {
@@ -41,10 +41,14 @@ $(document).ready(function() {
 			$("#data_holder").html("<h3>No data locally available!</h3>");
 		}
 
-	});
+	})
 });
 
 function flot_init(chart_data) {
+    //console.info(chart_data);
+    for (var t = 0 ; t < chart_data.length ; t++){
+        console.info(chart_data[t])
+    }
 	var d = chart_data;
     var d_bak = d.slice();
     var from_x, to_x, tol;

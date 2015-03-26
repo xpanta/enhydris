@@ -48,6 +48,7 @@ from enhydris.settings import SSO_APP
 #from enhydris.hcore.models import (Lookup as HLookup, Timeseries, Gpoint,
 #        Garea, Instrument)
 # added some comments!
+from django.views.decorators.cache import never_cache
 
 #from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
@@ -1447,6 +1448,7 @@ class timeseries(TemplateView):
     template_name = "timeseries.html"
 
     #@cache_page(30 * 60)  # cache for 30 minutes
+
     def get(self,request,**kwargs):
         object_id = self.kwargs['object_id']
         user = request.user
@@ -1468,8 +1470,8 @@ class timeseries(TemplateView):
             settings.ENHYDRIS_TSDATA_AVAILABLE_FOR_ANONYMOUS_USERS
         return context
         '''
-                  
-        return self.render_to_response({"timeseries":ts})    
+
+        return self.render_to_response({"timeseries":ts})
 '''
 This class deals with the consumer use case 5.3 which is to do with bill forecasting.
 It is dependent on the Forecast model and Iforecast class and JAVA based Weka machine learning and data mining libray

@@ -418,7 +418,6 @@ def inc_month(adate, months):
     return adate.replace(year=y, month=m, day=d)
 
 def timeseries_data(request, *args, **kwargs):
-
     def date_at_pos(pos):
         s = linecache.getline(afilename, pos)
         return datetime_from_iso(s.split(',')[0])

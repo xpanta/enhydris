@@ -876,8 +876,9 @@ def periods_distribution(request, *args, **kwargs):
         object_id = int(request.GET['object_id'])
     except ValueError:
         raise Http404
-    afilename = os.path.join(settings.ENHYDRIS_TS_GRAPH_CACHE_DIR,
-                             '%d.hts'%(object_id,))
+    # afilename = os.path.join(settings.ENHYDRIS_TS_GRAPH_CACHE_DIR,
+    #                          '%d.hts'%(object_id,))
+    afilename = None
     update_ts_temp_file(settings.ENHYDRIS_TS_GRAPH_CACHE_DIR,
                         db.connection, object_id)
     chart_data = []

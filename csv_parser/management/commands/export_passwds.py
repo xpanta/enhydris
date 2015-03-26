@@ -17,7 +17,7 @@ class Command(BaseCommand):
             print "Please, provide a country code id range"
             return
         try:
-            users = User.objects.filter(username__contains=code)\
+            users = User.objects.filter(username__startswith=code)\
                 .order_by("username")
             out = []
             for user in users:
@@ -26,7 +26,7 @@ class Command(BaseCommand):
                     key = uvk.key
                     val = str(binascii.hexlify(os.urandom(4)).upper())
                     email = "M%s@example.com" % val
-                    out.append([user.username, key, email])
+                    out.append([user.username, key])
                 except UserValidationKey.DoesNotExist:
                     continue
             import time

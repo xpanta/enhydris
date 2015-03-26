@@ -183,7 +183,7 @@ def create_household(identifier, user, dma_id):
                                value=identifier.lstrip('0'))
     return household, False
 
-
+#timecall()
 def create_raw_timeseries(household):
     db_series = {}
     for variable, unit in [(VAR_CUMULATIVE, CUBIC_METERS),
@@ -215,7 +215,7 @@ def create_raw_timeseries(household):
                 [variable]] = series
     return db_series
 
-
+#timecall()
 def create_processed_timeseries(household):
     # nominal_offset_minutes, _months, actual_offset_minutes, _months,
     # name
@@ -279,8 +279,6 @@ def create_objects(data, usernames, force, z_names, z_dict):
     found = False
     for hh_id in hh_ids:
         username = usernames[hh_id]
-        if username == "GB8176360" or username == "GB8245048":
-            pass
         try:
             zone_name = z_dict[username]
         except KeyError:
@@ -311,58 +309,226 @@ def create_objects(data, usernames, force, z_names, z_dict):
             # to append
             # d = read_timeseries_tail_from_db(db.connection, ts_id)
             total = 0.0
-            if s or e:
-                exists = True
-                timeseries = TSeries(ts_id)
-                timeseries.read_from_db(db.connection)
-                tail = read_timeseries_tail_from_db(db.connection, ts_id)
-                if not force:
-                    total = float(tail[1])  # keep up from last value
-            else:
-                timeseries = TSeries()
-                timeseries.id = ts_id
+            # if s or e:
+            #     exists = True
+            #     timeseries = TSeries(ts_id)
+            #     timeseries.read_from_db(db.connection)
+            # else:
+            #     timeseries = TSeries()
+            #     timeseries.id = ts_id
             _dict = data[hh_id]
             arr = _dict[variable]
             series = arr
-            part_total = 0
-            for timestamp, value in series:
-                if (latest_ts and latest_ts < timestamp) or (not latest_ts):
+            earlier = []
+            if (not latest_ts) or (latest_ts < series[0][0]):  # append
+                timeseries = TSeries()
+                timeseries.id = ts_id
+                tail = read_timeseries_tail_from_db(db.connection, ts_id)
+                if tail:
+                    total = float(tail[1])  # keep up from last value
+                for timestamp, value in series:
+                    if (not latest_ts) or (timestamp > latest_ts):
+                        if not isnan(value):
+                            total += value
+                            timeseries[timestamp] = total
+                        else:
+                            timeseries[timestamp] = float('NaN')
+                    elif timestamp < latest_ts:
+                        earlier.append((timestamp, value))
+                timeseries.append_to_db(db=db.connection,
+                                        transaction=transaction,
+                                        commit=True)
+            elif latest_ts >= series[0][0]:
+                if not force:  # ignore
+                    continue
+                else:  # insert
+                    for timestamp, value in series:
+                        if timestamp < latest_ts:
+                            earlier.append((timestamp, value))
+            if earlier and "GR" in username:  # insert (only for athens)
+                if variable == "WaterCold":
+                    ts15 = household \
+                        .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                                        variable__id=VAR_PERIOD)
+                    series15 = TSeries(id=ts15.id)
+                elif variable == "Electricity":
+                    ts15 = household \
+                        .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                                        variable__id=VAR_ENERGY_PERIOD)
+                    series15 = TSeries(id=ts15.id)
+                series15.read_from_db(db.connection)
+                for ts, value in earlier:
+                    series15[ts] = value
+                series15.write_to_db(db=db.connection,
+                                     transaction=transaction,
+                                     commit=True)
+
+                raw_ts = TSeries(ts_id)  # read existing ts raw data
+                raw_ts.read_from_db(db.connection)
+                total = get_consumption_totals(household, earlier[0][0],
+                                               variable)
+                for timestamp, value in earlier:
                     if not isnan(value):
                         total += value
-                        timeseries[timestamp] = total
+                        raw_ts[timestamp] = total
                     else:
-                        timeseries[timestamp] = float('NaN')
-                elif latest_ts and timestamp <= latest_ts \
-                        and "GR" in username:  # insert but only for Athens
-                    # find total consumption till timestamp
-                    dates = sorted(timeseries.keys())
-                    if not part_total:  # find it
-                        for _date in dates:
-                            if _date < timestamp:
-                                continue
-                            else:
-                                part_total = timeseries[_date]
-                                break
-                    if not isnan(value):
-                        part_total += value
-                        timeseries[timestamp] = part_total
-                    else:
-                        timeseries[timestamp] = float('NaN')
-                    # in case of next dates are after latest_ts then we
-                    # need the new total. (we always suppose that dates are
-                    # increasing.
-                    total = part_total
-            try:
-                if not exists or force:
-                    timeseries.write_to_db(db=db.connection,
-                                           transaction=transaction,
-                                           commit=True)
-                else:
-                    timeseries.write_to_db(db=db.connection,
-                                           transaction=transaction,
-                                           commit=True)
-            except ValueError as xx:
-                print repr(xx)
+                        raw_ts[timestamp] = float('NaN')
+
+                raw_ts.write_to_db(db=db.connection,
+                                   transaction=transaction,
+                                   commit=True)
+
+
+
+
+                    # """
+                    # 1. read from db period values into a dict
+                    # 2. update with current values
+                    # 3. reconstruct raw (cumulative) data.
+                    # 4. write to db
+                    # """
+                    # timeseries = None
+                    # if variable == "WaterCold":
+                    #     timeseries = household \
+                    #         .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                    #                         variable__id=VAR_PERIOD)
+                    # elif variable == "Electricity":
+                    #     timeseries = household \
+                    #         .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                    #                         variable__id=VAR_ENERGY_PERIOD)
+                    # dict1 = {}
+                    # dict2 = {}
+                    # cut = series[0][0]
+                    # if timeseries:
+                    #     series_db = TSeries(id=timeseries.id)
+                    #     series_db.read_from_db(db.connection)
+                    #     timestamps = sorted(series_db.keys())
+                    #     # add db data to dict1 and dict2. Cut to series 1st day
+                    #     for ts in timestamps:
+                    #         if ts < cut:
+                    #             dict1[ts] = series_db[ts]
+                    #         else:
+                    #             dict2[ts] = series_db[ts]
+                    #     # update dict2 with current series data
+                    #     for ts, value in series:
+                    #         if ts >= cut:
+                    #             dict2[ts] = value
+                    #     # combine dicts
+                    #     dict1.update(dict2)
+                    #     new_timeseries = TSeries()
+                    #     new_timeseries.id = ts_id
+                    #     keys = sorted(dict1.keys())
+                    #     total = 0
+                    #     for ts in keys:
+                    #         val = dict1[ts]
+                    #         if not isnan(val):
+                    #             total += float(dict1[ts])
+                    #             new_timeseries[ts] = total
+                    #         else:
+                    #             new_timeseries[ts] = float('NaN')
+                    #     new_timeseries.write_to_db(db=db.connection,
+                    #                                transaction=transaction,
+                    #                                commit=True)
+                    #
+                    #
+
+
+
+                        # for ts in timestamps:  # add db data to dict2
+                        #     dict2[ts] = series_db[ts]
+                        # timestamps2 = []
+                        # for timestamp, value in series:
+                        #     timestamps2.append(timestamp)
+                        # # add current data to dict1 up to first date
+                        # # and from that date to dict2 (replacing old with new
+                        # # values)
+                        # for ts in timestamps:
+                        #     if ts < cut:
+                        #         dict1[ts] = series_db[ts]
+                        #     else:
+                        #         # update dict2 with current data
+                        #         dict2[ts] = series_db[ts]
+                        # dict1.update(dict2)
+
+
+
+
+
+
+
+
+
+
+
+
+                    # timeseries = TSeries(ts_id)  # read existing ts raw data
+                    # timeseries.read_from_db(db.connection)
+                    # """
+                    # 1. find total up to series[0][0]
+                    # 2. append to series data from series[-1][0] to latest_ts
+                    # 3. Write series data to db
+                    # """
+                    # totals = get_consumption_totals(household, series[0][0])
+                    # series_after = get_values_after(household, series[-1][0],
+                    #                                 variable)
+                    # if series_after:
+                    #     series.append(series_after)
+                    # total = totals.get(variable, 0)
+                    # for timestamp, value in series:
+                    #     if timestamp.day == 10 and timestamp.hour == 2:
+                    #         pass
+                    #     if not isnan(value):
+                    #         total += value
+                    #         timeseries[timestamp] = total
+                    #     else:
+                    #         timeseries[timestamp] = float('NaN')
+                    #     print timestamp, value, total
+                    # timeseries.write_to_db(db=db.connection,
+                    #                        transaction=transaction,
+                    #                        commit=True)
+
+
+            # part_total = 0
+            # if force:
+            #     latest_ts = None  # just to enter the following loop
+            # for timestamp, value in series:
+            #     if (latest_ts and latest_ts < timestamp) or (not latest_ts):
+            #         if not isnan(value):
+            #             total += value
+            #             timeseries[timestamp] = total
+            #         else:
+            #             timeseries[timestamp] = float('NaN')
+            #     # elif latest_ts and timestamp <= latest_ts \
+            #     #         and "GR" in username:  # insert but only for Athens
+            #     #     # find total consumption till timestamp
+            #     #     dates = sorted(timeseries.keys())
+            #     #     if not part_total:  # find it
+            #     #         for _date in dates:
+            #     #             if _date < timestamp:
+            #     #                 continue
+            #     #             else:
+            #     #                 part_total = timeseries[_date]
+            #     #                 break
+            #     #     if not isnan(value):
+            #     #         part_total += value
+            #     #         timeseries[timestamp] = part_total
+            #     #     else:
+            #     #         timeseries[timestamp] = float('NaN')
+            #     #     # in case of next dates are after latest_ts then we
+            #     #     # need the new total. (we always suppose that dates are
+            #     #     # increasing.
+            #     #     total = part_total
+            # try:
+            #     if not exists or force:
+            #         timeseries.write_to_db(db=db.connection,
+            #                                transaction=transaction,
+            #                                commit=True)
+            #     else:
+            #         timeseries.write_to_db(db=db.connection,
+            #                                transaction=transaction,
+            #                                commit=True)
+            # except ValueError as xx:
+            #     print repr(xx)
         if 'WaterCold' in timeseries_data and not found:  # only for new HH
             calc_occupancy(timeseries_data['WaterCold'], household)
     return households
@@ -414,6 +580,66 @@ def has_burst(household):
                 return cons, tm
     return 0, 0
 
+
+def get_values_after(household, dt, variable):
+    timeseries = None
+    if variable == "WaterCold":
+        timeseries = household \
+            .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                            variable__id=VAR_PERIOD)
+    elif variable == "Electricity":
+        timeseries = household \
+            .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
+                            variable__id=VAR_ENERGY_PERIOD)
+    data = []
+    if timeseries:
+        series = TSeries(id=timeseries.id)
+        series.read_from_db(db.connection)
+        timestamps = sorted(series.keys())
+        for ts in timestamps:
+            val = series[ts]
+            if ts <= dt:
+                continue
+            data.append((ts, val))
+    return data
+
+
+def get_consumption_totals(household, dt, variable):
+    """
+    Not needed. read_timeseries_tail_from_db does the same thing, faster.
+    :param household:
+    :return:
+    """
+    if variable == "WaterCold":
+        timeseries = household \
+            .timeseries.get(variable__id=VAR_CUMULATIVE)
+        raw_series = TSeries(id=timeseries.id)
+        raw_series.read_from_db(db.connection)
+        timestamps = sorted(raw_series.keys())
+        total = 0
+        for ts in timestamps:
+            val = raw_series[ts]
+            if isnan(val):
+                continue
+            if ts > dt:
+                break
+            total = raw_series[ts]
+        return total
+    elif variable == "Electricity":
+        timeseries = household \
+            .timeseries.get(variable__id=VAR_ENERGY_CUMULATIVE)
+        raw_series = TSeries(id=timeseries.id)
+        raw_series.read_from_db(db.connection)
+        timestamps = sorted(raw_series.keys())
+        total = 0
+        for ts in timestamps:
+            val = raw_series[ts]
+            if isnan(val):
+                continue
+            if ts > dt:
+                break
+            total = raw_series[ts]
+        return total
 
 
 def has_burst_old(household):
@@ -585,7 +811,7 @@ def calc_occupancy(timeseries, household):
         household.num_of_occupants = num_of_occupants
         household.save()
 
-
+#@timecall()
 def regularize(raw_series_db, proc_series_db, rs, re):
     """
     This function regularize raw_series_db object from database and
@@ -669,7 +895,7 @@ def regularize(raw_series_db, proc_series_db, rs, re):
     #return the full timeseries
     return proc_series
 
-
+#@timecall()
 def aggregate(household, source_time_series, dest_timestep_id, variable):
     MISSING_ALLOWED = {
         TSTEP_HOURLY: 4,
@@ -704,6 +930,7 @@ def aggregate(household, source_time_series, dest_timestep_id, variable):
     return dest_timeseries
 
 
+#@timecall()
 def process_household(household):
     for variable in (VAR_PERIOD, VAR_ENERGY_PERIOD):
         raw_series_db = household \
@@ -789,10 +1016,10 @@ def process_data(data, usernames, force, z_names, zone_dict):
         for name in z_names:
             dma = create_zone(name)
             create_dma_series(dma.id)  # this might not be needed, actually
-        #dma = DMA.objects.get(pk=dma.id)
+        # dma = DMA.objects.get(pk=dma.id)
         households = create_objects(data, usernames, force, z_names, zone_dict)
         for household in households:
-            #log.info("Processing ts records for household %s" % household)
+            # log.info("Processing ts records for household %s" % household)
             process_household(household)
             cons, _time = has_leakage(household)
             if cons:
