@@ -76,7 +76,6 @@ def process_file(data):
         beg = meter_id.rfind("_") + 1
         end = meter_id.rfind("/")
         serial_no = meter_id[beg:end]
-        # TODO! Find a better way to handle meter swaps
         """ because meter was swapped, the meter id was changed.
             we need to append new data to old meter id
         """

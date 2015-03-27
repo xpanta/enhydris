@@ -1,4 +1,4 @@
-__author__ = 'chris'
+__author__ = 'Chris Pantazis'
 from django.core.management.base import BaseCommand, CommandError
 from fnmatch import fnmatch
 from os import path, listdir
@@ -21,13 +21,19 @@ def notify_admins():
     msg.send()
 
 
-def process_file(_filename, _path, force):
+def chunks(arr, n):
+    """ Yield successive n-sized chunks from l.
+    """
+    for i in xrange(0, len(arr), n):
+        yield arr[i:i+n]
+
+
+def process_file(data, force):
     """
     This function just gets the data row by row and creates a list of arrays
     consistent for all different csv files that will comply with the common
     process_data function in commonlib
-    :param _filename:
-    :param _path:
+    :param meter readings in list of lists:
     :return:
     """
     log = logging.getLogger(__name__)
@@ -35,61 +41,59 @@ def process_file(_filename, _path, force):
     def initialize_series():
         return dict(WaterCold=[], Electricity=[])
 
-    with open(path.join(_path, _filename), 'r') as f:
-        usernames = {}
-        data = csv.reader(f, encoding="utf-8")
-        meter_data = {}
-        used_meters = []  # to create a new empty series for each new meter
-        for row in data:
-            meter_id = row[0]
-            if meter_id not in used_meters:
-                used_meters.append(meter_id)
-                series = initialize_series()  # new meter! Init new series!
-            _dt = row[1]
-            try:
-                consumption = float(row[3])
-                if consumption < 0:
-                    continue
-            except ValueError:
+    used_meters = []  # to create a new empty series for each new meter
+    usernames = {}
+    meter_data = {}
+    for row in data:
+        meter_id = row[0]
+        if meter_id not in used_meters:
+            used_meters.append(meter_id)
+            series = initialize_series()  # new meter! Init new series!
+        _dt = row[1]
+        try:
+            consumption = float(row[3])
+            if consumption < 0:
                 continue
-            if 'Electricity' in meter_id:
-                _type = "Electricity"
-            elif 'Water' in meter_id:
-                _type = "WaterCold"
-            else:
-                log.debug("Consumption type not found! Skipping this row!")
-                continue
-            dt = datetime.strptime(_dt, "%Y/%m/%d %H:%M")
-            dt_aware = make_aware(dt, timezone('UTC'))
-            gr_tz = timezone("Europe/Athens")
-            athens_dt = gr_tz.normalize(dt_aware.astimezone(gr_tz))
-            dt = make_naive(athens_dt, gr_tz)  # athens time in naive format
-            #series[_type].append((dt, consumption))
-            """
-                meter_data = dict of dicts of arrays
-            """
-            beg = meter_id.rfind("_") + 1
-            end = meter_id.rfind("/")
-            serial_no = meter_id[beg:end]
-            # TODO! Find a better way to handle meter swaps
-            """ because meter was swapped, the meter id was changed.
-                we need to append new data to old meter id
-            """
-            if serial_no == "005E4F":
-                serial_no = "006047"
-            try:  # find previously inserted value
-                _dict = meter_data[serial_no]
-                _dict[_type].append((dt, consumption))
-                #print "append for %s value %s (%s)" % (_type, consumption, dt)
-            except KeyError:  # add new meter data
-                series[_type].append((dt, consumption))
-                meter_data[serial_no] = series
-                #print "create for %s value %s (%s)" % (_type, consumption, dt)
-                # when we create a HH we need a new username
-                username = serial_no
-                usernames[serial_no] = "GR%s" % username
-        z_names = ["Greece electric-water"]
-        process_data(meter_data, usernames, force, z_names, {})
+        except ValueError:
+            continue
+        if 'Electricity' in meter_id:
+            _type = "Electricity"
+        elif 'Water' in meter_id:
+            _type = "WaterCold"
+        else:
+            log.debug("Consumption type not found! Skipping this row!")
+            continue
+        dt = datetime.strptime(_dt, "%Y/%m/%d %H:%M")
+        dt_aware = make_aware(dt, timezone('UTC'))
+        gr_tz = timezone("Europe/Athens")
+        athens_dt = gr_tz.normalize(dt_aware.astimezone(gr_tz))
+        dt = make_naive(athens_dt, gr_tz)  # athens time in naive format
+        #series[_type].append((dt, consumption))
+        """
+            meter_data = dict of dicts of arrays
+        """
+        beg = meter_id.rfind("_") + 1
+        end = meter_id.rfind("/")
+        serial_no = meter_id[beg:end]
+        # TODO! Find a better way to handle meter swaps
+        """ because meter was swapped, the meter id was changed.
+            we need to append new data to old meter id
+        """
+        if serial_no == "005E4F":
+            serial_no = "006047"
+        try:  # find previously inserted value
+            _dict = meter_data[serial_no]
+            _dict[_type].append((dt, consumption))
+            #print "append for %s value %s (%s)" % (_type, consumption, dt)
+        except KeyError:  # add new meter data
+            series[_type].append((dt, consumption))
+            meter_data[serial_no] = series
+            #print "create for %s value %s (%s)" % (_type, consumption, dt)
+            # when we create a HH we need a new username
+            username = serial_no
+            usernames[serial_no] = "GR%s" % username
+    z_names = ["Greece electric-water"]
+    process_data(meter_data, usernames, force, z_names, {})
 
 
 class Command(BaseCommand):
@@ -119,7 +123,6 @@ class Command(BaseCommand):
         except IndexError:
             force = False
         try:
-            force = True
             timer1 = datetime.now()
             log.debug("starting athens import. Setting timer at {x} force={y}".
                       format(x=timer1, y=force))
@@ -141,10 +144,23 @@ class Command(BaseCommand):
             if not _filenames:
                 log.info(" *** did not find file with pattern %s" % _pattern)
                 notify_admins()
+            big_data = []
             for _filename in sorted(_filenames):
                 log.info("parsing file %s" % _filename)
                 print("parsing file {x} ({y})".format(x=_filename, y=force))
-                process_file(_filename, _path, force)
+                with open(path.join(_path, _filename), 'r') as f:
+                    data = csv.reader(f, encoding="utf-8")
+                    for row in data:
+                        big_data.append(row)
+            big_data.sort(key=lambda x: datetime.strptime(x[1],
+                                                          "%Y/%m/%d %H:%M"))
+            print len(big_data)
+            bds = chunks(big_data, 500)
+            i = 0
+            for bd in bds:
+                i += 1
+                print "processing chunk %s with length %s" % (i, len(bd))
+                process_file(bd, True)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60
                 secs = (timer2 - timer1).seconds % 60

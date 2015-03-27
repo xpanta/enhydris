@@ -319,13 +319,18 @@ def create_objects(data, usernames, force, z_names, z_dict):
             _dict = data[hh_id]
             arr = _dict[variable]
             series = arr
+            if not series:
+                continue
             earlier = []
             if (not latest_ts) or (latest_ts < series[0][0]):  # append
                 timeseries = TSeries()
                 timeseries.id = ts_id
-                tail = read_timeseries_tail_from_db(db.connection, ts_id)
-                if tail:
+                try:
+                    tail = read_timeseries_tail_from_db(db.connection, ts_id)
                     total = float(tail[1])  # keep up from last value
+                except Exception as e:
+                    log.debug(repr(e))
+                    total = 0
                 for timestamp, value in series:
                     if (not latest_ts) or (timestamp > latest_ts):
                         if not isnan(value):
