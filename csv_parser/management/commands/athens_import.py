@@ -143,7 +143,7 @@ class Command(BaseCommand):
                 notify_admins()
             for _filename in sorted(_filenames):
                 log.info("parsing file %s" % _filename)
-                print("parsing file {x} ({y})".format(x=_filename, y=force))
+                # print("parsing file {x} ({y})".format(x=_filename, y=force))
                 process_file(_filename, _path, force)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60

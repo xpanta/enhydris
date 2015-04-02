@@ -25,13 +25,15 @@ class Command(BaseCommand):
                     uvk = UserValidationKey.objects.get(user=user)
                     key = uvk.key
                     val = str(binascii.hexlify(os.urandom(4)).upper())
-                    email = "M%s@example.com" % val
-                    out.append([user.username, key])
+                    email = user.email
+                    if "example.com" in email:
+                        email = ""
+                    out.append([user.username, key, email])
                 except UserValidationKey.DoesNotExist:
                     continue
             import time
             ts = int(time.time())
-            _outfile = "exported_password_%s.csv" % ts
+            _outfile = "%s_users_data.csv" % code
             _path = "data/"
             with open(path.join(_path, _outfile), 'w') as of:
                 a = csv.writer(of, delimiter=',',
