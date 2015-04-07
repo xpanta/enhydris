@@ -27,7 +27,7 @@ class Command(BaseCommand):
                 print "output for {x}".format(x=username)
                 household = Household.objects.get(user=user)
                 timeseries = household \
-                    .timeseries.get(time_step__id=TSTEP_HOURLY,
+                    .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
                                     variable__id=VAR_PERIOD)
                 series = TSeries(id=timeseries.id)
                 series.read_from_db(db.connection)

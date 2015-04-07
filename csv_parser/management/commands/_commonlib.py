@@ -372,12 +372,22 @@ def create_objects(data, usernames, force, z_names, z_dict):
                 raw_ts.read_from_db(db.connection)
                 total = get_consumption_totals(household, earlier[0][0],
                                                variable)
+                init = total
                 for timestamp, value in earlier:
                     if not isnan(value):
                         total += value
                         raw_ts[timestamp] = total
                     else:
                         raw_ts[timestamp] = float('NaN')
+
+                # correct later values, too
+                diff = total - init
+                all_ts = sorted(raw_ts.keys())
+                for ts in all_ts:
+                    if ts <= timestamp:
+                        continue
+                    curr = raw_ts[ts]
+                    raw_ts[ts] = curr + diff
 
                 raw_ts.write_to_db(db=db.connection,
                                    transaction=transaction,

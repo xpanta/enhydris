@@ -20,8 +20,11 @@ class Command(BaseCommand):
             print "I need a username!"
             return -1
         try:
-            if username:
-                user = User.objects.get(username=username)
+            if username not in ["GR", "GB", "PT"]:
+                users = User.objects.filter(username=username)
+            else:
+                users = User.objects.filter(username__startswith=username)
+            for user in users:
                 out = []
                 print "output for {x}".format(x=username)
                 household = Household.objects.get(user=user)
@@ -41,7 +44,7 @@ class Command(BaseCommand):
                     values = np.append(values, val)
                     #perc = np.percentile(values, 90)
                     out.append([ts, val])
-                _outfile = "timeseries_cumulative_%s.csv" % username
+                _outfile = "timeseries_cumulative_%s.csv" % user.username
                 _path = "data/"
                 with open(path.join(_path, _outfile), 'w') as of:
                     a = csv.writer(of, delimiter=',',

@@ -75,12 +75,11 @@ def process_file(data):
         """
         beg = meter_id.rfind("_") + 1
         end = meter_id.rfind("/")
-        serial_no = meter_id[beg:end]
+        # serial_no = meter_id[beg:end]
+        serial_no = "IWDEMO"
         """ because meter was swapped, the meter id was changed.
             we need to append new data to old meter id
         """
-        if serial_no == "005E4F":
-            serial_no = "006047"
         try:  # find previously inserted value
             _dict = meter_data[serial_no]
             _dict[_type].append((dt, consumption))
@@ -101,6 +100,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         log = logging.getLogger(__name__)
+        print "CREATING UPDATING DEMO GR USER"
         big_data = []
         force = False
         year = month = user_meter_id = day = None
@@ -121,7 +121,8 @@ class Command(BaseCommand):
                 return -1
         try:
             timer1 = datetime.now()
-            log.debug("starting athens replace %s" % user_meter_id)
+            log.debug("starting create / update demo user from data of "
+                      " %s" % user_meter_id)
             _filenames = []
             _path = "data/athens/"
             all_files = sorted(listdir(_path))

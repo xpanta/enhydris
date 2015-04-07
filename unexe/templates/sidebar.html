@@ -19,6 +19,7 @@
         <div class="panel panel-default">
             <div class="panel-heading"><small><a href="3" class="pull-right" data-toggle="tab" onclick="activateTab('Hsettings');">{% trans "Update" %}</a></small> <div class="panel-title">{% trans "HOUSEHOLD" %}</div></div>
             <div class="panel-body">
+                <p>ID: {{  household.id }}</p>
                 <!--
                         <form class="form-inline">
                         {% trans "Household" %}: 
@@ -27,6 +28,7 @@
                         </select>
                         </form><br/>
                          -->
+
                 {% trans "Number of Occupants" %}: {{household.num_of_occupants}}
                 | {% trans "Property type" %}:
 
