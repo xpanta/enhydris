@@ -189,9 +189,6 @@ function c_uc33toggle()
 				$("#uc33").load("loaddata_uc_03_3");
 			}
 		</script>
-		{% if not "PT" in request.user.username %}
-			<button onclick="load_uc33('{{ request.user.username }}')" class="btn btn-primary" type="button">{% trans "View Charts" %}</button>
-		{% endif %}
 		</form>     
 		</div>
 	 </div>
@@ -270,7 +267,8 @@ function c_uc33toggle()
 	<!--  charts and table -->
 	<div class="panel-body" id="panel">
 		<div id="uc33_compare"></div>
-		{% if not "PT" in request.user.username %}			
+		{% if not "PT" in request.user.username %}
+			<button style="margin-bottom: 10px;" onclick="load_uc33('{{ request.user.username }}')" class="btn btn-primary" type="button">{% trans "View Charts" %}</button>			
 			<div id="uc33"></div>
 		{% endif %}							
 	</div>

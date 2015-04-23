@@ -822,7 +822,7 @@ function ChartUtil()
 	 * 
 	 */
 
-	this.c_uc52linechart = function(id,dim,data1,data2)
+	this.c_uc52linechart = function(id,dim,data1,data2, currency)
 	{
 		var margin = {top: 30, right: 80, bottom: 110, left: 60};
 	    var keys = Object.keys(data1[0]);
@@ -851,7 +851,7 @@ function ChartUtil()
 	    var y = myChart.addMeasureAxis("y", ycord);
 	    y.showGridlines = true;
 	    y.tickFormat = ',.2f';  
-	    y.title = "Cost (£)";
+	    y.title = "Cost (" + currency + ")";
 	    
 	    var s1 = myChart.addSeries("Tariff1", dimple.plot.line);
 	    var s2 = myChart.addSeries("Tariff2", dimple.plot.line);
@@ -879,7 +879,7 @@ function ChartUtil()
 	    	var parser   = d3.time.format("%b-%Y");
             return [
                 "Date: "+ parser(new Date(e.x)),
-                "Cost: £" + e.y,
+                "Cost: " + currency + e.y,
                 "Data: "+ e.aggField[0]
             ];
         };
@@ -888,13 +888,13 @@ function ChartUtil()
 	    	var parser   = d3.time.format("%b-%Y");
             return [
                 "Date: "+ parser(new Date(e.x)),
-                "Cost: £" + e.y,
+                "Cost: " + currency + e.y,
                 "Data: "+ e.aggField[0]                
             ];
         };	            
 	}
 	
-	this.c_uc52comparechart = function(id,dim,data)
+	this.c_uc52comparechart = function(id,dim,data, currency)
 	{
 		var margin = {top: 30, right: 80, bottom: 115, left: 60};
 		var svg    = dimple.newSvg(id, dim.width, dim.height);
@@ -910,7 +910,7 @@ function ChartUtil()
 		var y = chart.addMeasureAxis("y", "Cost");
 		y.showGridlines = true;
 		y.tickFormat = ',.2f';
-		y.title = "Cost (£)";
+		y.title = "Cost (" + currency + ")";
 		
 		chart.addLegend(margin.left,0,dim.width-margin.right,20,"left");
 		
@@ -924,7 +924,7 @@ function ChartUtil()
 	    s1.getTooltipText = function (e) {
 	    	var parser   = d3.time.format("%b-%Y");
             return [
-                "Cost: £" + e.y,
+                "Cost: " + currency + e.y,
                 "Data: "+ e.x
             ];
         };		
@@ -954,7 +954,7 @@ function ChartUtil()
 	        .style("opacity", 0.7)
 	
 	        // Format the number
-	        .text("£"+d3.format(",.2f")(d.yValue));
+	        .text(currency+d3.format(",.2f")(d.yValue));
         });	 		
 	}
 	
@@ -1393,7 +1393,7 @@ function ChartUtil()
 	    
 	}
 	*/
-	this.uc32barplot1 = function(id,dim,data)
+	this.uc32barplot1 = function(id,dim,data,currency)
 	{
 		//var data = '[{"Units": "273.881880739", "Cost": "273.881880739", "Data": "DMA", "Period": "12"}, {"Units": "9.47616916667", "Cost": "9.47616916667", "Data": "You", "Period": "12"}, {"Units": "115.149275501", "Cost": "115.149275501", "Data": "DMA", "Period": "6"}, {"Units": "10.793005", "Cost": "10.793005", "Data": "You", "Period": "6"}, {"Units": "74.2850266667", "Cost": "74.2850266667", "Data": "DMA", "Period": "4"}, {"Units": "11.161", "Cost": "11.161", "Data": "You", "Period": "4"}]';
 		var margin = {top: 30, right: 80, bottom: 110, left: 60};
@@ -1413,7 +1413,7 @@ function ChartUtil()
 		var y = chart.addMeasureAxis("y", "Cost");
 		y.showGridlines = true;
 		y.tickFormat = ',.2f';
-		y.title = "Cost(£)";
+		y.title = "Cost (" + currency + ")";
 		chart.addLegend(65, 10, 510, 20, "right");
 		var s = chart.addSeries(["Cost", "Data"], dimple.plot.bar);
 		chart.assignColor("DMA", "#C0C0C0");
@@ -1429,7 +1429,7 @@ function ChartUtil()
 	    /*Change tooltip data*/
 	    s.getTooltipText = function (e) {
             return [
-                "Cost: £" + e.y,
+                "Cost: " + currency + e.y,
                 "Period: "+ e.x,
                 "Data: "+ e.aggField[1] 
             ];
@@ -1460,7 +1460,7 @@ function ChartUtil()
 	        .style("opacity", 0.7)
 	
 	        // Format the number
-	        .text("£"+d3.format(",.2f")(d.yValue));
+	        .text(currency+d3.format(",.2f")(d.yValue));
         });			
 	}//--end function
 	
@@ -2208,13 +2208,13 @@ function AppUtil()
 				//draw line chart				
 				var w = domutil.getdivwidth("c_uc52chartcont"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 				var dim = {"width":w,"height":450}; //width and height of chart container
-				chartutil.c_uc52linechart("#c_uc52chartcont",dim,data["tariff1"],data["tariff2"]);
+				chartutil.c_uc52linechart("#c_uc52chartcont",dim,data["tariff1"],data["tariff2"], data["currency"]);
 				
 				//draw compare bar chart
 				w = domutil.getdivwidth("c_uc52compchart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 				dim = {"width":w,"height":450}; //width and height of chart container
 				
-				chartutil.c_uc52comparechart("#c_uc52compchart",dim,data["comparechart"]);				
+				chartutil.c_uc52comparechart("#c_uc52compchart",dim,data["comparechart"], data["currency"]);				
 				
 			}
 			else if(id==iwidgetutil.c_uc33form)
