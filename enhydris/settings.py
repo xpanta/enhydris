@@ -168,6 +168,7 @@ INSTALLED_APPS = (
     'csv_parser',
     'core',
     'sso',
+    'iw_admin',
 )
 
 AUTHENTICATION_BACKENDS = (

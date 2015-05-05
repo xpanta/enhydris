@@ -73,6 +73,7 @@ if getattr(settings, 'REGISTRATION_OPEN', True):
             name='registration_register')) + urlpatterns
 
 
+
 from enhydris.settings import DEBUG, MEDIA_ROOT, STATIC_ROOT
 if DEBUG:
     urlpatterns += patterns(
