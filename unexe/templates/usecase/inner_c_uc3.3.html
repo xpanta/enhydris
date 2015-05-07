@@ -5,7 +5,7 @@ var data = jQuery.parseJSON("{{c_uc33data|escapejs}}");
 //alert(data[0]["chart"]);
 //alert(JSON.stringify(data["chart"]));
 var w = domutil.getdivwidth("c_uc33chart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
-var dim = {"width":w,"height":450}; //width and height of chart container	
+var dim = {"width":w,"height":450}; //width and height of chart container
 chartutil.uc32barplot1("#c_uc33chart",dim,data["chart"], data["currency"]);
 
 var values= data["yourdata"]["month"];
@@ -55,7 +55,7 @@ $("#c_uc33Yearly").html("<strong>Over 12 Months Period:</strong><br/><div class=
 	<div class="col-md-7" id="c_uc33chart"></div>
 	<div class="col-md-5" id="c_uc33summary">
 	    <div class="panel panel-primary">
-	        <div class="panel-heading">{% trans "AREA SUMMARY" %}</div>
+	        <div class="panel-heading">{% trans "AREA SUMMARY" %}<p>{% trans "(other households in your DMA)" %}</p></div>
 	        <ul class="list-group list-group-flush">
 		        <li class="list-group-item" id="c_uc33Yearly"></li>
 		        <li class="list-group-item" id="c_uc33Half"></li>

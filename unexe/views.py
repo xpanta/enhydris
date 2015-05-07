@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 24 Feb 2014
 @author: adeel
@@ -728,9 +729,10 @@ def uc_03_3(request):
     
     data = {
         "c_uc33data" : json.dumps(c_uc33data),
-        "tsid" : ts_monthlyid
+        "tsid" : ts_monthlyid,
     }
     
+    print data
     variables = RequestContext(request, data)
     return render_to_response("usecase/inner_c_uc3.3.html", variables)
 
@@ -864,13 +866,17 @@ class c_uc32(TemplateView):
         pdf = pd.DataFrame(list(units),index=list(dates),columns=["units"])                   
         pdf.index.name = "dates"
         data = {"error": ""}
+        print "period", period
         if period == "season":
             data["you"]  = hhold.getseasonusage(user,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
             data["area"] = d.getseasonusage(household_dma,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
-                comparechart[0]["Units"] = data["area"]["areadata"]["household"]                    
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]
+            else:
+                 data["error"] = _("No data is available for this selection")                 
         elif period == "days": #if period is defined in range
+            print "period days"
             stdate = iutility.getPostValue("stdate",request)
             endate = iutility.getPostValue("endate",request)
             s = datetime.datetime.strptime(stdate, "%Y-%m-%d")
@@ -890,7 +896,9 @@ class c_uc32(TemplateView):
             data["area"] = d.getmonthlyusage(household_dma,int(period))
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
-                comparechart[0]["Units"] = data["area"]["areadata"]["household"]   
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]
+            else:
+                data["error"] = _("No data is available for this selection")
         '''
         if period=="days": #if period is defined in range
             stdate       = iutility.getPostValue("stdate",request)
@@ -943,10 +951,9 @@ class c_uc32(TemplateView):
         data["area_label"] = _("Area")
         data["data_label"] = _("Data")
         data["you_label"] = _("You")
-        data["units_label"] = _("Units")
+        data["units_label"] = _("m3")
         data["date_label"] = _("Date")
-
-        #print data["comparechart"]            
+            
         return HttpResponse(json.dumps(data),content_type='application/javascript')
     
 '''
@@ -1023,7 +1030,9 @@ class c_uc33(TemplateView):
             data["area"] = d.getseasonusage(household_dma,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
-                comparechart[0]["Units"] = data["area"]["areadata"]["household"]                    
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]
+            else:
+                data["error"] = _("No data is available for this selection")                       
         elif period=="days": #if period is defined in range
             stdate       = iutility.getPostValue("stdate",request)
             endate       = iutility.getPostValue("endate",request)
@@ -1043,7 +1052,9 @@ class c_uc33(TemplateView):
             data["area"] = d.getmonthlyusage(household_dma,int(period))
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
-                comparechart[0]["Units"] = data["area"]["areadata"]["household"]             
+                comparechart[0]["Units"] = data["area"]["areadata"]["household"]
+            else:
+                data["error"] = _("No data is available for this selection")   
             ""
         '''
             if compare=="night":
@@ -1099,8 +1110,9 @@ class c_uc33(TemplateView):
             data["area_label"] = _("Area")
             data["data_label"] = _("Data")
             data["you_label"] = _("You")
-            data["units_label"] = _("Units")
+            data["units_label"] = _("m3")
             data["date_label"] = _("Date")
+            data["currency"] = _("EUR")
 
         if data == None:
             data = {"error" : _("No data is available for analysis")}  
@@ -1124,13 +1136,18 @@ class c_uc52(TemplateView):
         tariff1data = {"sum":0.0,"avg":0.0,"high":0.0,"low":0.0}
         tariff2data = {"sum":0.0,"avg":0.0,"high":0.0,"low":0.0}
         comparechart=[{"Cost":"","Data":"Tariff1"},{"Cost":"","Data":"Tariff2"}]
-        data = {}        
+        data = {}
+        
+        user = request.user
+        if user.username.startswith("GB"):
+            data["currency"] = u"£"
+        else:
+            data["currency"] = u"€"        
 
         #capture data
         period = iutility.getPostValue("period",request)                
 
-        #extract timeseries data        
-        user       = request.user
+        #extract timeseries data
         household  = user.households.all()[0]
         hhold      = ihousehold()
         series     = iseries()
@@ -1271,7 +1288,7 @@ class c_uc52(TemplateView):
                 data = None
   
         if data == None:
-            data = {"error" : _("No data is available for this selection (from Python)")}
+            data = {"error" : _("No data is available for this selection")}
         return HttpResponse(json.dumps(data),content_type='application/javascript')
 
     

@@ -293,6 +293,11 @@ class iusecase():
             stdate = iutility.convertdate(str(stdate),'%Y-%m-%d','%B-%Y')
             endate = iutility.convertdate(str(endate),'%Y-%m-%d','%B-%Y')
             data["title"]   = _("TARIFF COMPARISON FROM ")+stdate+ _(" TO ")+endate
+            
+            if self.User.username.startswith("GB"):
+                data["currency"] = u"£"
+            else:
+                data["currency"] = u"€"
         else:
             data = None
 

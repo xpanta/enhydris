@@ -1,16 +1,18 @@
 {% load sekizai_tags %}
 {% load i18n %}
 <script>
-	var data = jQuery.parseJSON("{{c_uc52data|escapejs}}");
+	/*var data = jQuery.parseJSON("{{c_uc52data|escapejs}}");
 	var w = domutil.getdivwidth("c_uc52chartcont"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 	var dim = {"width":w,"height":450}; //width and height of chart container
-	
-	chartutil.c_uc52linechart("#c_uc52chartcont",dim,data["tariff1"],data["tariff2"]);
+
+	var currency = data["currency"];
+	alert("template: " + currency);
+	chartutil.c_uc52linechart("#c_uc52chartcont",dim,data["tariff1"],data["tariff2"], currency);
 	
 	w = domutil.getdivwidth("c_uc52compchart"); //get width of chart div as it changed dynamically due to bootstrap responsive layout
 	dim = {"width":w,"height":450}; //width and height of chart container
 	
-	chartutil.c_uc52comparechart("#c_uc52compchart",dim,data["comparechart"]);
+	chartutil.c_uc52comparechart("#c_uc52compchart",dim,data["comparechart"], currency);
 	
 	var stdate = JSON.stringify(data["tariff1"][0].Date);
 	var endate = JSON.stringify(data["tariff1"][1].Date);
@@ -28,17 +30,19 @@
 	
 	//adding chart details (tariff1)
 	$("#c_uc52t1sum").html("Total: £"+data["tariff1data"]["sum"]);
-	$("#c_uc52t1avg").html("<div class='text-warning'>Average Per Month: £"+data["tariff1data"]["avg"]+"</div");
-	$("#c_uc52t1high").html("<div class='text-danger'>Highest: £"+data["tariff1data"]["high"]["max"]+" in "+data["tariff1data"]["high"]["date"]+"</div");
-	$("#c_uc52t1low").html("<div class='text-success'>Lowest: £"+data["tariff1data"]["low"]["min"]+" in "+data["tariff1data"]["low"]["date"]+"</div");
+	$("#c_uc52t1avg").html("<div class='text-warning'>Average Per Month: £"+data["tariff1data"]["avg"]+"</div>");
+	$("#c_uc52t1high").html("<div class='text-danger'>Highest: £"+data["tariff1data"]["high"]["max"]+" in "+data["tariff1data"]["high"]["date"]+"</div>");
+	$("#c_uc52t1low").html("<div class='text-success'>Lowest: £"+data["tariff1data"]["low"]["min"]+" in "+data["tariff1data"]["low"]["date"]+"</div>");
 
 	
 	//adding chart details (tariff2)
 	$("#c_uc52t2sum").html("Total: £"+data["tariff2data"]["sum"]);
 	$("#c_uc52t2avg").html("<div class='text-warning'>Average Per Month: £"+data["tariff2data"]["avg"]+"</div");	
 	$("#c_uc52t2high").html("<div class='text-danger'>Highest: £"+data["tariff2data"]["high"]["max"]+" in "+data["tariff2data"]["high"]["date"]+"</div");
-	$("#c_uc52t2low").html("<div class='text-success'>Lowest: £"+data["tariff2data"]["low"]["min"]+" in "+data["tariff2data"]["low"]["date"]+"</div");
+	$("#c_uc52t2low").html("<div class='text-success'>Lowest: £"+data["tariff2data"]["low"]["min"]+" in "+data["tariff2data"]["low"]["date"]+"</div");*/
 	
+	// Remove the message asking the user to select a period.
+	$("#init_prompt52").remove();
 	apputil.sendToserver('#c_uc52-form');
 </script>
 
