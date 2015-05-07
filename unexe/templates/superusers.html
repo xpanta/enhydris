@@ -4,6 +4,14 @@
 {% load general_tags %}
 {% block pagetitle %}{% trans "Administrator Control Panel" %}{% endblock %}
 {% block pagecontent %}
+
+    {% addtoblock "css" %}
+        <link rel="stylesheet" href="{{STATIC_URL}}css/tablesorter/blue/style.css">
+    {% endaddtoblock %}
+
+    {% addtoblock "js" %}
+        <script src="{{STATIC_URL}}js/jquery.tablesorter.min.js"></script>
+    {% endaddtoblock %}
     <div class="col-md-9">
         <div class="panel panel-default">
             <div class="panel-heading"><div class="panel-title">{% trans " Home" %}</div></div>
@@ -45,8 +53,8 @@
 
     {% addtoblock "js" %}
     <script>
-        function addUsageData(ctr){
-            $("#usage-data-table").load("/data/usage/" + ctr + "/?p=1")
+        function showUsageData(ctr){
+            $("#usage-data-table").load("/superuser/data/usage/" + ctr + "/?p=1")
         }
     </script>
     {% endaddtoblock %}

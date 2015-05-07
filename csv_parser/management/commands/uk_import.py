@@ -92,7 +92,10 @@ def process_file(_filename, _path, old_cons):
                 series = initialize_series()  # new meter! Init new series!
             if meter_id:
                 _date = row[3]
-                _time = row[4]
+                try:
+                    _time = row[4]
+                except IndexError:
+                    _time = "14:05"
                 consumption = row[2]
                 if not consumption:
                     consumption = 0
@@ -110,7 +113,11 @@ def process_file(_filename, _path, old_cons):
                     consumption = 0
                 _type = "WaterCold"
                 _dt = "%s %s" % (_date, _time)
-                dt = datetime.strptime(_dt, "%d/%m/%Y %H:%M")
+                try:
+                    dt = datetime.strptime(_dt, "%d/%m/%Y %H:%M")
+                except ValueError:
+                    dt = datetime.strptime(_dt, "%m/%d/%Y %H:%M")
+
                 #series[_type].append((dt, consumption))
                 """
                     meter_data = dict of dicts of arrays
