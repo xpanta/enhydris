@@ -1025,6 +1025,7 @@ class c_uc33(TemplateView):
         pdf.index.name = "dates"
         data = {}
         
+        print "uc33 period", period
         if period=="season":
             data["you"]  = hhold.getseasonusage(user,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
             data["area"] = d.getseasonusage(household_dma,iutility.getPostValue("seasonyear",request),iutility.getPostValue("season",request))
@@ -1046,15 +1047,21 @@ class c_uc33(TemplateView):
                 data["area"] = d.getperiodstats(household_dma,stdate,endate)
                 if data["you"] and data["area"]:                        
                     comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
-                    comparechart[0]["Units"] = data["area"]["areadata"]["household"] 
+                    comparechart[0]["Units"] = data["area"]["areadata"]["household"]
         else:
             data["you"]  = hhold.getmonthlyusage(user,int(period))
             data["area"] = d.getmonthlyusage(household_dma,int(period))
             if data["you"] and data["area"]:                        
                 comparechart[1]["Units"] = data["you"]["yourdata"]["household"]                        
                 comparechart[0]["Units"] = data["area"]["areadata"]["household"]
+                
+                # Check that the area dates are all within the same period as the consumer's dates.
+                areaDates = [el["Date"] for el in data["area"]["data"]]
+                youDates = [el["Date"] for el in data["you"]["data"]]
+                if max(areaDates) < min(youDates) or min(areaDates) > max(youDates):
+                    data["error"] = _("No data is available for this selection")
             else:
-                data["error"] = _("No data is available for this selection")   
+                data["error"] = _("No data is available for this selection")       
             ""
         '''
             if compare=="night":
@@ -1504,7 +1511,7 @@ class c_uc53(TemplateView):
         #series = iseries()
         #ts_monthly = series.getmonthlyseries(household)
         #timeseries_month = series.readseries(ts_monthly)
-        data = ""        
+        data = {}     
         dailyfile = ""
         yearfile = ""
         type   = request.POST.get("algo")
@@ -1513,15 +1520,23 @@ class c_uc53(TemplateView):
         gateway = JavaGateway() 
         entry = gateway.entry_point #connect to JVM
         javats = entry.getTimeSeries(str(user.id)) #get this user javatimeseries object
-        ifcast = iforecast(javats)        
+        ifcast = iforecast(javats)      
+        
+        user = request.user
+        if user.username.startswith("GB"):
+            data["currency"] = u"£"
+        else:
+            data["currency"] = u"€"             
         
         forecast = Forecast.objects.get(user__pk=user.pk)
+        print forecast.dailyfile
         if period=="days": #daily forecast
             ts_daily = series.getdailyseries(household)
             timeseries_daily = series.readseries(ts_daily)
             if forecast.dailyfile and len(timeseries_daily)>60: #forecast only when data has 60 days historical cost or usage
                 dailyfile = forecast.dailyfile
             else:
+                print "return 1"
                 return HttpResponse(json.dumps(False),content_type='application/javascript')
         else: #yearly fordcast
             ts_monthly = series.getmonthlyseries(household)
@@ -1529,11 +1544,13 @@ class c_uc53(TemplateView):
             if forecast.yearfile and len(timeseries_month)>12: #forecast only when data has 12 months of historical cost or usage. later can be fixed for other intervals
                 yearfile = forecast.yearfile
             else:
+                print "return 2"
                 #return HttpResponse(json.dumps(False),content_type='application/javascript')
                 data = {"error" : _("No data is available for analysis")} 
                 return HttpResponse(json.dumps(data),content_type='application/javascript')                                                  
   
-        if period=="quarter":    
+        if period=="quarter":  
+            print "quarter"  
             data = ifcast.getForecast(timeseries_month,3,type,yearfile)
             '''
             sum = ifcast.getCost(ifcast.getSum(data))
@@ -1547,6 +1564,7 @@ class c_uc53(TemplateView):
             data.append({"title":"NEXT 3 MONTHS BILL FORECAST"})
             '''
         elif period=="half":
+            print "half"
             data = ifcast.getForecast(timeseries_month,6,type,yearfile)
             '''
             sum = ifcast.getCost(ifcast.getSum(data))
@@ -1560,6 +1578,7 @@ class c_uc53(TemplateView):
             data.append({"title":"NEXT 6 MONTHS BILL FORECAST"})
             '''        
         elif period=="year":
+            print "year"
             data = ifcast.getForecast(timeseries_month,12,type,yearfile)
             '''
             sum = ifcast.getCost(ifcast.getSum(data))
@@ -1575,6 +1594,7 @@ class c_uc53(TemplateView):
         else:
             #print timeseries_daily, it is very slow and therefore not included, however it perfectly works, its browser display still needed fixing as 
             #chart will be displayed in days rather than months
+            print "other"
             data = ifcast.getForecast(timeseries_daily,30,type,dailyfile,"days")
             '''
             sum = ifcast.getCost(ifcast.getSum(data))
@@ -1585,7 +1605,7 @@ class c_uc53(TemplateView):
             data.append({"high":high})
             data.append({"sum":sum})
             data.append({"avg":avg})
-            data.append({"title":"Next 30 days forecast"});
+            data.append({"title":"Next 30 days forecast"})
             '''
         print "data", data
         return HttpResponse(json.dumps(data),content_type='application/javascript')                          
