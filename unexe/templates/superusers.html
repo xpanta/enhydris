@@ -1,25 +1,61 @@
 {% extends "sidebar.html" %}
 {% load i18n %}
+{% load sekizai_tags %}
 {% load general_tags %}
 {% block pagetitle %}{% trans "Administrator Control Panel" %}{% endblock %}
 {% block pagecontent %}
-<div class="col-md-9">
-<div class="panel panel-default">
-	<div class="panel-heading"><div class="panel-title">{% trans " Home" %}</div></div>
-	<div class="panel-body">
-	<div class="row">
-	    <div class="col-md-12"> 
-		<div class="panel panel-primary">
-	        <div class="panel-heading">
-	           <span class="glyphicon glyphicon-info-sign"></span> <strong>{% trans "Administrator Control Panel" %}</strong>
-	        </div>
-	        <div class="panel-body">
-	        	{% trans "Welcome to Administrator control panel. Here you can view DMA details and assess policy effects. Please use the side menu bar to navigate" %}.
-	        </div>
-        </div>
+
+    {% addtoblock "css" %}
+        <link rel="stylesheet" href="{{STATIC_URL}}css/tablesorter/blue/style.css">
+    {% endaddtoblock %}
+
+    {% addtoblock "js" %}
+        <script src="{{STATIC_URL}}js/jquery.tablesorter.min.js"></script>
+    {% endaddtoblock %}
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-heading"><div class="panel-title">{% trans " Home" %}</div></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <span class="glyphicon glyphicon-info-sign"></span> <strong>{% trans "Administrator Control Panel" %}</strong>
+                            </div>
+                            <div class="panel-body">
+                                <p>{% trans "Welcome to Administrator control panel. Here you can view DMA details and assess policy effects. Please use the side menu bar to navigate" %}.</p>
+                                <p>{% trans "Please, select the country you would like to view usage data." %}</p>
+                                <p>
+                                    <button class="btn btn-primary" onclick="showUsageData('GB');">Great Britain</button>
+                                    <button class="btn btn-primary" onclick="showUsageData('GR');">Greece</button>
+                                    <button class="btn btn-primary" onclick="showUsageData('PT');">Portugal</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <span class="glyphicon glyphicon-signal"></span>
+                                {% trans "Usage Data" %}
+                            </div>
+                            <div class="panel-body" id="usage-data-table">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    </div>
-	</div>
-</div>
+
+    {% addtoblock "js" %}
+    <script>
+        function showUsageData(ctr){
+            $("#usage-data-table").load("/superuser/data/usage/" + ctr + "/?p=1")
+        }
+    </script>
+    {% endaddtoblock %}
 {% endblock %}

@@ -192,7 +192,7 @@ class changepassword(TemplateView):
     template_name = "dashboard.html"
 
     def post(self, request):
-        if request.user.is_authenticated(): #only change password if authenticated
+        if request.user.is_authenticated():  # only change password if authenticated
             wuser = iuser()
             status = wuser\
                 .changepassword(request.user,
