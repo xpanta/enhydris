@@ -3,14 +3,12 @@
 <table id="myTable" class="tablesorter">
     <thead>
     <tr>
-        <th>username</th>
+        <th>Username</th>
+        <th>Last Access</th>
         <th>Water Start</th>
         <th>Water End</th>
         <th>Energy Start</th>
         <th>Energy End</th>
-        <th>Last Login</th>
-        <th>Last Exit</th>
-        <th>Duration (m)</th>
         <th>Pages</th>
     </tr>
     </thead>
@@ -19,13 +17,11 @@
     <tr>
         <td>{{ user.username }}</td>
         {% with data|dict_get:user.id as arr %}
+            <td>{{ arr.8|date:"Y-m-d h:i" }}</td>
             <td>{{ arr.1 }}</td>
             <td>{{ arr.2 }}</td>
             <td>{{ arr.3 }}</td>
             <td>{{ arr.4 }}</td>
-            <td>{{ arr.5 }}</td>
-            <td>{{ arr.6 }}</td>
-            <td>{{ arr.7 }}</td>
         {% endwith %}
         {% with pages|dict_get:user.id as views %}
             <td style="width: 20%">

@@ -57,8 +57,12 @@ def usage_data(request, ctr_code):
                                - time.mktime(ets.timetuple())) / 60)
             else:
                 arr.extend([0, 0, 0])
+            upvs = UserPageView.objects.filter(user=user).order_by('-added')
+            if upvs:
+                arr.append(upvs[0].added)
+            else:
+                arr.append("-")
             u_data[user.id] = arr
-            upvs = UserPageView.objects.filter(user=user)
             pages = {}
             for upv in upvs:
                 page = upv.page
