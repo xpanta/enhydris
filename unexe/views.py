@@ -329,6 +329,7 @@ class consumer(TemplateView):
     '''
     def get(self,request,**kwargs):
         #following code is to do with use case developed by NTUA
+        return HttpResponse("Server is down for maintenance")
         from iwidget.views import dashboard_view
         try:
             hid = self.kwargs['household_id']
