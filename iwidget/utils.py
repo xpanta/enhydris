@@ -52,7 +52,7 @@ def aggregate_period(timeseries, start, end):
 def _dec_year(timestamp):
     return timestamp.replace(year=timestamp.year-1)
 
-def statistics_on_daily(ts_daily, occupancy = 1):
+def statistics_on_daily(ts_daily, occupancy=1):
     """
     Note: multiplying timeseries by 1000.0 becomes litres. Otherwise it is
     cubic metres

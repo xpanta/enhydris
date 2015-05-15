@@ -290,7 +290,6 @@ def create_objects(data, usernames, force, z_names, z_dict):
         else:
             log.info("*** found user %s ***" % user)
         household, found = create_household(hh_id, user, zone.id)
-        #print "added user %s to zone %s with id %s" % (user.username, zone_name, zone.id)
         households.append(household)
         db_series = create_raw_timeseries(household)
         create_processed_timeseries(household)
@@ -969,8 +968,6 @@ def process_household(household):
         #        return
         #log.info("Now regularizing %s with id %s for s1=%s and e1=%s"
         #         % (raw_series_db, raw_series_db.id, s1, e1))
-        if household.user.username == "GR059E35":
-            pass
         fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db,
                                         s1, e1)
         if fifteen_min_series and fifteen_min_series.bounding_dates():
@@ -1034,7 +1031,6 @@ def process_data(data, usernames, force, z_names, zone_dict):
         # dma = DMA.objects.get(pk=dma.id)
         households = create_objects(data, usernames, force, z_names, zone_dict)
         for household in households:
-            # log.info("Processing ts records for household %s" % household)
             process_household(household)
             cons, _time = has_leakage(household)
             if cons:
