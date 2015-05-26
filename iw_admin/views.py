@@ -20,7 +20,10 @@ def usage_data(request, ctr_code):
         user_pages = {}
         for user in users:
             arr = [user.username]
-            household = Household.objects.get(user=user)
+            try:
+                household = Household.objects.get(user=user)
+            except Household.DoesNotExist:
+                continue
             for variable in (VAR_PERIOD, VAR_ENERGY_PERIOD):
                 if variable == VAR_PERIOD:
                     _type = "WATER"
