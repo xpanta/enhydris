@@ -83,6 +83,7 @@ def process_file(raw_data, _path, force, z_dict):
             series = initialize_series()  # new meter! Init new series!
 
         timestamps = curr_data[meter_id].keys()
+        timestamps = sorted(timestamps)
         for ts in timestamps:
             dt = ts
             consumption = curr_data[meter_id][dt]
@@ -111,6 +112,7 @@ def process_file(raw_data, _path, force, z_dict):
             z = z_dict[k]
             if z not in z_names:
                 z_names.append(z)
+    # print meter_data
     process_data(meter_data, usernames, force, z_names, z_dict)
 
 
@@ -149,12 +151,12 @@ class Command(BaseCommand):
                 _path = "data/ags/"
                 custom_uid = value
                 all_files = sorted(listdir(_path))
-                _pattern = "TM1409*"
+                _pattern = "TM15*"
                 for f_name in all_files:
                     if fnmatch(f_name, _pattern):
                         new_files.append(f_name)
                 new_files = sorted(new_files)
-                print "Going to insert data from %s files" % len(new_files)
+                print "Going to insert data from %s files for %s" % (len(new_files), custom_uid)
 
         except IndexError:
             user_filename = ""
@@ -257,12 +259,14 @@ class Command(BaseCommand):
                                       .strptime(a, "%d-%m-%Y"))
                 for _dt in sorted_dates:
                     arr = day_data[_dt]
-                    # print "processing %s" % _dt
+                    #print "processing %s" % _dt
                     process_file(arr, _path, force, z_dict)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60
                 secs = (timer2 - timer1).seconds % 60
                 log.debug("process ended. It took %s "
                           "minutes and %s seconds." % (mins, secs))
+                print("process ended. It took %s "
+                      "minutes and %s seconds." % (mins, secs))
         except Exception as e:
             raise CommandError(repr(e))

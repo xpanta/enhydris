@@ -1,4 +1,4 @@
-__author__ = 'chris'
+__author__ = 'Chris Pantazis'
 from django.core.management.base import BaseCommand, CommandError
 from fnmatch import fnmatch
 from os import path, listdir
@@ -57,7 +57,7 @@ def parse_prev_consumption(_filename, _path):
     return meter_data
 
 
-def process_file(_filename, _path, old_cons):
+def process_file(_filename, _path, old_cons, uid):
     """
     This function just gets the data row by row and creates a list of arrays
     consistent for all different csv files that will comply with the common
@@ -83,8 +83,8 @@ def process_file(_filename, _path, old_cons):
                 x += 1  # skip first row
                 continue
             meter_id = row[0]
-            if meter_id == "8173467":
-                pass
+            if meter_id != uid:
+                continue
             if not meter_id:
                 meter_id = row[1]
             if meter_id not in used_meters:
@@ -106,7 +106,7 @@ def process_file(_filename, _path, old_cons):
                     cons = old_cons[meter_id]
                     consumption -= float(cons)
                     consumption /= 100.0  # to get litres
-                    consumption /= 1000.0
+                    consumption /= 1000.0  # to get m3
                 except (KeyError, ValueError) as e:
                     log.debug("UK: Consumption value for meter %s and date %s "
                               "not inserted because %s"
@@ -137,6 +137,7 @@ def process_file(_filename, _path, old_cons):
                     username = "GB" + meter_id
                     usernames[meter_id] = username
         z_names = ["UK water"]
+        print "processing %s data" % len(meter_data)
         process_data(meter_data, usernames, False, z_names, {})
 
 
@@ -146,55 +147,42 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         log = logging.getLogger(__name__)
         try:
-            _curr_user_filename = args[0]
-            _prev_user_filename = args[1]
+            uid = args[0]
         except IndexError:
-            _curr_user_filename = ""
-            _prev_user_filename = ""
+            return -1
         try:
             timer1 = datetime.now()
             log.debug("staring UK import. Setting timer at %s" % timer1)
             _curr_file = None
             _prev_file = None
             _path = "data/southern/"
-            all_files = sorted(listdir(_path))
-            today = datetime.today()
-            # I used %02d to format two digits from the datetime object
-            _date1 = "%02d_%02d_%s" % (today.day, today.month, str(today.year)[2:])
-            _pattern1 = _date1 + "*"
-            for f_name in all_files:
-                if fnmatch(f_name, _pattern1):
-                    _curr_file = f_name
-            # Let's find previous metre data file (unfortunately
-            # we can't know when was the previous time we had a data file
-            # so we need to go back n (=max 5) days.
-            found = False
-            x = 1
-            while not found and x < 5:
-                prev = today - timedelta(days=x)
-                _date2 = "%02d_%02d_%s" % (prev.day, prev.month,
-                                           str(prev.year)[2:])
-                _pattern2 = _date2 + "*"
-                for f_name in all_files:
-                    if fnmatch(f_name, _pattern2):
-                        _prev_file = f_name
-                        found = True
-                x += 1
-            #_prev_file = "17_11_14_uk.csv"
-            #_curr_file = "19_11_14_uk.csv"
-            if _curr_user_filename:
-                _curr_file = _curr_user_filename
-            if _prev_user_filename:
-                _prev_file = _prev_user_filename
-            print "importing %s -> %s" % (_prev_file, _curr_file)
-            if _curr_file and _prev_file:
-                log.info("parsing file %s" % _curr_file)
-                force = False  # True = Rewrite
-                old_cons = parse_prev_consumption(_prev_file, _path)
-                process_file(_curr_file, _path, old_cons)
-            else:
-                log.info("No files found for today and yesterday data! "
-                         "Stopping!")
+            # all_files = sorted(listdir(_path))
+            # correct_list = []
+            # aday = datetime.today()
+            # start = aday.replace(day=01, month=10, year=2014)
+            # end = aday
+            # while start <= end:
+            #     _date1 = "%02d_%02d_%s" % (start.day, start.month, str(start.year)[2:])
+            #     _pattern1 = _date1 + "*"
+            #     _date2 = "%02d_%02d_%s" % (start.day, start.month, str(start.year))
+            #     _pattern2 = _date2 + "*"
+            #     for f_name in all_files:
+            #         if fnmatch(f_name, _pattern1) or fnmatch(f_name, _pattern2):
+            #             correct_list.append(f_name)
+            #     start += timedelta(days=1)
+            correct_list = ['01_10_2014.csv', '06_10_2014_UK.csv', '07_10_2014_UK.csv', '08_10_14_UK.csv', '09_10_2014_UK.csv', '10_10_14_UK.csv', '13_10_14.csv', '15_10_14_UK.csv', '16_10_14_UK.csv', '20_10_14_UK.csv', '21_10_14_UK.csv', '22_10_14_UK.csv', '23_10_14_UK.csv', '24_10_14_UK.csv', '27_10_14_UK.csv', '27_10_2014.csv', '28_10_14_UK.csv', '29_10_14_UK.csv', '30_10_14_UK.csv', '30_10_2014_UK.csv', '03_11_2014_UK.csv', '04_11_14_uk.csv', '05_11_14_UK.csv', '06_11_2014_UK.csv', '10_11_14_uk.csv', '11_11_14_uk.csv', '12_11_14_uk.csv', '13_11_14_uk.csv', '14_11_14_uk.csv', '17_11_14_uk.csv', '19_11_14_uk.csv', '20_11_14_uk.csv', '21_11_14_uk.csv', '24_11_14_uk.csv', '25_11_14_uk.csv', '26_11_14_uk.csv', '27_11_14_uk.csv', '28_11_14_uk.csv', '01_12_14_uk.csv', '02_12_14_uk.csv', '03_12_14_uk.csv', '04_12_14_uk.csv', '05_12_14_uk.csv', '08_12_14_uk.csv', '09_12_14_uk.csv', '10_12_14_uk.csv', '11_12_14_uk.csv', '12_12_14_uk.csv', '15_12_14_uk.csv', '16_12_14_uk.csv', '17_12_14_uk.csv', '18_12_14_uk.csv', '19_12_14_uk.csv', '22_12_14_uk.csv', '05_01_15_uk.csv', '06_01_15_uk.csv', '07_01_15_uk.csv', '08_01_15_uk.csv', '09_01_15_uk.csv', '12_01_15_uk.csv', '13_01_15_uk.csv', '14_01_15_uk.csv', '15_01_15_uk.csv', '16_01_15_uk.csv', '20_01_2015_uk.csv', '21_01_15_uk.csv', '22_01_15_uk.csv', '23_01_15_uk.csv', '26_01_15_uk.csv', '27_01_15_uk.csv', '28_01_15_uk.csv', '29_01_15_uk.csv', '30_01_15_uk.csv', '03_02_15_uk.csv', '05_02_15_uk.csv', '06_02_15_uk.csv', '09_02_15_uk.csv', '10_02_15_uk.csv', '11_02_15_uk.csv', '13_02_15_uk.csv', '16_02_15_uk.csv', '17_02_15_uk.csv', '19_02_15_uk.csv', '20_02_15_uk.csv', '23_02_15_uk.csv', '25_02_15_uk.csv', '26_02_15_uk.csv', '27_02_15_uk.csv', '02_03_15_uk.csv', '03_03_15_uk.csv', '04_03_15_uk.csv', '05_03_15_uk.csv', '06_03_15_uk.csv', '09_03_2015_uk.csv', '10_03_15_uk.csv', '11_03_15_uk.csv', '12_03_15_uk.csv', '13_03_15_uk.csv', '16_03_15_uk.csv', '18_03_15_uk.csv', '19_03_15_uk.csv', '20_03_15_uk.csv', '23_03_15_uk.csv', '25_03_15_uk.csv', '26_03_15_uk.csv', '27_03_2015_uk.csv', '30_03_15_uk.csv', '01_04_15_uk.csv', '02_04_15_uk.csv', '08_04_15.csv', '13_04_15_uk.csv', '14_04_15_uk.csv', '15_04_15_uk.csv', '16_04_15_uk.csv', '17_04_15_uk.csv', '20_04_15_uk.csv', '22_04_15_uk.csv', '23_04_15_uk.csv', '28_04_15_uk.csv', '29_04_15_uk.csv', '30_04_15_uk.csv', '01_05_15_uk.csv']
+            for i in range(1, len(correct_list)):
+                _curr_file = correct_list[i]
+                _prev_file = correct_list[i-1]
+                print "importing %s -> %s" % (_prev_file, _curr_file)
+                if _curr_file and _prev_file:
+                    log.info("parsing file %s" % _curr_file)
+                    force = False  # True = Rewrite
+                    old_cons = parse_prev_consumption(_prev_file, _path)
+                    process_file(_curr_file, _path, old_cons, uid)
+                else:
+                    log.info("No files found for today and yesterday data! ")
+                    continue
             timer2 = datetime.now()
             mins = (timer2 - timer1).seconds / 60
             secs = (timer2 - timer1).seconds % 60
@@ -202,3 +190,4 @@ class Command(BaseCommand):
                       "minutes and %s seconds." % (mins, secs))
         except Exception as e:
             raise CommandError(repr(e))
+

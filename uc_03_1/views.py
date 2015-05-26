@@ -57,6 +57,9 @@ def compare(request, username):
     max_val2 = 0  # maximum consumption (for chart2)
     cons_table_data = []  # data prepared for the consumption tables
     cons_table_data2 = []  # data prepared for the consumption tables
+    nulls = {}
+    nulls2 = {}
+    max_allowed_nans = 14  # hours or days
     if user.username == username:
         step = request.GET.get('step', None)
         view = request.GET.get('view', None)
@@ -68,6 +71,7 @@ def compare(request, username):
             period = prd_d
         else:
             period = None
+            max_allowed_nans = 0  # for 15min and hourly
         household = user.households.all()[0]  # get user household id
         dma = household.dma  # get dma of the user
         from unexe.classes.Iseries import iseries
@@ -221,14 +225,17 @@ def compare(request, username):
                                     key=lambda a: datetime.strptime(a, "%H:%M"))
         x = 0
         # Prepare chart data to be displayed and the x-axis labels
+        null_dts = nulls.keys()
+        null_dts2 = nulls2.keys()
         if step == "15min":
             key_dates = key_dates[-96:]
             if key_dates2:
                 key_dates2 = key_dates2[-96:]
         for dt in key_dates:
             val = float(total_dict[dt])
-            if dt in nulls:
-                val = -1
+            if dt in null_dts:
+                if nulls[dt] > max_allowed_nans:
+                    val = -1
             if step != "monthly":
                 val *= 1000
             total_data.append([x, val])
@@ -239,9 +246,10 @@ def compare(request, username):
                 dv = day_dict[dt]
                 night_total += nv
                 day_total += dv
-                if dt in nulls:
-                    nv = -1
-                    dv = -1
+                if dt in null_dts:
+                    if nulls[dt] > max_allowed_nans:
+                        nv = -1
+                        dv = -1
                 if step != "monthly":
                     nv *= 1000
                     dv *= 1000
@@ -290,8 +298,9 @@ def compare(request, username):
         if key_dates2:
             for dt in key_dates2:
                 val = float(total_dict2[dt])
-                if dt in nulls2:
-                    val = -1
+                if dt in null_dts2:
+                    if nulls2[dt] > max_allowed_nans:
+                        val = -1
                 if step != "monthly":
                     val *= 1000
                 total_data2.append([x, val])
@@ -302,9 +311,10 @@ def compare(request, username):
                     dv = day_dict2[dt]
                     night_total2 += nv
                     day_total2 += dv
-                    if dt in nulls2:
-                        nv = -1
-                        dv = -1
+                    if dt in null_dts2:
+                        if nulls2[dt] > max_allowed_nans:
+                            nv = -1
+                            dv = -1
                     if step != "monthly":
                         nv *= 1000
                         dv *= 1000

@@ -57,7 +57,7 @@ def get_chart_data(household, dates, units, step, view, start, end):
             _("Sat"), _("Sun")]
     total_dict = {}
     day_dict = {}
-    nulls = []
+    nulls = {}
     night_dict = {}
     hh = ihousehold()
     for x in range(0, len(dates)):
@@ -83,8 +83,9 @@ def get_chart_data(household, dates, units, step, view, start, end):
             if isnan(consumption):
                 consumption = 0
                 if 'monthly' not in step:
-                    if key not in nulls:
-                        nulls.append(key)
+                    val = nulls.get(key, 0)
+                    val += 1
+                    nulls[key] = val
             try:
                 total_dict[key] += consumption
             except KeyError:  # if not there, put it!
