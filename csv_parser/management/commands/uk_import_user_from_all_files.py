@@ -104,8 +104,9 @@ def process_file(_filename, _path, old_cons, uid):
                     continue  # probably false reading
                 try:
                     cons = old_cons[meter_id]
+                    #print cons, consumption
                     consumption -= float(cons)
-                    consumption /= 100.0  # to get litres
+                    consumption *= 100.0  # to get litres
                     consumption /= 1000.0  # to get m3
                 except (KeyError, ValueError) as e:
                     log.debug("UK: Consumption value for meter %s and date %s "
@@ -120,6 +121,7 @@ def process_file(_filename, _path, old_cons, uid):
                     dt = datetime.strptime(_dt, "%m/%d/%Y %H:%M")
 
                 #series[_type].append((dt, consumption))
+                # print dt, consumption
                 """
                     meter_data = dict of dicts of arrays
                 """
@@ -137,7 +139,8 @@ def process_file(_filename, _path, old_cons, uid):
                     username = "GB" + meter_id
                     usernames[meter_id] = username
         z_names = ["UK water"]
-        print "processing %s data" % len(meter_data)
+        # print "processing %s data" % len(meter_data)
+        # print meter_data
         process_data(meter_data, usernames, False, z_names, {})
 
 
@@ -171,10 +174,11 @@ class Command(BaseCommand):
             #             correct_list.append(f_name)
             #     start += timedelta(days=1)
             correct_list = ['01_10_2014.csv', '06_10_2014_UK.csv', '07_10_2014_UK.csv', '08_10_14_UK.csv', '09_10_2014_UK.csv', '10_10_14_UK.csv', '13_10_14.csv', '15_10_14_UK.csv', '16_10_14_UK.csv', '20_10_14_UK.csv', '21_10_14_UK.csv', '22_10_14_UK.csv', '23_10_14_UK.csv', '24_10_14_UK.csv', '27_10_14_UK.csv', '27_10_2014.csv', '28_10_14_UK.csv', '29_10_14_UK.csv', '30_10_14_UK.csv', '30_10_2014_UK.csv', '03_11_2014_UK.csv', '04_11_14_uk.csv', '05_11_14_UK.csv', '06_11_2014_UK.csv', '10_11_14_uk.csv', '11_11_14_uk.csv', '12_11_14_uk.csv', '13_11_14_uk.csv', '14_11_14_uk.csv', '17_11_14_uk.csv', '19_11_14_uk.csv', '20_11_14_uk.csv', '21_11_14_uk.csv', '24_11_14_uk.csv', '25_11_14_uk.csv', '26_11_14_uk.csv', '27_11_14_uk.csv', '28_11_14_uk.csv', '01_12_14_uk.csv', '02_12_14_uk.csv', '03_12_14_uk.csv', '04_12_14_uk.csv', '05_12_14_uk.csv', '08_12_14_uk.csv', '09_12_14_uk.csv', '10_12_14_uk.csv', '11_12_14_uk.csv', '12_12_14_uk.csv', '15_12_14_uk.csv', '16_12_14_uk.csv', '17_12_14_uk.csv', '18_12_14_uk.csv', '19_12_14_uk.csv', '22_12_14_uk.csv', '05_01_15_uk.csv', '06_01_15_uk.csv', '07_01_15_uk.csv', '08_01_15_uk.csv', '09_01_15_uk.csv', '12_01_15_uk.csv', '13_01_15_uk.csv', '14_01_15_uk.csv', '15_01_15_uk.csv', '16_01_15_uk.csv', '20_01_2015_uk.csv', '21_01_15_uk.csv', '22_01_15_uk.csv', '23_01_15_uk.csv', '26_01_15_uk.csv', '27_01_15_uk.csv', '28_01_15_uk.csv', '29_01_15_uk.csv', '30_01_15_uk.csv', '03_02_15_uk.csv', '05_02_15_uk.csv', '06_02_15_uk.csv', '09_02_15_uk.csv', '10_02_15_uk.csv', '11_02_15_uk.csv', '13_02_15_uk.csv', '16_02_15_uk.csv', '17_02_15_uk.csv', '19_02_15_uk.csv', '20_02_15_uk.csv', '23_02_15_uk.csv', '25_02_15_uk.csv', '26_02_15_uk.csv', '27_02_15_uk.csv', '02_03_15_uk.csv', '03_03_15_uk.csv', '04_03_15_uk.csv', '05_03_15_uk.csv', '06_03_15_uk.csv', '09_03_2015_uk.csv', '10_03_15_uk.csv', '11_03_15_uk.csv', '12_03_15_uk.csv', '13_03_15_uk.csv', '16_03_15_uk.csv', '18_03_15_uk.csv', '19_03_15_uk.csv', '20_03_15_uk.csv', '23_03_15_uk.csv', '25_03_15_uk.csv', '26_03_15_uk.csv', '27_03_2015_uk.csv', '30_03_15_uk.csv', '01_04_15_uk.csv', '02_04_15_uk.csv', '08_04_15.csv', '13_04_15_uk.csv', '14_04_15_uk.csv', '15_04_15_uk.csv', '16_04_15_uk.csv', '17_04_15_uk.csv', '20_04_15_uk.csv', '22_04_15_uk.csv', '23_04_15_uk.csv', '28_04_15_uk.csv', '29_04_15_uk.csv', '30_04_15_uk.csv', '01_05_15_uk.csv']
+            #correct_list = ['05_01_15_uk.csv', '06_01_15_uk.csv', '07_01_15_uk.csv', '08_01_15_uk.csv', '09_01_15_uk.csv', '12_01_15_uk.csv', '13_01_15_uk.csv', '14_01_15_uk.csv', '15_01_15_uk.csv', '16_01_15_uk.csv', '20_01_2015_uk.csv', '21_01_15_uk.csv', '22_01_15_uk.csv', '23_01_15_uk.csv', '26_01_15_uk.csv', '27_01_15_uk.csv', '28_01_15_uk.csv', '29_01_15_uk.csv', '30_01_15_uk.csv', '03_02_15_uk.csv', '05_02_15_uk.csv', '06_02_15_uk.csv', '09_02_15_uk.csv', '10_02_15_uk.csv', '11_02_15_uk.csv', '13_02_15_uk.csv', '16_02_15_uk.csv', '17_02_15_uk.csv', '19_02_15_uk.csv', '20_02_15_uk.csv', '23_02_15_uk.csv', '25_02_15_uk.csv', '26_02_15_uk.csv', '27_02_15_uk.csv', '02_03_15_uk.csv', '03_03_15_uk.csv', '04_03_15_uk.csv', '05_03_15_uk.csv', '06_03_15_uk.csv', '09_03_2015_uk.csv', '10_03_15_uk.csv', '11_03_15_uk.csv', '12_03_15_uk.csv', '13_03_15_uk.csv', '16_03_15_uk.csv', '18_03_15_uk.csv', '19_03_15_uk.csv', '20_03_15_uk.csv', '23_03_15_uk.csv', '25_03_15_uk.csv', '26_03_15_uk.csv', '27_03_2015_uk.csv', '30_03_15_uk.csv', '01_04_15_uk.csv', '02_04_15_uk.csv', '08_04_15.csv', '13_04_15_uk.csv', '14_04_15_uk.csv', '15_04_15_uk.csv', '16_04_15_uk.csv', '17_04_15_uk.csv', '20_04_15_uk.csv', '22_04_15_uk.csv', '23_04_15_uk.csv', '28_04_15_uk.csv', '29_04_15_uk.csv', '30_04_15_uk.csv', '01_05_15_uk.csv']
             for i in range(1, len(correct_list)):
                 _curr_file = correct_list[i]
                 _prev_file = correct_list[i-1]
-                print "importing %s -> %s" % (_prev_file, _curr_file)
+                # print "importing %s -> %s" % (_prev_file, _curr_file)
                 if _curr_file and _prev_file:
                     log.info("parsing file %s" % _curr_file)
                     force = False  # True = Rewrite

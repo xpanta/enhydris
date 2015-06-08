@@ -65,6 +65,7 @@ def usage_data(request, ctr_code):
                 arr.append(upvs[0].added)
             else:
                 arr.append("-")
+            arr.append(len(ud))
             u_data[user.id] = arr
             pages = {}
             for upv in upvs:

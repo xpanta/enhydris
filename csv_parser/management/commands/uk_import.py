@@ -105,7 +105,7 @@ def process_file(_filename, _path, old_cons):
                 try:
                     cons = old_cons[meter_id]
                     consumption -= float(cons)
-                    consumption /= 100.0  # to get litres
+                    consumption *= 100.0  # to get litres
                     consumption /= 1000.0
                 except (KeyError, ValueError) as e:
                     log.debug("UK: Consumption value for meter %s and date %s "
