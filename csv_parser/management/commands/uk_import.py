@@ -5,6 +5,7 @@ from os import path, listdir
 from datetime import datetime, timedelta
 import unicodecsv as csv
 import logging
+import time
 from _commonlib import process_data
 
 
@@ -95,7 +96,7 @@ def process_file(_filename, _path, old_cons):
                 try:
                     _time = row[4]
                 except IndexError:
-                    _time = "14:05"
+                    _time = "02:05 AM"
                 consumption = row[2]
                 if not consumption:
                     consumption = 0
@@ -117,8 +118,8 @@ def process_file(_filename, _path, old_cons):
                 try:
                     dt = datetime.strptime(_dt, "%d/%m/%Y %H:%M")
                 except ValueError:
-                    dt = datetime.strptime(_dt, "%m/%d/%Y %H:%M")
-
+                    # convert 12h to 24h time
+                    dt = datetime.strptime(_dt, "%m/%d/%Y %I:%M %p")
                 #series[_type].append((dt, consumption))
                 """
                     meter_data = dict of dicts of arrays
