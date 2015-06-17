@@ -100,8 +100,8 @@ class Command(BaseCommand):
             if user_filename:
                 _filenames = [user_filename]
             for _filename in _filenames:
-                log.info("parsing file %s" % _filename)
-                force = False  # True = Rewrite
+                force = True  # True = Rewrite
+                log.info("parsing file %s with force=%s" % (_filename, force))
                 process_file(_filename, _path, force)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60

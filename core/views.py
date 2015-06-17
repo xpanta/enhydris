@@ -22,6 +22,8 @@ from sso.common import encrypt_and_hash_pwd
 from datetime import datetime
 from django.utils import translation
 
+log = logging.getLogger(__name__)
+
 
 def sso_redirect(request):
     xml = """
@@ -37,7 +39,6 @@ def sso_redirect(request):
         </soap:Envelope>
     """
     token = request.GET.get('t')
-    log = logging.getLogger(__name__)
     if token:
         xml = xml.strip()
         xml = xml.replace("##TOKEN##", token)
@@ -63,7 +64,11 @@ def sso_redirect(request):
             request.session['django_language'] = user_language
             # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
             log.debug("username is %s" % username)
-            user = User.objects.get(username=username)
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                log.debug("User %s Does Not Exist" % username)
+                return Http404("User %s Does Not Exist" % username)
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             #user = authenticate(username=user.username, password=user.password)
             login(request, user)
