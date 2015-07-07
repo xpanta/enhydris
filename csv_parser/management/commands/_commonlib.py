@@ -279,16 +279,14 @@ def create_objects(data, usernames, force, z_names, z_dict):
     found = False
     for hh_id in hh_ids:
         username = usernames[hh_id]
+        if username == "PT94993":
+            pass
         try:
             zone_name = z_dict[username]
         except KeyError:
             zone_name = z_names[0]
         zone = DMA.objects.get(name=zone_name)
         user, created = create_user(username, hh_id)
-        if created:
-            log.info("*** created user %s ***" % user)
-        else:
-            log.info("*** found user %s ***" % user)
         household, found = create_household(hh_id, user, zone.id)
         households.append(household)
         db_series = create_raw_timeseries(household)
@@ -881,7 +879,12 @@ def process_data(data, usernames, force, z_names, zone_dict):
         # dma = DMA.objects.get(pk=dma.id)
         households = create_objects(data, usernames, force, z_names, zone_dict)
         for household in households:
-            process_household(household)
+            log.debug("processing household %s" % household.user.username)
+            try:
+                process_household(household)
+                log.debug("done")
+            except Exception as e:
+                log.debug("error %s" % repr(e))
             cons, _time = has_leakage(household)
             if cons:
                 today = datetime.today()

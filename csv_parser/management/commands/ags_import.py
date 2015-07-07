@@ -10,6 +10,13 @@ from _commonlib import process_data
 _max = 30
 
 
+def chunks(arr, n):
+    """ Yield successive n-sized chunks from l.
+    """
+    for i in xrange(0, len(arr), n):
+        yield arr[i:i+n]
+
+
 def create_15_mins(dt, consumption):
     _tuples = []
     dt4 = dt - timedelta(minutes=15)
@@ -259,14 +266,15 @@ class Command(BaseCommand):
                                       .strptime(a, "%d-%m-%Y"))
                 for _dt in sorted_dates:
                     arr = day_data[_dt]
-                    #print "processing %s" % _dt
+                    # print "processing %s" % _dt
+                    log.debug("ags processing date %s" % _dt)
                     process_file(arr, _path, force, z_dict)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60
                 secs = (timer2 - timer1).seconds % 60
                 log.debug("process ended. It took %s "
                           "minutes and %s seconds." % (mins, secs))
-                print("process ended. It took %s "
-                      "minutes and %s seconds." % (mins, secs))
+                # print("process ended. It took %s "
+                #       "minutes and %s seconds." % (mins, secs))
         except Exception as e:
             raise CommandError(repr(e))

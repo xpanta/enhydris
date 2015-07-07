@@ -4,22 +4,16 @@ Created on 24 Feb 2014
 @author: adeel
 '''
 import datetime
-import time
 import pandas as pd
-import numpy as np
 import itertools as IT
-from dateutil import parser
 from django.views.generic import View
 from django.views.generic.base import TemplateView
 from django.template import RequestContext, loader
-from django.core.context_processors import csrf
 from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
 from django.contrib.auth import logout as auth_logout
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
-from py4j.java_gateway import JavaGateway, GatewayClient
-from django.db import connection
+from py4j.java_gateway import JavaGateway
 from unexe.models import *
 import json, urlparse, traceback
 from classes.Iuser import iuser
@@ -27,31 +21,16 @@ from classes.Iutility import iutility
 from classes.Ihousehold import ihousehold
 from classes.Iforecast import iforecast
 from classes.Iseries import iseries
-from classes.Ifile import ifile
 from classes.Idma import idma
 from classes.Ierror import ierror
 from classes.Iemail import iemail
 from classes.Iusecase import iusecase
 from classes.Iconfig import iconfig
-from classes.Irest import irest
-from enhydris.hcore.views import (TimeseriesDetailView as TDV,
-        bufcount)
-from enhydris.hcore.models import Timeseries, Gentity, Garea
-from enhydris.conf import settings
 from iwidget.models import (IWTimeseries, Household, DMA, PropertyType,
         TSTEP_FIFTEEN_MINUTES, TSTEP_DAILY, TSTEP_MONTHLY,
         VAR_CUMULATIVE, VAR_PERIOD, VAR_COST, TSTEP_HOURLY,UserProfile)
-from iwidget.utils import statistics_on_daily
-from pthelma.timeseries import Timeseries
-from enhydris.hcore.models import ReadTimeStep
-from django.db.models import Avg,Max,Min,Count,Sum
 from enhydris.settings import SSO_APP
-#from enhydris.hcore.models import (Lookup as HLookup, Timeseries, Gpoint,
-#        Garea, Instrument)
-# added some comments!
-from django.views.decorators.cache import never_cache
-
-#from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
 
 '''
@@ -566,7 +545,7 @@ TemplateView class for consumer use case 3.4
 class c_uc34(TemplateView):
     template_name = "dashboard.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         comparechart=[{"Units":"","Data":"Efficient User"},{"Units":"","Data":"You"}]
         compare = iutility.getPostValue("compare",request)
@@ -651,7 +630,7 @@ TemplateView class for consumer use case 4.1
 class c_uc41(TemplateView):
     template_name = "dashboard.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         data = None            
         return HttpResponse(json.dumps(data),content_type='application/javascript')
@@ -662,7 +641,7 @@ TemplateView class for consumer use case 5.4
 class c_uc54(TemplateView):
     template_name = "dashboard.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         data = None    
         print "this always returns none..."        
@@ -822,7 +801,7 @@ TemplateView class for consumer use case 3.2
 class c_uc32(TemplateView):
     template_name = "dashboard.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         #donutchart=[{"label":"You"   , "value":"", "color":"#80B1D3"},{"label":"Area" , "value":"", "color":"#C0C0C0"}]
         comparechart=[
@@ -963,7 +942,7 @@ TemplateView class for consumer use case 3.3
 class c_uc33(TemplateView):
     template_name = "dashboard.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         donutchart=[
             {
@@ -1123,7 +1102,7 @@ class c_uc33(TemplateView):
 class c_uc52(TemplateView):
     template_name = "dashboard.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         #declaration
         stdate = "" #start date
@@ -1465,7 +1444,7 @@ class dmas(TemplateView):
 class timeseries(TemplateView):
     template_name = "timeseries.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
 
     def get(self,request,**kwargs):
         object_id = self.kwargs['object_id']
@@ -1498,7 +1477,7 @@ The bridge between JAVA and python is made using py4j which connect python throu
 class c_uc53(TemplateView):
     template_name = "index.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
     def post(self,request):
         user = request.user #get authenticated user
         household = user.households.all()[0] #get user household id
@@ -1599,7 +1578,7 @@ The bridge between JAVA and python is made using py4j which connect python throu
 class c_uc54(TemplateView):
     template_name = "index.html"
 
-    #@cache_page(30 * 60)  # cache for 30 minutes
+    @cache_page(30 * 60)  # cache for 30 minutes
     def post(self,request):
         user = request.user #get authenticated user
         household = user.households.all()[0] #get user household id
