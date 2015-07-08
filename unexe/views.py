@@ -30,7 +30,7 @@ from iwidget.models import (IWTimeseries, Household, DMA, PropertyType,
         TSTEP_FIFTEEN_MINUTES, TSTEP_DAILY, TSTEP_MONTHLY,
         VAR_CUMULATIVE, VAR_PERIOD, VAR_COST, TSTEP_HOURLY,UserProfile)
 from enhydris.settings import SSO_APP
-from django.views.decorators.cache import cache_page
+#from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
 
 '''
@@ -545,7 +545,7 @@ TemplateView class for consumer use case 3.4
 class c_uc34(TemplateView):
     template_name = "dashboard.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         comparechart=[{"Units":"","Data":"Efficient User"},{"Units":"","Data":"You"}]
         compare = iutility.getPostValue("compare",request)
@@ -630,7 +630,7 @@ TemplateView class for consumer use case 4.1
 class c_uc41(TemplateView):
     template_name = "dashboard.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         data = None            
         return HttpResponse(json.dumps(data),content_type='application/javascript')
@@ -641,7 +641,7 @@ TemplateView class for consumer use case 5.4
 class c_uc54(TemplateView):
     template_name = "dashboard.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         data = None    
         print "this always returns none..."        
@@ -801,7 +801,7 @@ TemplateView class for consumer use case 3.2
 class c_uc32(TemplateView):
     template_name = "dashboard.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         #donutchart=[{"label":"You"   , "value":"", "color":"#80B1D3"},{"label":"Area" , "value":"", "color":"#C0C0C0"}]
         comparechart=[
@@ -942,7 +942,7 @@ TemplateView class for consumer use case 3.3
 class c_uc33(TemplateView):
     template_name = "dashboard.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         donutchart=[
             {
@@ -1109,7 +1109,7 @@ class c_uc33(TemplateView):
 class c_uc52(TemplateView):
     template_name = "dashboard.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self, request, *args, **kwargs):
         #declaration
         stdate = "" #start date
@@ -1451,7 +1451,7 @@ class dmas(TemplateView):
 class timeseries(TemplateView):
     template_name = "timeseries.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
 
     def get(self,request,**kwargs):
         object_id = self.kwargs['object_id']
@@ -1484,7 +1484,7 @@ The bridge between JAVA and python is made using py4j which connect python throu
 class c_uc53(TemplateView):
     template_name = "index.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self,request):
         user = request.user #get authenticated user
         household = user.households.all()[0] #get user household id
@@ -1598,7 +1598,7 @@ The bridge between JAVA and python is made using py4j which connect python throu
 class c_uc54(TemplateView):
     template_name = "index.html"
 
-    @cache_page(30 * 60)  # cache for 30 minutes
+    #@cache_page(30 * 60)  # cache for 30 minutes
     def post(self,request):
         user = request.user #get authenticated user
         household = user.households.all()[0] #get user household id
