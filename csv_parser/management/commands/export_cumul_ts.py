@@ -20,7 +20,7 @@ class Command(BaseCommand):
             print "I need a username!"
             return -1
         try:
-            if username not in ["GR", "GB", "PT"]:
+            if username not in ["GR", "GB", "PT", "GBA"]:
                 users = User.objects.filter(username=username)
             else:
                 users = User.objects.filter(username__startswith=username)

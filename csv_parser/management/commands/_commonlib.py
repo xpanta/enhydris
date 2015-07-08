@@ -279,18 +279,15 @@ def create_objects(data, usernames, force, z_names, z_dict):
     found = False
     for hh_id in hh_ids:
         username = usernames[hh_id]
+        if username == "PT94993":
+            pass
         try:
             zone_name = z_dict[username]
         except KeyError:
             zone_name = z_names[0]
         zone = DMA.objects.get(name=zone_name)
         user, created = create_user(username, hh_id)
-        if created:
-            log.info("*** created user %s ***" % user)
-        else:
-            log.info("*** found user %s ***" % user)
         household, found = create_household(hh_id, user, zone.id)
-        #print "added user %s to zone %s with id %s" % (user.username, zone_name, zone.id)
         households.append(household)
         db_series = create_raw_timeseries(household)
         create_processed_timeseries(household)
@@ -350,7 +347,8 @@ def create_objects(data, usernames, force, z_names, z_dict):
                     for timestamp, value in series:
                         if timestamp < latest_ts:
                             earlier.append((timestamp, value))
-            if earlier and "GR" in username:  # insert (only for athens)
+            if earlier and ("GR" in username or "GBA" in username):  # insert (only for athens)
+                # print "appending %s items for %s" % (len(earlier), username)
                 if variable == "WaterCold":
                     ts15 = household \
                         .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
@@ -393,157 +391,6 @@ def create_objects(data, usernames, force, z_names, z_dict):
                                    transaction=transaction,
                                    commit=True)
 
-
-
-
-                    # """
-                    # 1. read from db period values into a dict
-                    # 2. update with current values
-                    # 3. reconstruct raw (cumulative) data.
-                    # 4. write to db
-                    # """
-                    # timeseries = None
-                    # if variable == "WaterCold":
-                    #     timeseries = household \
-                    #         .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
-                    #                         variable__id=VAR_PERIOD)
-                    # elif variable == "Electricity":
-                    #     timeseries = household \
-                    #         .timeseries.get(time_step__id=TSTEP_FIFTEEN_MINUTES,
-                    #                         variable__id=VAR_ENERGY_PERIOD)
-                    # dict1 = {}
-                    # dict2 = {}
-                    # cut = series[0][0]
-                    # if timeseries:
-                    #     series_db = TSeries(id=timeseries.id)
-                    #     series_db.read_from_db(db.connection)
-                    #     timestamps = sorted(series_db.keys())
-                    #     # add db data to dict1 and dict2. Cut to series 1st day
-                    #     for ts in timestamps:
-                    #         if ts < cut:
-                    #             dict1[ts] = series_db[ts]
-                    #         else:
-                    #             dict2[ts] = series_db[ts]
-                    #     # update dict2 with current series data
-                    #     for ts, value in series:
-                    #         if ts >= cut:
-                    #             dict2[ts] = value
-                    #     # combine dicts
-                    #     dict1.update(dict2)
-                    #     new_timeseries = TSeries()
-                    #     new_timeseries.id = ts_id
-                    #     keys = sorted(dict1.keys())
-                    #     total = 0
-                    #     for ts in keys:
-                    #         val = dict1[ts]
-                    #         if not isnan(val):
-                    #             total += float(dict1[ts])
-                    #             new_timeseries[ts] = total
-                    #         else:
-                    #             new_timeseries[ts] = float('NaN')
-                    #     new_timeseries.write_to_db(db=db.connection,
-                    #                                transaction=transaction,
-                    #                                commit=True)
-                    #
-                    #
-
-
-
-                        # for ts in timestamps:  # add db data to dict2
-                        #     dict2[ts] = series_db[ts]
-                        # timestamps2 = []
-                        # for timestamp, value in series:
-                        #     timestamps2.append(timestamp)
-                        # # add current data to dict1 up to first date
-                        # # and from that date to dict2 (replacing old with new
-                        # # values)
-                        # for ts in timestamps:
-                        #     if ts < cut:
-                        #         dict1[ts] = series_db[ts]
-                        #     else:
-                        #         # update dict2 with current data
-                        #         dict2[ts] = series_db[ts]
-                        # dict1.update(dict2)
-
-
-
-
-
-
-
-
-
-
-
-
-                    # timeseries = TSeries(ts_id)  # read existing ts raw data
-                    # timeseries.read_from_db(db.connection)
-                    # """
-                    # 1. find total up to series[0][0]
-                    # 2. append to series data from series[-1][0] to latest_ts
-                    # 3. Write series data to db
-                    # """
-                    # totals = get_consumption_totals(household, series[0][0])
-                    # series_after = get_values_after(household, series[-1][0],
-                    #                                 variable)
-                    # if series_after:
-                    #     series.append(series_after)
-                    # total = totals.get(variable, 0)
-                    # for timestamp, value in series:
-                    #     if timestamp.day == 10 and timestamp.hour == 2:
-                    #         pass
-                    #     if not isnan(value):
-                    #         total += value
-                    #         timeseries[timestamp] = total
-                    #     else:
-                    #         timeseries[timestamp] = float('NaN')
-                    #     print timestamp, value, total
-                    # timeseries.write_to_db(db=db.connection,
-                    #                        transaction=transaction,
-                    #                        commit=True)
-
-
-            # part_total = 0
-            # if force:
-            #     latest_ts = None  # just to enter the following loop
-            # for timestamp, value in series:
-            #     if (latest_ts and latest_ts < timestamp) or (not latest_ts):
-            #         if not isnan(value):
-            #             total += value
-            #             timeseries[timestamp] = total
-            #         else:
-            #             timeseries[timestamp] = float('NaN')
-            #     # elif latest_ts and timestamp <= latest_ts \
-            #     #         and "GR" in username:  # insert but only for Athens
-            #     #     # find total consumption till timestamp
-            #     #     dates = sorted(timeseries.keys())
-            #     #     if not part_total:  # find it
-            #     #         for _date in dates:
-            #     #             if _date < timestamp:
-            #     #                 continue
-            #     #             else:
-            #     #                 part_total = timeseries[_date]
-            #     #                 break
-            #     #     if not isnan(value):
-            #     #         part_total += value
-            #     #         timeseries[timestamp] = part_total
-            #     #     else:
-            #     #         timeseries[timestamp] = float('NaN')
-            #     #     # in case of next dates are after latest_ts then we
-            #     #     # need the new total. (we always suppose that dates are
-            #     #     # increasing.
-            #     #     total = part_total
-            # try:
-            #     if not exists or force:
-            #         timeseries.write_to_db(db=db.connection,
-            #                                transaction=transaction,
-            #                                commit=True)
-            #     else:
-            #         timeseries.write_to_db(db=db.connection,
-            #                                transaction=transaction,
-            #                                commit=True)
-            # except ValueError as xx:
-            #     print repr(xx)
         if 'WaterCold' in timeseries_data and not found:  # only for new HH
             calc_occupancy(timeseries_data['WaterCold'], household)
     return households
@@ -969,8 +816,6 @@ def process_household(household):
         #        return
         #log.info("Now regularizing %s with id %s for s1=%s and e1=%s"
         #         % (raw_series_db, raw_series_db.id, s1, e1))
-        if household.user.username == "GR059E35":
-            pass
         fifteen_min_series = regularize(raw_series_db, fifteen_min_series_db,
                                         s1, e1)
         if fifteen_min_series and fifteen_min_series.bounding_dates():
@@ -1034,8 +879,12 @@ def process_data(data, usernames, force, z_names, zone_dict):
         # dma = DMA.objects.get(pk=dma.id)
         households = create_objects(data, usernames, force, z_names, zone_dict)
         for household in households:
-            # log.info("Processing ts records for household %s" % household)
-            process_household(household)
+            log.debug("processing household %s" % household.user.username)
+            try:
+                process_household(household)
+                log.debug("done")
+            except Exception as e:
+                log.debug("error %s" % repr(e))
             cons, _time = has_leakage(household)
             if cons:
                 today = datetime.today()

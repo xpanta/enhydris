@@ -10,6 +10,13 @@ from _commonlib import process_data
 _max = 30
 
 
+def chunks(arr, n):
+    """ Yield successive n-sized chunks from l.
+    """
+    for i in xrange(0, len(arr), n):
+        yield arr[i:i+n]
+
+
 def create_15_mins(dt, consumption):
     _tuples = []
     dt4 = dt - timedelta(minutes=15)
@@ -83,6 +90,7 @@ def process_file(raw_data, _path, force, z_dict):
             series = initialize_series()  # new meter! Init new series!
 
         timestamps = curr_data[meter_id].keys()
+        timestamps = sorted(timestamps)
         for ts in timestamps:
             dt = ts
             consumption = curr_data[meter_id][dt]
@@ -111,6 +119,7 @@ def process_file(raw_data, _path, force, z_dict):
             z = z_dict[k]
             if z not in z_names:
                 z_names.append(z)
+    # print meter_data
     process_data(meter_data, usernames, force, z_names, z_dict)
 
 
@@ -124,6 +133,7 @@ class Command(BaseCommand):
         user_filename = None
         custom_date = None
         new_files = []
+        custom_uid = ""
         try:
             arg = args[0]
             param = arg.split('=')[0]
@@ -143,6 +153,18 @@ class Command(BaseCommand):
                 for f_name in all_files:
                     if fnmatch(f_name, _pattern):
                         new_files.append(f_name)
+            elif param == "all_data_from_start":
+                user_filename = None
+                _path = "data/ags/"
+                custom_uid = value
+                all_files = sorted(listdir(_path))
+                _pattern = "TM15*"
+                for f_name in all_files:
+                    if fnmatch(f_name, _pattern):
+                        new_files.append(f_name)
+                new_files = sorted(new_files)
+                print "Going to insert data from %s files for %s" % (len(new_files), custom_uid)
+
         except IndexError:
             user_filename = ""
             custom_date = ""
@@ -151,7 +173,7 @@ class Command(BaseCommand):
             timer1 = datetime.now()
             log.debug("starting AGS Portugal import. Setting timer at %s" % timer1)
             _path = "data/ags/"
-            if not user_filename and not custom_date:
+            if not user_filename and not custom_date and not custom_uid:
                 # I used %02d to format two digits from the datetime object
                 # Telemetria filename: TM141002_120015.txt
                 ## CONNECT TO FTP SERVER AND RETRIEVE FILE LIST
@@ -189,7 +211,7 @@ class Command(BaseCommand):
                 raw_data = []
                 force = False
                 for _filename in new_files:
-                    print "reading {x}".format(x=_filename)
+                    #print "reading {x}".format(x=_filename)
                     log.debug("reading {x}".format(x=_filename))
                     # First make on big file concatenating all new downloaded
                     # files.
@@ -223,6 +245,10 @@ class Command(BaseCommand):
                 # the previous day in order to go on. See _commonlib.py: 296
                 day_data = {}
                 for row in raw_data:
+                    if custom_uid:
+                        _id = row[0]
+                        if _id != custom_uid:
+                            continue
                     _dt = row[1]
                     _dt = _dt.split(" ")[0]  # pick only the date part
                     try:
@@ -239,13 +265,16 @@ class Command(BaseCommand):
                                       key=lambda a: datetime
                                       .strptime(a, "%d-%m-%Y"))
                 for _dt in sorted_dates:
-                    print "processing %s" % _dt
                     arr = day_data[_dt]
+                    # print "processing %s" % _dt
+                    log.debug("ags processing date %s" % _dt)
                     process_file(arr, _path, force, z_dict)
                 timer2 = datetime.now()
                 mins = (timer2 - timer1).seconds / 60
                 secs = (timer2 - timer1).seconds % 60
                 log.debug("process ended. It took %s "
                           "minutes and %s seconds." % (mins, secs))
+                # print("process ended. It took %s "
+                #       "minutes and %s seconds." % (mins, secs))
         except Exception as e:
             raise CommandError(repr(e))

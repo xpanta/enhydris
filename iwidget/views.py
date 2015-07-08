@@ -950,7 +950,8 @@ def periods_distribution(request, *args, **kwargs):
                     linecache.checkcache(afilename)
                     continue
                 else:
-                    raise
+                    # raise
+                    continue
             if v != '':
                 afloat = float(v)
                 add_to_stats(params, k, afloat)

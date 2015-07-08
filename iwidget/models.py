@@ -321,7 +321,7 @@ class UserNotifications(models.Model):
     user = models.ForeignKey(User, related_name="notifications")
     notification = models.CharField(max_length=64)  # leakage, burst, etc
     detected = models.DateField()
-    event_time = models.CharField(max_length=10, default=0)
+    event_time = models.CharField(max_length=30, default=0)
     added = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     valid = models.BooleanField(default=False)  # if user agrees with event
