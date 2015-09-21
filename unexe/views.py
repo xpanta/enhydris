@@ -3,7 +3,7 @@
 Created on 24 Feb 2014
 @author: adeel
 '''
-import datetime
+import datetime, time
 import pandas as pd
 import itertools as IT
 from django.views.generic import View
@@ -28,6 +28,7 @@ from classes.Iusecase import iusecase
 from classes.Iconfig import iconfig
 from iwidget.models import (IWTimeseries, Household, DMA, PropertyType,
         UserProfile)
+import unexe.models as umd
 from enhydris.settings import SSO_APP
 from django.utils.translation import ugettext as _
 
@@ -1615,3 +1616,61 @@ class c_uc54(TemplateView):
         '''
 
         return HttpResponse(json.dumps(data),content_type='application/javascript')
+    
+    
+    
+def ediary_get(request):
+    """
+    View to load the e-diary for the logged in user.
+    @author: David Walker
+    """
+    user = request.user
+    household = user.households.all()[0]       # Get the user household ID.
+    
+    diary_entries = []
+    for ed in household.ediary_set.all().order_by('-diary_ts'):
+        diary_entries.append((ed.id, ed.diary_ts, ed.diary_entry))
+    
+    data = {"entries": diary_entries}
+    
+    variables = RequestContext(request, data)
+    return render_to_response("ediary.html", variables)
+
+
+def ediary_new(request):
+    """
+    Save a new e-diary entry for the logged in user.
+    @author: David Walker
+    """
+    # Extract the user from the request and get their household.
+    user = request.user
+    household = user.households.all()[0]
+    
+    # Generate a timestamp and extract the form data.
+    edts = time.strftime("%Y-%m-%d %H:%M:%S")
+    edentry = request.POST[u'edentry']
+    
+    # Construct the Ediary object and add it to the household.
+    ed_entry = umd.Ediary(None, edts, edentry, household.id)
+    household.ediary_set.add(ed_entry)
+
+    return ediary_get(request)
+
+
+def ediary_update(request):
+    """
+    Update an existing e-diary entry.
+    @author: David Walker
+    """
+    # Extract the user from the request and get their household.
+    user = request.user
+    household = user.households.all()[0]
+    
+    # Extract the form data.
+    edid = request.POST[u'ediary_editform_id']
+    edentry = request.POST[u'ediary_editform_ta']
+    
+    # Get a handle on the e-diary entry and update its entry field.
+    umd.Ediary.objects.filter(pk=edid).update(diary_entry=edentry)
+    
+    return ediary_get(request)
