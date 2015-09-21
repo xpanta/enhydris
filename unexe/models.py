@@ -52,3 +52,8 @@ class DMAstats(models.Model):
     minunits      = models.FloatField()
     dma           = models.ForeignKey(DMA)
 
+
+class Ediary(models.Model):
+    diary_ts = models.DateTimeField()
+    diary_entry = models.TextField()
+    hh_ref = models.ForeignKey(Household)
