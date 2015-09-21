@@ -18,6 +18,9 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'iwidget_consumer.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
+    url(r'^ediary/get/', ediary_get),
+    url(r'^ediary/new/', ediary_new),
+    url(r'^ediary/update/', ediary_update),
     url(r'^test$', test.as_view(), name='test'),  # logout
     url(r'^$', home.as_view(), name='home'),  # home page
     url(r'^dashboard$', login_required(dashboard.as_view()),
@@ -97,6 +100,7 @@ urlpatterns = patterns('',
     # Added by Chris Pantazis to redirect to core/signup
     #url(r'^signup/$', RedirectView.as_view(url='/core/signup/',
     #                                       permanent=False)),
+    
 )
 
 """ url confs from other use cases go here """
