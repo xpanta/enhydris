@@ -132,6 +132,11 @@ var page_view_url = "{% url "user_page_view" %}";
                 </ul>
             </li>
     	{% endif %}
+    	<!-- <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-tint"></span> {% trans "e-Diary" %} <span class="caret"></span></a>
+    		<ul class="dropdown-menu" role="menu" id="ediary-menu">
+	    		<li><a href="" onclick="$('#ediary').load('/ediary/get/');" data-toggle="tab"><span class="glyphicon glyphicon-edit"></span> {% trans "e-Diary" %}</a></li>
+    		</ul>
+    	</li>-->
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span> {% trans "Settings" %} <span class="caret"></span></a>
 			<ul class="dropdown-menu" role="menu" id="settings">
 				<!-- 2 in the javascript method is the index of the menu tab -->
@@ -226,6 +231,8 @@ var page_view_url = "{% url "user_page_view" %}";
 		<div class="tab-pane tabcontent" id="Hsettings">
 			{% include "households.html" %}   
 		</div> <!-- household settings --> 	
+		
+		<!-- <div class="" id="ediary"></div> <!-- e-diary -->
 
 		{% if not user.is_staff and not user.is_superuser %}
 			<div class="tab-pane tabcontent" id="Usettings">
