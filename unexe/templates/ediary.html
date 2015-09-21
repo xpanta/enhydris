@@ -1,0 +1,75 @@
+{% load i18n %}	
+	
+	    	<div id="ediary-panel" class="panel panel-default">
+	    		<div id="ediary_editform_container" style="display: none;">
+					<form id="ediary_editform" method="post">
+						{% csrf_token %}
+				  		<textarea name="ediary_editform_ta" id="ediary_editform_ta" rows="3" cols="100"></textarea></p>
+				  		<input type="hidden" id="ediary_editform_id" name="ediary_editform_id" value="" />
+				  		<input type="submit" value="Save Entry" />
+					</form>
+			    </div>
+				<div class="panel-heading"><div class="panel-title">{% trans "e-Diary" %}</div></div>
+				<div class="panel-body">
+				<div id="household-msg"></div>
+				<script>
+					$('#ediary_new').submit(function(event){
+					    var data = $(this).serialize();
+					    $.post('/ediary/new/', data)
+					        .success(function(result){
+					            $('#ediary').load("/ediary/get/");
+					        });
+					    return false;
+					});
+					
+					$('#ediary_editform').submit(function(event) {
+						var data = $(this).serialize();
+						$.post('/ediary/update/', data)
+							.success(function(result) {
+								$('#ediary').load("/ediary/get");
+							});
+						return false;
+					});
+					
+					function toggleEntry(entry, active) {
+						var display = "none";
+						if (active) {
+							display = "block";
+						}
+						
+						entry.getElementsByTagName("p")[0].style.display = display;
+					}
+					
+					function ediary_edit(id) {
+						// ID is the unique ID of the entry to be edited.
+						var entry = document.getElementById("iwed_" + id);
+						var entryText = entry.textContent;
+						toggleEntry(entry, false);
+					      
+				    	var editForm = document.getElementById("ediary_editform_container");
+				    	var ediaryPanel = document.getElementById("ediary-panel");
+				    	ediaryPanel.removeChild(editForm);
+				    	entry.appendChild(editForm);
+				    	editForm.style.display = "block";
+				    	$('#ediary_editform_ta').html(entryText);
+				    	document.getElementById("ediary_editform_id").value = id;
+					}
+				</script>
+				<form id="ediary_new" method="post" onsubmit="submit_ediary();" action="#">
+					{% csrf_token %}
+					<p style="float: left; margin-right: 20px;">New diary entry</p>
+					<textarea style="float: left; margin-right: 20px; margin-bottom: 20px;" rows="3" cols="100" name="edentry"></textarea><br />
+					<input style="float: left;" type="submit" value="Submit" name="submit" class="btn btn-primary" />
+				</form>
+				<table class="table table-condensed table-striped table-hover">
+				<thead class="bg-primary">
+					<tr><th width="25%">Time</th><th>Entry</th></tr>
+				</thead>
+				{% for edid, edts, edentry in entries %}
+					<tr><td>{{ edts }} <button type="button" onclick="ediary_edit({{ edid }})">Edit</button></td><td><div id="iwed_{{ edid }}"><p>{{ edentry }}</p></div></td></tr>
+				{% endfor %}
+				</table>
+			   </div>
+	                <div id="household-msg-bottom"></div>
+		   </div> <!-- household-panel -->
+   
